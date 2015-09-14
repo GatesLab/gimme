@@ -1,5 +1,8 @@
-##R port of Bush and Cisler 2013, Magnetic Resonance Imaging
-##Adapted from the original provided by Keith Bush
+## R versions of deconvolution algorithms for testing in GIMME
+## Ported from MATLAB by Michael Hallquist, September 2015
+
+## R port of Bush and Cisler 2013, Magnetic Resonance Imaging
+## Adapted from the original provided by Keith Bush
 
 ## Author:      Keith Bush, PhD
 ## Institution: University of Arkansas at Little Rock
@@ -109,54 +112,267 @@ generate_feature <- function(encoding, K) {
 }
 
 
-spm_hrf <- function(TR, P) {
-    ## spm_hrf - Returns a hemodynamic response function as a difference of gammas (canonical)
-    ##
-    ## USAGE:
-    ##   hrf = spm_hrf(TR,[p])
-    ##
-    ##INPUT:
-    ## TR   - scan repetition time (seconds)
-    ## P    - 1x7 vector of parameters for the response function (two gamma functions)
-    ##                                                 (default value, in seconds)
-    ## P[1] - delay of response (relative to onset)    (6)
-    ## P[2] - delay of undershoot (relative to onset)  (16)
-    ## P[3] - dispersion of response                   (1)
-    ## P[4] - dispersion of undershoot                 (1)
-    ## P[5] - ratio of response to undershoot          (6)
-    ## P[6] - onset (seconds)                          (0)
-    ## P[7] - length of kernel (seconds)               (32)
-    ##
-    ## OUTPUT:
-    ##  $kernel - hemodynamic response function
-    ##  $p      - parameters of the response function
-    ##_______________________________________________________________________
-    ## Copyright (C) 2005 Wellcome Department of Imaging Neuroscience
+#####
+## Wu code
 
-    ## Karl Friston
-    ## $Id: spm_hrf.m 387 2005-12-17 18:31:23Z klaas $
+## R port of Wu et al. 2013, Medical Image Analysis
+## Adapted from the original provided by Daniele Marinazzo
 
-    ## default parameters
-    ##-----------------------------------------------------------------------
-    fMRI_T = 16 #microtime resolution is 1/16th of TR
+wgr_deconv_canonhrf_par <- function(data, thr=1.0, event_lag_max, TR) {
+### function [data_deconv event HRF adjust_global PARA] = wgr_deconv_canonhrf_par(data,thr,event_lag_max,TR)
 
-    p = c(6, 16, 1, 1, 6, 0, 32)
+### this function implements the method described in
+### Wu et al,
+### A blind deconvolution approach to recover effective connectivity brain networks from resting state fMRI data,
+### Med Image Anal. 2013 Jan 29. pii: S1361-8415(13)00004-2. doi: 10.1016/j.media.2013.01.003
 
-    if (!missing(P)) {
-        p[1:length(P)] = P
+### input
+### data, dimensions time points x number of voxels, normalized
+### threshold, assuming data are normalized
+### event_lag_max: maximum time from neural event to BOLD event in bins, not time
+### (e.g. if we assume 10seconds, and TR=2s,  set the value to 10/2=5)
+### TR is the TR parameter, in seconds.
+
+### Some parts of the code (subfunction: Fit_Canonical_HRF, CanonicalBasisSet, get_parameters2) were modified from the hemodynamic response estimation toolbox(http://www.stat.columbia.edu/~martin/HRF_Est_Toolbox.zip).
+###
+### the code uses the parallel for loop ¡°parfor¡±. In case of older matlab versions, parfor can be changed to standard for.
+###
+### The default is using canonical hrf and two derivatives, as described in the paper.
+### The function can be modified to use instead point processes, FIR model, etc.
+
+    ##force data to explicit matrix form (time x variables) for proper looping
+    ##this will allow data to be passed in as a 1-D vector for single variable problems
+    if (!inherits(data, "matrix")) { data <- matrix(data, ncol=1) }
+    
+    N = nrow(data); nvar = ncol(data)
+    even_new = wgr_trigger_onset(data,thr)
+
+    p_m=3 #define what HRF to fit
+    ## Options: p_m=1 - only canonical HRF
+    ##          p_m=2 - canonical + temporal derivative
+    ##          p_m=3 - canonical + time and dispersion derivative
+
+    T = round(30/TR) ## assume HRF effect lasts 30s.
+    data_deconv = matrix(0, nrow=N, ncol=nvar)
+    HRF  = matrix(0, nrow=T, ncol=nvar)
+    PARA = matrix(0, nrow=3, ncol=nvar)
+    event = list()
+    event_lag <- rep(0, nvar)
+    ##warning off
+
+    ##can parallelize over nvar
+    for (i in 1:nvar) {    
+        out = wgr_adjust_onset(data[,i], even_new[[i]], event_lag_max, TR, p_m, T, N)
+        ##[data_deconv(:,i) HRF(:,i) event{i} adjust_global(i)  PARA(:,i)]
+        data_deconv[,i] <- out$data_deconv
+        HRF[,i] <- out$hrf
+        event[[i]] <- out$events
+        event_lag[i] <- out$event_lag
+        PARA[,i] <- out$param        
     }
 
-    ## modelled hemodynamic response function - {mixture of Gammas}
-    ##-----------------------------------------------------------------------
-    dt    = TR/fMRI_T
-    u     = 0:(p[7]/dt) - p[6]/dt #sampling grid of HRF in microtime units (e.g., 0:256 for default params and 2s TR)
+    ##warning on
+    return(list(data_deconv=data_deconv, event=event, HRF=HRF, event_lag=event_lag, PARA=PARA))
 
-    ## MH: eliminated use of spm Gpdf in favor of built-in gamma PDF in R. Checked that this yields identical
-    ## results, although the third parameter of spm_Gpdf is really rate, not shape.
-    hrf   = dgamma(u, shape=p[1]/p[3], rate=dt/p[3]) - dgamma(u, shape=p[2]/p[4], rate=dt/p[4])/p[5]
+}
 
-    hrf   = hrf[0:(p[7]/TR)*fMRI_T + 1] #subsample hrf back onto TR grid
-    hrf   = hrf/sum(hrf); #Unit normalize hrf
+wgr_adjust_onset <- function(dat,even_new,event_lag_max,TR,p_m,T,N) {  
+    ##function [dat_deconv hrf even_new ad_global param] = wgr_adjust_onset(dat,even_new,event_lag_max,TR,p_m,T,N)
+    ## global adjust.
+    kk=1 #this is just a 1-based version of the loop iterator event_lag...
+    hrf   = matrix(NA_real_, nrow=T, ncol=event_lag_max+1)
+    param = matrix(NA_real_, nrow=p_m, ncol=event_lag_max+1)
+    Cov_E = rep(NA_real_, event_lag_max+1)
+    for (event_lag in 0:event_lag_max) {
+        RR = even_new - event_lag; RR = RR[RR >= 0]
+        design = matrix(0, nrow=N, ncol=1)
+        design[RR,1] = 1 #add pseudo-events to design matrix
+        fit = Fit_Canonical_HRF(dat,TR,design,T,p_m);
+        hrf[,kk] <- fit$hrf
+        param[,kk] <- fit$param
+        Cov_E[kk] <- cov(fit$e) #covariance of residual
+        kk = kk+1;
+    }
+    
+    C   = min(Cov_E)
+    ind = which.min(Cov_E)
+    ad_global = ind - 1 #begin with 0.
+    even_new = even_new - ad_global
+    even_new = even_new[even_new>=0]
+    hrf = hrf[,ind] #keep only best HRF (minimize error of pseudo-event timing)
+    param = param[,ind] #keep only best params
+    
+    ## linear deconvolution.
+    H = fft(c(hrf, rep(0, N-T)))  ##    H=fft([hrf; zeros(N-T,1)]);
+    M = fft(dat)
+    data_deconv = Re(fft(Conj(H)*M/(H*Conj(H)+C), inverse=TRUE)/length(H)) ## only keep real part -- there is a tiny imaginary residue in R
 
-    return(list(kernel=hrf, p=p))
+    return(list(data_deconv=data_deconv, hrf=hrf, events=even_new, event_lag=ad_global, param=param))
+}
+
+wgr_trigger_onset <- function(mat, thr) {
+    ##function [oneset] = wgr_trigger_onset(mat,thr)
+    N = nrow(mat); nvar = ncol(mat)
+    mat = apply(mat, 2, scale) #z-score columns
+    oneset <- list()
+    ## Computes pseudo event.
+    for (i in 1:nvar) {
+        oneset_temp = c()
+        for (t in 2:(N-1)) {
+            if (mat[t,i] > thr && mat[t-1,i] < mat[t,i] && mat[t,i] > mat[t+1,i]) { ## detects threshold
+                oneset_temp = c(oneset_temp, t)
+            }
+        }
+        oneset[[i]] = oneset_temp
+    }
+
+    return(oneset)
+}
+
+
+
+
+#####
+## Helper functions for Wu deconvolution algorithm
+## Original code from Lindquist and Wager HRF Toolbox
+CanonicalBasisSet <- function(TR) {
+    len = round(30/TR) # 30 secs worth of images
+    xBF <- list()
+    xBF$dt = TR
+    xBF$length= len
+    xBF$name = 'hrf (with time and dispersion derivatives)'
+    xBF = spm_get_bf(xBF)
+    
+    v1 = xBF$bf[1:len,1]
+    v2 = xBF$bf[1:len,2]
+    v3 = xBF$bf[1:len,3]
+
+    ## orthogonalize
+    h = v1
+    dh =  v2 - (v2 %*% v1/norm(v1, "2")^2)*v1
+    dh2 =  v3 - (v3 %*% v1/norm(v1, "2")^2)*v1 - (v3 %*% dh/norm(dh, "2")^2)*dh
+
+    ## normalize amplitude
+    h = h/max(h)
+    dh = dh/max(dh)
+    dh2 = dh2/max(dh2)
+
+    return(list(h=h, dh=dh, dh2=dh2))
+}
+
+Fit_Canonical_HRF <- function(tc, TR, Run, T, p) {
+##function [hrf, e, param] = Fit_Canonical_HRF(tc,TR,Run,T,p)
+##
+## Fits GLM using canonical hrf (with option of using time and dispersion derivatives)';
+##
+## INPUTS:
+##
+## tc    - time course
+## TR    - time resolution
+## Runs  - expermental design
+## T     - length of estimated HRF
+## p     - Model type
+##
+## Options: p=1 - only canonical HRF
+##          p=2 - canonical + temporal derivative
+##          p=3 - canonical + time and dispersion derivative
+##
+## OUTPUTS:
+##
+## hrf   - estimated hemodynamic response function
+## fit   - estimated time course
+## e     - residual time course
+## param - estimated amplitude, height and width
+
+    len = length(Run)
+
+    X = matrix(0, nrow=len, ncol=p)
+
+    bf = CanonicalBasisSet(TR)
+    h  = bf$h; dh = bf$dh; dh2 = bf$dh2
+
+    v = convolve(Run,rev(h), type="open") #this is the R equivalent of conv(Run, h)
+    X[,1] = v[1:len]
+
+    if (p > 1) {        
+        v = convolve(Run,rev(dh), type="open")
+        X[,2] = v[1:len]
+    }
+        
+    if (p > 2) {
+        v = convolve(Run,rev(dh2), type="open")
+        X[,3] = v[1:len]
+    }
+
+    X   = cbind(rep(1, len), X) #add intercept
+    b   = MASS::ginv(X) %*% tc
+    e   = tc - X %*% b
+    fit = X %*% b
+
+    b = b[2:length(b)]
+
+    if (p == 2) {
+        bc = sign(b[1])*sqrt(b[1]^2 + b[2]^2)
+        H = cbind(h, dh)
+    } else if (p == 1) {
+        bc = b[1]
+        H = matrix(h, ncol=1)
+    } else if (p>2) {   
+        bc = sign(b[1])*sqrt(b[1]^2 + b[2]^2 + b[3]^2)
+        H = cbind(h, dh, dh2)
+    }
+
+    hrf = H %*% b
+
+    param = get_parameters2(hrf,T)
+
+    return(list(hrf=hrf, e=e, param=param))
+}
+
+
+get_parameters2 <- function(hdrf, t) {
+    
+    ##function [param] = get_parameters2(hdrf,t)
+    
+    ## Find model parameters
+    ##
+    ## Height - h
+    ## Time to peak - p (in time units of TR seconds)
+    ## Width (at half peak) - w
+
+    ## Calculate Heights and Time to peak:
+
+    ## n = t(end)*0.6;
+    n = round(t*0.8)
+
+    p = which.max(abs(hdrf[1:n]))
+    h = hdrf[p]
+    
+    ##if (p > t(end)*0.6), warning('Late time to peak'), end;
+    
+    if (h > 0) {
+        v = as.numeric(hdrf >= h/2)
+    } else {
+        v = as.numeric(hdrf <= h/2)
+    }
+    
+    b = which.min(diff(v))
+    v[(b+1):length(v)] = 0
+    w = sum(v)
+    
+    cnt = p-1
+    g = hdrf[2:length(hdrf)] - hdrf[1:(length(hdrf)-1)]
+    
+    while(cnt > 0 && abs(g[cnt]) < 0.001) {      
+        h = hdrf[cnt]
+        p = cnt
+        cnt = cnt-1
+    }
+    
+    param = rep(0,3)
+    param[1] = h
+    param[2] = p
+    param[3] = w
+
+    return(param)
 }
