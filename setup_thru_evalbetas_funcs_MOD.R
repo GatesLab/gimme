@@ -3,9 +3,22 @@ setup <- function (data,
                    header,
                    out,
                    plot,
-                   ar) {
-  
+                   ar,
+                   deconvolve_hrf,
+                   control) {
+
   files            <- list.files(data, full.names=TRUE)
+  
+  if (deconvolve_hrf) {
+      ## deconvolve_inputs deconvolves the HRF from time series for each subject and returns a vector
+      ## of input files to use in GIMME (this supplants the files above, which are not deconvolved)
+      ## current methods are "bush" and "wu". the control list above follows the R style of lme, lmer, etc.
+      ## where the list specifies details of how the algorithm is run, such as TR (required) and learning rate.
+      ## 
+      ## deconvolve_inputs creates a parallel set of text files in the deconvolved_inputs folder within the gimme out directory.
+      files <- deconvolve_inputs(files, sep, header, out, control)
+  }
+  
   subjects         <- length(files)
   trackparts       <- matrix(0,nrow=subjects,ncol=2)
   trackparts[,1]   <- seq(1:subjects)
@@ -30,7 +43,7 @@ setup <- function (data,
   x                 <- seq(1:vars)
   y                 <- substring(lvarnames,4)
   individual        <- file.path(out,"individual")
-  subgroup.dir          <- file.path(out,"subgroup")
+  subgroup.dir      <- file.path(out,"subgroup")
   betas             <- file.path(individual,"betas")
   SEs               <- file.path(individual,"SEs")
   fitted            <- file.path(out,"fitted")
