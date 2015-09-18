@@ -10,7 +10,9 @@
 #'       ar       = FALSE,
 #'       plot     = TRUE,
 #'       subgroup = FALSE,
-#'       paths    = NULL)
+#'       paths    = NULL,
+#'       deconvolve_hrf = FALSE,
+#'       control  = list(deconvolve_method="bush"))
 #' @param data Path to the directory where the data files are located. Each file must contain one matrix for each
 #' individual containing a T (time) by p (number of variables) matrix where the columns represent variables and
 #' the rows represent time.
@@ -27,6 +29,8 @@
 #' @param plot Logical. If TRUE, graphs depicting relations among variables of interest will automatically be
 #' created. For individual-level plots, red paths represent positive weights and blue paths represent negative weights. For the group-level plot, black represents group-level paths, grey represents individual-level paths, and (if subgroup = TRUE) green represents subgroup-level paths. For the group-level plot, the width of the edge corresponds to the count. Defaults to TRUE.
 #' @param subgroup Logical. If TRUE, subgroups are generated based on similarities in model features using the \code{walktrap.community} function from the \code{igraph} package.
+#' @param deconvolve_hrf 
+#' @param control 
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -73,7 +77,9 @@ gimme <- function(data,
                   ar   = FALSE,
                   plot = TRUE,
                   subgroup = FALSE,
-                  paths = NULL){
+                  paths = NULL,
+                  deconvolve_hrf = FALSE,
+                  control=list(deconvolve_method="bush")){
 
     setup.out        <- setup(data   = data,
                               sep    = sep,
@@ -83,7 +89,9 @@ gimme <- function(data,
                               ar     = ar,
                               paths   = paths,
                               subgroup = subgroup,
-                              agg      = FALSE)
+                              agg      = FALSE,
+                              deconvolve_hrf = deconvolve_hrf,
+                              control = control)
 
   miSEM.out         <- miSEM(setup.out            = setup.out,
                              previous.out         = setup.out,
@@ -214,9 +222,22 @@ setup <- function (data,
                    ar,
                    paths,
                    subgroup,
-                   agg) {
+                   agg,
+                   deconvolve_hrf,
+                   control) {
 
   files            <- list.files(data, full.names=TRUE)
+     
+  if (deconvolve_hrf) {
+      ## deconvolve_inputs deconvolves the HRF from time series for each subject and returns a vector
+      ## of input files to use in GIMME (this supplants the files above, which are not deconvolved)
+      ## current methods are "bush" and "wu". the control list above follows the R style of lme, lmer, etc.
+      ## where the list specifies details of how the algorithm is run, such as TR (required) and learning rate.
+      ## 
+      ## deconvolve_inputs creates a parallel set of text files in the deconvolved_inputs folder within the gimme out directory.
+      files <- deconvolve_inputs(files, sep, header, out, control)
+  }
+
   subjects         <- length(files)
   trackparts       <- matrix(0,nrow=subjects,ncol=2)
   trackparts[,1]   <- seq(1:subjects)

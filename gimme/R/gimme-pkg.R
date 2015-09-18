@@ -6,7 +6,7 @@
 #' Kathleen Gates [aut], \cr
 #' Peter Molenaar [aut] \cr
 #' Maintainer: Stephanie Lane \email{slane@@unc.edu}
-#' @import qgraph lavaan igraph
+#' @import qgraph lavaan igraph parallel foreach doSNOW
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time
 #' @importFrom utils capture.output head read.table write.csv write.table
