@@ -237,8 +237,7 @@ setup <- function (data,
       ## deconvolve_inputs creates a parallel set of text files in the deconvolved_inputs folder within the gimme out directory.
       files <- deconvolve_inputs(files, sep, header, out, control)
   }
-  
-  
+
   subjects         <- length(files)
   trackparts       <- matrix(0,nrow=subjects,ncol=2)
   trackparts[,1]   <- seq(1:subjects)

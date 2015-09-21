@@ -5,10 +5,11 @@ Date: 2015-09-17
 Author: Stephanie Lane [aut, cre, trl], Kathleen Gates [aut], Peter Molenaar
     [aut]
 Maintainer: Stephanie Lane <slane@unc.edu>
-Depends: R (>= 3.0.2), lavaan (>= 0.5-17), qgraph, igraph, MASS, doSNOW, foreach, parallel
+Depends: R (>= 3.0.2), lavaan (>= 0.5-17), qgraph, igraph, MASS,
+        doSNOW, foreach, parallel
 Description: Automated identification and estimation of group- and
     individual-level relations in time series data from within a structural
     equation modeling framework.
 License: GPL-2
 LazyData: Yes
-Packaged: 2015-09-18 12:55:27 UTC; stlane
+Packaged: 2015-09-21 13:39:54 UTC; trhenry

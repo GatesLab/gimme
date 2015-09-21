@@ -64,7 +64,7 @@ deconvolve_inputs <- function(inputs, sep, header, out, control, njobs) {
   exportFuncs <- c("deconvolve_nlreg", "sigmoid", "dsigmoid", "generate_feature", "wgr_deconv_canonhrf_par",
       "wgr_adjust_onset", "wgr_trigger_onset", "CanonicalBasisSet", "Fit_Canonical_HRF", "get_parameters2",
       "spm_hrf", "spm_get_bf", "spm_gamma_bf", "spm_orth")
-  f = NULL
+  
   files <- foreach(f=inputs, .combine=c, .export=exportFuncs, .inorder=TRUE) %dopar% {
     stopifnot(file.exists(f))
     d <- as.matrix(read.table(f, header=header, sep=sep))
