@@ -247,7 +247,20 @@ setup <- function (data,
                              function(x) paste(x[1:(length(x)-1)], collapse="."))
 
   all               <- as.matrix(read.table(files[1],sep=sep,header=header))
+  # check to see if number of columns is equal to 1. if so, user likely
+  # misspecified the sep argument
   rois              <- ncol(all)
+  if (rois == 1) stop('gimme ERROR: only one column of data read in. Check if sep argument properly specified.')
+  
+  ## check to see if all individuals have same number of columns. 
+  ## if not, code will fail later
+  cols     <- numeric()
+  for (k in 1:subjects){
+    data.file <- read.table(files[k],sep=sep,header=header)
+    cols[k]   <- ncol(data.file)
+  }
+  if (sd(cols) != 0) stop('gimme ERROR: not all files have the same number of columns. Fix before continuing.')
+  
   vars              <- rois*2
   varnames          <- colnames(all)
   varnames          <- rep(varnames,2)
@@ -1489,9 +1502,15 @@ wrapup <- function(indsem.internal.out,
       }
       sub.paths[is.na(sub.paths)] <- 0
       sub.paths.all <- sub.paths[(rois+1):(rois*2),(1:(rois*2))]
+      if (header == FALSE){
       rownames(sub.paths.all) <- lvarnames[(rois+1):(rois*2)]
       colnames(sub.paths.all) <- lvarnames[1:(rois*2)]
-
+      } else {
+      rownames(sub.paths.all) <- varnames[(rois+1):(rois*2)]
+      colnames(sub.paths.all) <- varnames[1:(rois*2)]
+      }
+      
+      
       if (sub.subjects != 1)  {
         write.csv(sub.paths.all, file=file.path(subgroup.dir,paste("subgroup",p,"PathCountsMatrix.csv",sep="")), row.names=TRUE)
       }
@@ -1602,12 +1621,17 @@ wrapup <- function(indsem.internal.out,
     }
     final.paths[is.na(final.paths)] <- 0
     final.paths.all <- final.paths[(rois+1):(rois*2),1:(rois*2)]
+    if (header == FALSE){
     rownames(final.paths.all) <- lvarnames[(rois+1):(rois*2)]
     colnames(final.paths.all) <- lvarnames[1:(rois*2)]
+    } else {
+    rownames(final.paths.all) <- varnames[(rois+1):(rois*2)]
+    colnames(final.paths.all) <- varnames[1:(rois*2)]
+    }
     write.csv(final.paths.all, file=file.path(out,"summaryPathCountMatrix.csv"), row.names=TRUE)
 
     if (subgroup==FALSE | all.diff.sub==TRUE){
-      all.elements.summary <- a1
+      all.elements.summary  <- a1
     } else {
       all.elements.summary  <- a2
     }
