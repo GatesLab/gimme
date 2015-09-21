@@ -1,6 +1,6 @@
-## R port of spm8 functions needed for deconvolution
-
+#' @keywords internal
 spm_hrf <- function(TR, P) {
+    ## R port of spm8 functions needed for deconvolution
     ## spm_hrf - Returns a hemodynamic response function as a difference of gammas (canonical)
     ##
     ## USAGE:
