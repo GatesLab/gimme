@@ -236,6 +236,7 @@ setup <- function (data,
       ## 
       ## deconvolve_inputs creates a parallel set of text files in the deconvolved_inputs folder within the gimme out directory.
       files <- deconvolve_inputs(files, sep, header, out, control)
+      data <- file.path(out, "deconvolved_inputs") #test
   }
   
   
@@ -455,7 +456,7 @@ miSEM <- function (setup.out,
     count.group.paths <- 0
     count.subgroup.paths <- 0
     subjects          <- setup.out$subjects
-    files  <- list.files(data, full.names=TRUE)
+    files  <- list.files(data, full.names=TRUE) 
     syntax            <- previous.out$syntax
   }
 
