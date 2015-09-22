@@ -231,7 +231,7 @@ setup <- function (data,
   ## code to check whether output directory specified by the user actually exists
   ## if it doesn't exist, the code wouldn't crash until the individual-level search
   ## this checks and throws an error at the start
-  if (file_test(op="-d",out)) == FALSE {
+  if (file_test(op="-d",out) == FALSE) {
     stop("gimme ERROR: specified output directory doesn't seem to exist. Please create the directory or check to make sure the file path is accurate.")
   }
      
