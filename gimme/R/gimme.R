@@ -310,8 +310,8 @@ if (!is.null(paths))
       {
       table    <- lavParTable(paths)
       table    <- table[table$op == "~", ]
-      dvs      <- lvarnames[which(varnames%in%unique(table$lhs))]
-      ivs      <- lvarnames[which(varnames%in%unique(table$rhs))]
+      dvs      <- recoderFunc(table$lhs,varnames,lvarnames)
+      ivs      <- recoderFunc(table$rhs,varnames,lvarnames)
       vs       <- paste(dvs, "~", ivs, sep = "")
       return(vs)
       }
