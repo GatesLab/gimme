@@ -81,17 +81,17 @@ gimme <- function(data,
                   deconvolve_hrf = FALSE,
                   control=list(deconvolve_method="bush")){
 
-    setup.out        <- setup(data   = data,
-                              sep    = sep,
-                              header = header,
-                              out    = out,
-                              plot   = plot,
-                              ar     = ar,
-                              paths   = paths,
-                              subgroup = subgroup,
-                              agg      = FALSE,
-                              deconvolve_hrf = deconvolve_hrf,
-                              control = control)
+  setup.out         <- setup(data                 = data,
+                             sep                  = sep,
+                             header               = header,
+                             out                  = out,
+                             plot                 = plot,
+                             ar                   = ar,
+                             paths                = paths,
+                             subgroup             = subgroup,
+                             agg                  = FALSE,
+                             deconvolve_hrf       = deconvolve_hrf,
+                             control              = control)
 
   miSEM.out         <- miSEM(setup.out            = setup.out,
                              previous.out         = setup.out,
