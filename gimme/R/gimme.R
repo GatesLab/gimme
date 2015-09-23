@@ -801,8 +801,13 @@ addind <- function (done,
       check.singular      <- any(grepl("singular",singular)==TRUE)
       converge            <- lavInspect(fit, "converged")
       check.error         <- any(grepl("error",class(singular))==TRUE)
-      check.fit           <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
-                                          "nnfi","cfi"))))
+      
+      if (converge == FALSE){
+        check.fit <- FALSE
+      } else if (converge == TRUE){
+        check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",
+                                                 "srmr","nnfi","cfi"))))
+      }
 
     } else {
       check.singular <- TRUE
@@ -856,8 +861,14 @@ addind <- function (done,
       check.singular      <- any(grepl("singular",singular)==TRUE)
       converge            <- lavInspect(fit, "converged")
       check.error         <- any(grepl("error",class(singular))==TRUE)
-      check.fit           <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
-                                          "nnfi","cfi"))))
+    
+      if (converge == FALSE){
+        check.fit <- FALSE
+      } else if (converge == TRUE){
+        check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",
+                                                 "srmr","nnfi","cfi"))))
+      }
+      
     } else {
       check.singular <- TRUE
       converge       <- FALSE
