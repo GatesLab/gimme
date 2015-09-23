@@ -81,17 +81,17 @@ gimme <- function(data,
                   deconvolve_hrf = FALSE,
                   control=list(deconvolve_method="bush")){
 
-    setup.out        <- setup(data   = data,
-                              sep    = sep,
-                              header = header,
-                              out    = out,
-                              plot   = plot,
-                              ar     = ar,
-                              paths   = paths,
-                              subgroup = subgroup,
-                              agg      = FALSE,
-                              deconvolve_hrf = deconvolve_hrf,
-                              control = control)
+  setup.out         <- setup(data                 = data,
+                             sep                  = sep,
+                             header               = header,
+                             out                  = out,
+                             plot                 = plot,
+                             ar                   = ar,
+                             paths                = paths,
+                             subgroup             = subgroup,
+                             agg                  = FALSE,
+                             deconvolve_hrf       = deconvolve_hrf,
+                             control              = control)
 
   miSEM.out         <- miSEM(setup.out            = setup.out,
                              previous.out         = setup.out,
@@ -227,6 +227,13 @@ setup <- function (data,
                    control) {
 
   files            <- list.files(data, full.names=TRUE)
+  
+  ## code to check whether output directory specified by the user actually exists
+  ## if it doesn't exist, the code wouldn't crash until the individual-level search
+  ## this checks and throws an error at the start
+  if (file_test(op="-d",out) == FALSE) {
+    stop("gimme ERROR: specified output directory doesn't seem to exist. Please create the directory or check to make sure the file path is accurate.")
+  }
      
   if (deconvolve_hrf) {
       ## deconvolve_inputs deconvolves the HRF from time series for each subject and returns a vector
@@ -253,13 +260,17 @@ setup <- function (data,
   if (rois == 1) stop('gimme ERROR: only one column of data read in. Check if sep argument properly specified.')
   
   ## check to see if all individuals have same number of columns. 
-  ## if not, code will fail later
-  cols     <- numeric()
+  ## if not, code will fail with ambiguous error later
+
+  cols        <- numeric()
+  missingCols <- numeric()
   for (k in 1:subjects){
     data.file <- read.table(files[k],sep=sep,header=header)
     cols[k]   <- ncol(data.file)
+    missingCols[k] <- sum(colSums(is.na(data.file))<nrow(data.file)) 
   }
-  if (sd(cols) != 0) stop('gimme ERROR: not all files have the same number of columns. Fix before continuing.')
+  if (sd(cols) != 0) stop('gimme ERROR: not all data files have the same number of columns. Fix or remove file before continuing.')
+  if (sd(missingCols) != 0) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing. ')
   
   vars              <- rois*2
   varnames          <- colnames(all)
@@ -281,6 +292,7 @@ setup <- function (data,
   betas             <- file.path(individual,"betas")
   SEs               <- file.path(individual,"SEs")
   fitted            <- file.path(out,"fitted")
+  
   ## need to insert a TRUE/FALSE to only create if user selects subgroup=TRUE
   if (subgroup == TRUE) dir.create(subgroup.dir,  showWarnings=FALSE)
   if (agg      == FALSE) dir.create(individual,    showWarnings=FALSE)
@@ -298,8 +310,8 @@ if (!is.null(paths))
       {
       table    <- lavParTable(paths)
       table    <- table[table$op == "~", ]
-      dvs      <- lvarnames[which(varnames%in%unique(table$lhs))]
-      ivs      <- lvarnames[which(varnames%in%unique(table$rhs))]
+      dvs      <- recoderFunc(table$lhs,varnames,lvarnames)
+      ivs      <- recoderFunc(table$rhs,varnames,lvarnames)
       vs       <- paste(dvs, "~", ivs, sep = "")
       return(vs)
       }
