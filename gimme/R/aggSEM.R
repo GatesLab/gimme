@@ -72,6 +72,9 @@ aggSEM <- function(data,
   files    = list.files(setup.out$data,full.names=TRUE)
   header   = setup.out$header
   sep      = setup.out$sep
+  subgroup = setup.out$subgroup
+  agg      = setup.out$agg
+  plot     = setup.out$plot
 
   data.all <- data.frame()
   for (k in 1:subjects){
@@ -99,9 +102,7 @@ aggSEM <- function(data,
   final.fit.out <- final.fit(setup.out     = setup.out,
                              fixfitind.out = fixfitind.out,
                              data.file     = data.all,
-                             k             = 1,
-                             agg           = TRUE,
-                             plot          = plot)
+                             k             = 1)
 
   all.elements <- final.fit.out$ind.elements
   all.fit      <- as.matrix(final.fit.out$ind.fit)
@@ -124,14 +125,14 @@ aggSEM <- function(data,
                      ar       = ar,
                      paths    = NULL,
                      subgroup = FALSE,
-                     agg      = TRUE)
+                     agg      = TRUE,
+                     deconvolve_hrf = FALSE,
+                     control=list(deconvolve_method="bush"))
 
   agg.internal.out <- agg.internal(setup.out = setup.out)
 
   wrapup.out <- wrapup(indsem.internal.out = agg.internal.out,
-                       setup.out           = setup.out,
-                       agg                 = TRUE,
-                       subgroup            = FALSE)
+                       setup.out           = setup.out)
 
   print.gimme.aggSEM(z=setup.out)
 }

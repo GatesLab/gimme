@@ -185,16 +185,13 @@ gimme <- function(data,
   ## this is the individual-level search, adds path for each individual
   ## runs one person at a time  indsem.internal.out <- list
   indsem.internal.out <- indsem.internal(setup.out        = setup.out,
-                                         subgroup         = subgroup,
                                          evalbetassub.out = evalbetassub.out,
                                          evalbetas.out    = evalbetas.out)
 
   ## just grabs information from individual-level search (once complete) and prints
   ## summary output and makes tables
   wrapup.out <- wrapup(indsem.internal.out = indsem.internal.out,
-                       setup.out           = setup.out,
-                       agg                 = FALSE,
-                       subgroup            = subgroup)
+                       setup.out           = setup.out)
 
   print.gimme(x=subsetup.out,
               y=subgroup,
@@ -289,8 +286,6 @@ setup <- function (data,
   y                 <- substring(lvarnames,4)
   individual        <- file.path(out,"individual")
   subgroup.dir      <- file.path(out,"subgroup")
-  betas             <- file.path(individual,"betas")
-  SEs               <- file.path(individual,"SEs")
   fitted            <- file.path(out,"fitted")
   
   ## need to insert a TRUE/FALSE to only create if user selects subgroup=TRUE
@@ -382,8 +377,6 @@ if (!is.null(paths))
                "vars"              = vars,
                "lvarnames"         = lvarnames,
                "cutoffind"         = cutoffind,
-               "betas"             = betas,
-               "SEs"               = SEs,
                "fitted"            = fitted,
                "individual"        = individual,
                "plots"             = plots,
@@ -399,7 +392,9 @@ if (!is.null(paths))
                "plot"              = plot,
                "count.group.paths" = count.group.paths,
                "subgroup.dir"      = subgroup.dir,
-               "fixed.paths"       = fixed.paths)
+               "fixed.paths"       = fixed.paths,
+               "subgroup"          = subgroup,
+               "agg"               = agg)
   return(list)
 }
 
@@ -1078,8 +1073,6 @@ fixfitind <- function (setup.out,
 final.fit <- function(setup.out,
                       fixfitind.out,
                       data.file,
-                      plot,
-                      agg,
                       k){
 
   varnames   = setup.out$varnames
@@ -1090,12 +1083,12 @@ final.fit <- function(setup.out,
   plot.names = setup.out$plot.names
   x          = setup.out$x
   y          = setup.out$y
-  betas      = setup.out$betas
-  SEs        = setup.out$SEs
   plots      = setup.out$plots
   fitted     = setup.out$fitted
   individual = setup.out$individual
   out        = setup.out$out
+  plot       = setup.out$plot
+  agg        = setup.out$agg
 
   op = NULL
 
@@ -1196,29 +1189,18 @@ final.fit <- function(setup.out,
       individual.SEs[indrows[q], indcols[q]] <- indSEs[q]
     }
 
+    individual.paths <- round(individual.paths,digits=4)
     individual.paths[is.na(individual.paths)] <- 0
-    individual.paths.lag <- individual.paths[(rois+1):(rois*2),(1:rois)]
-    individual.paths.con <- individual.paths[(rois+1):(rois*2),(rois+1):(rois*2)]
 
-    rownames(individual.paths.lag) <- lvarnames[(rois+1):(rois*2)]
-    colnames(individual.paths.lag) <- lvarnames[1:rois]
-    rownames(individual.paths.con) <- lvarnames[(rois+1):(rois*2)]
-    colnames(individual.paths.con) <- lvarnames[(rois+1):(rois*2)]
-
+    individual.SEs <- round(individual.SEs,digits=4)
     individual.SEs[is.na(individual.SEs)] <- 0
-    individual.SEs.lag <- individual.SEs[(rois+1):(rois*2),(1:rois)]
-    individual.SEs.con <- individual.SEs[(rois+1):(rois*2),(rois+1):(rois*2)]
-    rownames(individual.SEs.lag) <- lvarnames[(rois+1):(rois*2)]
-    colnames(individual.SEs.lag) <- lvarnames[1:rois]
-    rownames(individual.SEs.con) <- lvarnames[(rois+1):(rois*2)]
-    colnames(individual.SEs.con) <- lvarnames[(rois+1):(rois*2)]
 
     individual.paths.all         <- individual.paths[(rois+1):(rois*2),1:(rois*2)]
-    rownames(individual.paths.all) <- lvarnames[(rois+1):(rois*2)]
-    colnames(individual.paths.all) <- lvarnames[1:(rois*2)]
+    rownames(individual.paths.all) <- varnames[(rois+1):(rois*2)]
+    colnames(individual.paths.all) <- varnames[1:(rois*2)]
     individual.SEs             <- individual.SEs[(rois+1):(rois*2),1:(rois*2)]
-    rownames(individual.SEs)   <- lvarnames[(rois+1):(rois*2)]
-    colnames(individual.SEs)   <- lvarnames[1:(rois*2)]
+    rownames(individual.SEs)   <- varnames[(rois+1):(rois*2)]
+    colnames(individual.SEs)   <- varnames[1:(rois*2)]
 
     if (agg==TRUE) {
       write.csv(individual.paths.all,file=file.path(out,"allBetas.csv"),row.names=TRUE)
@@ -1287,7 +1269,6 @@ final.fit <- function(setup.out,
 
 ## puts all of them together
 indsem.internal <- function(setup.out,
-                            subgroup,
                             evalbetassub.out,
                             evalbetas.out){
 
@@ -1299,6 +1280,7 @@ indsem.internal <- function(setup.out,
   sep              = setup.out$sep
   plot             = setup.out$plot
   modularity       = evalbetassub.out$modularity
+  subgroup         = setup.out$subgroup
 
   all.elements      <- data.frame()
   all.fit           <- matrix(NA, nrow=subjects, ncol=9)
@@ -1374,9 +1356,7 @@ indsem.internal <- function(setup.out,
     final.fit.out <- final.fit(setup.out     = setup.out,
                                fixfitind.out = fixfitind.out,
                                data.file     = data.file,
-                               k             = k,
-                               agg           = FALSE,
-                               plot          = plot)
+                               k             = k)
 
     all.elements    <- rbind(all.elements,final.fit.out$ind.elements)
     all.fit[k,]     <- as.matrix(final.fit.out$ind.fit)
@@ -1411,9 +1391,7 @@ indsem.internal <- function(setup.out,
 
 ## sorts and organizes information, prints summary files
 wrapup <- function(indsem.internal.out,
-                   setup.out,
-                   agg,
-                   subgroup){
+                   setup.out){
 
   all.elements = indsem.internal.out$all.elements
   all.fit      = indsem.internal.out$all.fit
@@ -1431,6 +1409,8 @@ wrapup <- function(indsem.internal.out,
   lvarnames    = setup.out$lvarnames
   subgroup.dir = setup.out$subgroup.dir
   plot         = setup.out$plot
+  agg          = setup.out$agg
+  subgroup     = setup.out$subgroup
 
   present = NULL
   sig     = NULL
@@ -1512,17 +1492,12 @@ wrapup <- function(indsem.internal.out,
         sub.paths [rows[m], cols[m]] <- counts[m]
         sub.colors[rows[m], cols[m]] <- colors[m]
       }
+      sub.paths <- round(sub.paths,digits=4)
       sub.paths[is.na(sub.paths)] <- 0
       sub.paths.all <- sub.paths[(rois+1):(rois*2),(1:(rois*2))]
-      if (header == FALSE){
-      rownames(sub.paths.all) <- lvarnames[(rois+1):(rois*2)]
-      colnames(sub.paths.all) <- lvarnames[1:(rois*2)]
-      } else {
       rownames(sub.paths.all) <- varnames[(rois+1):(rois*2)]
       colnames(sub.paths.all) <- varnames[1:(rois*2)]
-      }
-      
-      
+
       if (sub.subjects != 1)  {
         write.csv(sub.paths.all, file=file.path(subgroup.dir,paste("subgroup",p,"PathCountsMatrix.csv",sep="")), row.names=TRUE)
       }
@@ -1633,13 +1608,10 @@ wrapup <- function(indsem.internal.out,
     }
     final.paths[is.na(final.paths)] <- 0
     final.paths.all <- final.paths[(rois+1):(rois*2),1:(rois*2)]
-    if (header == FALSE){
-    rownames(final.paths.all) <- lvarnames[(rois+1):(rois*2)]
-    colnames(final.paths.all) <- lvarnames[1:(rois*2)]
-    } else {
+    
     rownames(final.paths.all) <- varnames[(rois+1):(rois*2)]
     colnames(final.paths.all) <- varnames[1:(rois*2)]
-    }
+    
     write.csv(final.paths.all, file=file.path(out,"summaryPathCountMatrix.csv"), row.names=TRUE)
 
     if (subgroup==FALSE | all.diff.sub==TRUE){
@@ -1684,36 +1656,41 @@ wrapup <- function(indsem.internal.out,
 
   all.elements   <- all.elements[c("subject","param","est.std","se","pvalue","z")]
   all.elements[,3:6] <- round(all.elements[,3:6],digits=4)
-  colnames(setup.out$trackparts) <- c("subject","ID")
+  colnames(setup.out$trackparts) <- c("subject","file")
   all.elements   <- merge(setup.out$trackparts,all.elements,by.x="subject",by.y="subject")[,-1]
-  all.elements   <- all.elements[order(all.elements$ID),]
+  all.elements   <- all.elements[order(all.elements$file),]
 
   if (agg==TRUE) {all.elements[,1] <- "all"; all.elements.summary <- data.frame()}
-  # insert code here to sub back variable names into all.elements summary and all.elements
-  if (header==TRUE){
-    for (v in 1:length(varnames)){
-      all.elements$param <- gsub(lvarnames[v],varnames[v],all.elements$param)
-      if (agg==FALSE) all.elements.summary$param <- gsub(lvarnames[v],varnames[v],all.elements.summary$param)
-    }
-  }
 
-  outcome   <- sapply(strsplit(all.elements$param,"~"),"[",1)
-  predictor <- sapply(strsplit(all.elements$param,"~"),"[",2)
-  dvs.ivs   <- as.data.frame(cbind(outcome,predictor))
+  dv           <- sapply(strsplit(all.elements$param,"~"),"[",1)
+  iv           <- sapply(strsplit(all.elements$param,"~"),"[",2)
+  dvs.ivs      <- as.data.frame(cbind(dv,iv))
   all.elements <- cbind(dvs.ivs,all.elements)
-  all.elements <- all.elements[c("ID","outcome","predictor","est.std","se","pvalue","z")]
+  all.elements <- all.elements[c("file","dv","iv","est.std","se","z","pvalue")]
 
   if (agg == FALSE){
-    outcome   <- sapply(strsplit(all.elements.summary$param,"~"),"[",1)
-    predictor <- sapply(strsplit(all.elements.summary$param,"~"),"[",2)
-    dvs.ivs   <- as.data.frame(cbind(outcome,predictor))
+    dv        <- sapply(strsplit(all.elements.summary$param,"~"),"[",1)
+    iv        <- sapply(strsplit(all.elements.summary$param,"~"),"[",2)
+    dvs.ivs   <- as.data.frame(cbind(dv,iv))
     all.elements.summary <- cbind(dvs.ivs,all.elements.summary)
     all.elements.summary$param <- NULL
   }
 
+  # insert code here to sub back variable names into all.elements summary and all.elements
+  for (v in 1:length(varnames)){
+    all.elements$dv   <- gsub(lvarnames[v],varnames[v],all.elements$dv)
+    all.elements$iv   <- gsub(lvarnames[v],varnames[v],all.elements$iv)
+    if (agg==FALSE) {
+      all.elements.summary$dv <- gsub(lvarnames[v],varnames[v],all.elements.summary$dv)
+      all.elements.summary$iv <- gsub(lvarnames[v],varnames[v],all.elements.summary$iv) 
+    }
+  }
+  colnames(all.elements)[4]       <- "beta"
+  colnames(all.elements)[7]       <- "pval"
   row.names(all.elements.summary) <- NULL
   row.names(all.elements)         <- NULL
   all.fit                         <- as.data.frame(all.fit)
+  colnames(all.fit)[1]            <- "file"
   write.csv(all.fit,file.path(out,"summaryFit.csv"),row.names=FALSE)
   write.csv(all.elements,file.path(out,"indivPathEstimates.csv"),row.names=FALSE)
   if (agg == FALSE){
@@ -1843,7 +1820,7 @@ evalbetassub <- function (subsetup.out,
 subsetup <- function (setup.out,
                       previous.out) {
 
-  op = NULL
+  op         = NULL
   modularity = NULL
   param      = NULL
 
@@ -1972,8 +1949,9 @@ subsetup <- function (setup.out,
   subgroup.membership <- merge(files,subgroup.membership,
                                by.x="V1",by.y="names",all.x=TRUE)
   colnames(subgroup.membership) <- c("files","membership")
-  list <- list("mi.matrix"           = mi.matrix,
-               "cor.mi"              = sim,
+  list <- list("epcBetaMatrix"       = all.val.matrix,
+               "epcBetaPMatrix"      = all.p.matrix,
+               "sim"                 = sim,
                "subgroup.membership" = subgroup.membership,
                "n.subgroups"         = n.subgroups,
                "modularity"          = modularity.value)

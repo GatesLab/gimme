@@ -70,21 +70,20 @@ indSEM <- function(data,
                             ar     = ar,
                             paths   = paths,
                             subgroup = FALSE,
-                            agg      = FALSE)
+                            agg      = FALSE,
+                            deconvolve_hrf = FALSE,
+                            control=list(deconvolve_method="bush"))
 
   ## this is the individual-level search, adds path for each individual
   ## runs one person at a time  indsem.internal.out <- list
   indsem.internal.out <- indsem.internal(setup.out        = setup.out,
-                                         subgroup         = FALSE,
                                          evalbetassub.out = NULL,
                                          evalbetas.out    = NULL)
 
   ## just grabs information from individual-level search (once complete) and prints
   ## summary output and makes tables
   wrapup.out <- wrapup(indsem.internal.out = indsem.internal.out,
-                       setup.out           = setup.out,
-                       agg                 = FALSE,
-                       subgroup            = FALSE)
+                       setup.out           = setup.out)
 
   print.gimme.indSEM(x=NULL,
               y=NULL,
