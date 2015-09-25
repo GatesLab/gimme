@@ -529,6 +529,7 @@ miSEM <- function (setup.out,
         }
         check.singular <- TRUE
         converge       <- FALSE
+        check.error    <- TRUE
       }
 
       if (check.singular==FALSE & converge==TRUE & check.not.identified==FALSE & check.error == FALSE) {
@@ -680,6 +681,7 @@ evalbetas <- function (setup.out,
       } else {
         check.singular <- TRUE
         converge       <- FALSE
+        check.error    <- TRUE
       }
 
       if (check.singular==FALSE & converge==TRUE & check.not.identified==FALSE & check.error ==FALSE) {
@@ -814,7 +816,8 @@ addind <- function (done,
     } else {
       check.singular <- TRUE
       converge       <- FALSE
-
+      check.error    <- TRUE
+      check.fit      <- TRUE
     }
 
     if (check.singular==FALSE & converge==TRUE & check.npd == FALSE & check.not.identified==FALSE & check.error == FALSE & check.fit==FALSE) {
@@ -868,6 +871,8 @@ addind <- function (done,
     } else {
       check.singular <- TRUE
       converge       <- FALSE
+      check.error    <- TRUE
+      check.fit      <- TRUE
     }
 
     if (converge==TRUE & check.singular==FALSE & check.npd ==FALSE & check.not.identified==FALSE & check.error == FALSE & check.fit==FALSE) {
@@ -930,6 +935,7 @@ evalind <- function (addind.out,
     } else {
       check.singular <- TRUE
       converge       <- FALSE
+      check.error    <- TRUE
     }
 
     if (check.singular==FALSE & converge==TRUE & check.npd==FALSE & check.error==FALSE) {
@@ -958,7 +964,6 @@ evalind <- function (addind.out,
       check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
 
       if (check.npd == FALSE & check.not.identified==FALSE) {
-
         singular            <- tryCatch(modindices(fit),error=function(e) e)
         check.singular      <- any(grepl("singular",singular)==TRUE)
         converge            <- lavInspect(fit, "converged")
@@ -966,6 +971,7 @@ evalind <- function (addind.out,
       } else {
         check.singular <- TRUE
         converge       <- FALSE
+        check.error    <- TRUE
       }
 
       if (converge==TRUE & check.singular==FALSE & check.npd==FALSE & check.not.identified==FALSE & check.error == FALSE){
@@ -1028,6 +1034,7 @@ fixfitind <- function (setup.out,
     } else {
       check.singular <- TRUE
       converge       <- FALSE
+      check.error    <- FALSE
     }
 
     if (check.singular == FALSE & converge == TRUE & check.npd==FALSE & check.not.identified==FALSE & check.error == FALSE) {
@@ -1044,7 +1051,7 @@ fixfitind <- function (setup.out,
       converge       <- lavInspect(fit, "converged")
       singular       <- tryCatch(modindices(fit),error=function(e) e)
       check.singular <- any(grepl("singular",singular)==TRUE)
-      check.error         <- any(grepl("error",class(singular))==TRUE)
+      check.error    <- any(grepl("error",class(singular))==TRUE)
       if (check.singular==FALSE & converge==TRUE & check.error == FALSE) {
         indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
                                           "nnfi","cfi"))
@@ -1133,6 +1140,7 @@ final.fit <- function(setup.out,
     } else {
       check.singular <- TRUE
       converge       <- FALSE
+      check.error    <- TRUE
     }
   }
 
@@ -1209,20 +1217,6 @@ final.fit <- function(setup.out,
       write.csv(individual.paths.all,file=file.path(individual,paste(trackparts[k,2],"Betas.csv",sep="")),row.names=TRUE)
       write.csv(individual.SEs,file=file.path(individual,paste(trackparts[k,2],"StdErrors.csv",sep="")),row.names=TRUE)
     }
-
-#     individual.paths.dich <- matrix(0,nrow=(rois*2), ncol=(rois*2))
-#     indbetas.dich         <- ifelse(indbetas!=0,1,0)
-#     for (r in 1:indelements){
-#       individual.paths.dich[indrows[r], indcols[r]] <- indbetas.dich[r]
-#     }
-#     inddichoutput                <- paste (fitted,"/",trackparts[k,2],".txt",sep="")
-#     if (agg==TRUE) inddichoutput <- paste (fitted,"/all.csv",sep="")
-#     individual.paths.dich[is.na(individual.paths.dich)] <- 0
-#     write.table(individual.paths.dich,
-#                 file      = inddichoutput,
-#                 sep       = ",",
-#                 row.names = FALSE,
-#                 col.names = FALSE)
 
     if (plot==TRUE){
       individual.paths.t     <- t(individual.paths)
