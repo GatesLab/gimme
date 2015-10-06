@@ -255,6 +255,8 @@ spm_orth <- function(X, OPT) {
     X     = X[, apply(X, 2, function(col) { any(col != 0.0) }), drop=FALSE] ##Only retain non-zero columns
     rankX = qr(X)$rank
 
+    x = j = NULL
+    
     tryCatch({
         x     <<- X[,1, drop=FALSE] #assign in global environment
         j     <<- 1

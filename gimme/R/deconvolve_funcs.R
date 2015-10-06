@@ -227,7 +227,7 @@ wgr_deconv_canonhrf_par <- function(data, thr=1.0, event_lag_max, TR) {
   
   ### Some parts of the code (subfunction: Fit_Canonical_HRF, CanonicalBasisSet, get_parameters2) were modified from the hemodynamic response estimation toolbox(http://www.stat.columbia.edu/~martin/HRF_Est_Toolbox.zip).
   ###
-  ### the code uses the parallel for loop ¡°parfor¡±. In case of older matlab versions, parfor can be changed to standard for.
+  ### the code uses the parallel for loop parfor. In case of older matlab versions, parfor can be changed to standard for.
   ###
   ### The default is using canonical hrf and two derivatives, as described in the paper.
   ### The function can be modified to use instead point processes, FIR model, etc.
