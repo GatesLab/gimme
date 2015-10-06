@@ -5,25 +5,25 @@
 \title{Group-level structural equation model search.}
 \usage{
 aggSEM(data   = "",
+       out    = "",
        sep    = "",
        header = ,
-       out    = "",
        ar     = FALSE,
        plot   = TRUE,
        paths  = NULL)
 }
 \arguments{
-\item{data}{Path to the directory where the data files are located. Each file must contain one matrix for
+\item{data}{The path to the directory where the data files are located. Each file must contain one matrix for
 each individual containing a T (time) by p (number of variables) matrix where the columns represent variables
 and the rows represent time.}
+
+\item{out}{The path to the directory where the results will be stored. This directory must be generated
+by the user prior to running the function.}
 
 \item{sep}{The spacing of the data files. "" indicates space-delimited, "/t" indicates tab-delimited, ","
 indicates comma delimited.}
 
 \item{header}{Logical. Indicate TRUE for data files with a header.}
-
-\item{out}{The path to the directory where the results will be stored. This directory must be generated
-by the user prior to running the function.}
 
 \item{ar}{Logical. If TRUE, begins search for group model with autoregressive (AR) paths open. Defaults
 to FALSE.}
@@ -42,11 +42,11 @@ Concatenates all individual-level data files and fits a group model to the data.
 \details{
 In main output directory:
  \itemize{
- \item{allPathEstimates} {Contains estimate, standard error, p-value, and z-value for each path for the concatenated data.}
- \item{summaryFit} {Contains model fit information for the aggregate-level model.}
- \item{allBetas} Contains estimates for each path in the aggregate-level model.
- \item{allStdErrors} Contains standard errors for each path in the aggregate-level model.
- \item{allPlot} Contains aggregate-level plot. Red paths represent positive weights and blue paths represent negative weights.
+ \item{\strong{allBetas}} Matrix. Contains estimates for each path in the aggregate-level model. The row variable is the outcome and the column variable is the predictor variable.
+ \item{\strong{allStdErrors}} Matrix. Contains standard errors for each path in the aggregate-level model. The row variable is the outcome and the column variable is the predictor variable.
+ \item{\strong{allPathEstimates}} {Contains estimate, standard error, p-value, and z-value for each path for the concatenated data.}
+ \item{\strong{summaryFit}} {Contains model fit information for the aggregate-level model.}
+ \item{\strong{summaryPathsPlot}} Contains aggregate-level plot. Red paths represent positive weights and blue paths represent negative weights.
 }
 }
 \examples{
@@ -61,9 +61,9 @@ write.table(ts3,file.path(input.path,"ts3.txt"),col.names=FALSE,row.names=FALSE)
 write.table(ts4,file.path(input.path,"ts4.txt"),col.names=FALSE,row.names=FALSE)
 write.table(ts5,file.path(input.path,"ts5.txt"),col.names=FALSE,row.names=FALSE)
 aggSEM(data   = input.path,
+       out    = output.path,
        sep    = "",
        header = FALSE,
-       out    = output.path,
        ar     = TRUE,
        plot   = TRUE,
        paths  = NULL)
