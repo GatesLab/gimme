@@ -72,9 +72,9 @@
 #'          paths    = paths,
 #'          subgroup = FALSE)
 #'  }
-#'  @keywords gimme
+#'  @keywords gimmeSEM
 #'  @export
-gimme <- gimmeSEM <- function(data,
+gimmeSEM <- gimme <- function(data,
                               out,
                               sep,
                               header,
@@ -271,8 +271,8 @@ setup <- function (data,
     missingCols[k] <- sum(colSums(is.na(data.file))<nrow(data.file)) 
   }
   if (sd(cols) != 0) stop('gimme ERROR: not all data files have the same number of columns. Fix or remove file before continuing.')
-  if (sd(missingCols) != 0) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing. ')
-  
+  if (sd(missingCols) != 0) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
+  if (any(cols != missingCols)) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
   vars              <- rois*2
   varnames          <- colnames(all)
   varnames          <- rep(varnames,2)
@@ -1422,9 +1422,9 @@ wrapup <- function(indsem.internal.out,
     sub.ind.paths        <- character()
     sub.fullsub.paths    <- character()
     all.merged           <- merge(all.elements,all.syntax,by="subject")
-    n.subgroups          <- nlevels(all.merged$membership)
+    n.subgroups          <- length(unique(all.merged$membership))
 
-    for (p in 1:n.subgroups){
+      for (p in 1:n.subgroups){
       all.merged.sub         <- subset(all.merged,membership==p)
       if (nrow(all.merged.sub)!=0){
       ## add code to add column for "group","subgroup","individual"

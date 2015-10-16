@@ -94,5 +94,5 @@ Stephanie Lane
 Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm recovers effective connectivity maps
 for individuals in homogeneous and heterogeneous samples. NeuroImage, 63, 310-319.
 }
-\keyword{gimme}
+\keyword{gimmeSEM}
 
