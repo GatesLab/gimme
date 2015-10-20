@@ -1,4 +1,4 @@
-#' ts1
+#' Example heterogeneous data, 1
 #'
 #' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
 #'
@@ -9,7 +9,7 @@
 #' @format A data frame with 50 observations on 3 variables.
 NULL
 
-#' ts2
+#' Example heterogeneous data, 2
 #'
 #' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
 #'
@@ -20,7 +20,7 @@ NULL
 #' @format A data frame with 50 observations on 3 variables.
 NULL
 
-#' ts3
+#' Example heterogeneous data, 3
 #'
 #' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
 #'
@@ -31,7 +31,7 @@ NULL
 #' @format A data frame with 50 observations on 3 variables.
 NULL
 
-#' ts4
+#' Example heterogeneous data, 4
 #'
 #' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
 #'
@@ -42,7 +42,7 @@ NULL
 #' @format A data frame with 50 observations on 3 variables.
 NULL
 
-#' ts5
+#' Example heterogeneous data, 5
 #'
 #' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
 #'

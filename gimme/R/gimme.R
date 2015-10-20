@@ -73,7 +73,7 @@
 #'          subgroup = FALSE)
 #'  }
 #'  @keywords gimmeSEM
-#'  @export
+#'  @export gimme gimmeSEM
 gimmeSEM <- gimme <- function(data,
                               out,
                               sep,
