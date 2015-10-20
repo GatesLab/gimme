@@ -3,7 +3,7 @@
 \docType{data}
 \name{ts4}
 \alias{ts4}
-\title{ts4}
+\title{Example heterogeneous data, 4}
 \format{A data frame with 50 observations on 3 variables.}
 \usage{
 ts4
