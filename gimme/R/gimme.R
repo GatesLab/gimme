@@ -464,8 +464,8 @@ miSEM <- function (setup.out,
 
   param = NULL
   Freq  = NULL
-
-  mi.index             <- matrix(1:((vars-1)*vars),nrow=((vars-1)*vars),ncol=1)
+  
+  mi.index            <- matrix(1:((vars-1)*vars),nrow=((vars-1)*vars),ncol=1)
 
   ## it gets tricky in this part. this function is used in several stages of gimme (after
   ## most recent revision), so it sets up some values depending on what stage it's in.
@@ -540,8 +540,10 @@ miSEM <- function (setup.out,
         if (subgroup.step==FALSE) {writeLines(paste("group-level search, subject", k))
         } else {writeLines(paste("subgroup-level search, subject", k))
         }
-
-        mi                <- as.matrix(singular[singular$op == "~",])[,1:4]
+        mi                <- as.matrix(singular[singular$op == "~",])[,c("lhs","op","rhs","mi")]
+        padLength         <- ((vars-1)*vars) - nrow(mi)
+        pad               <- matrix(NA, nrow = padLength, ncol = 4)
+        mi                <- rbind(mi,pad)
         count.converge    <- count.converge + 1
       }
       # if it doesn't converge or is computationally singular or NPD
@@ -1042,7 +1044,7 @@ fixfitind <- function (setup.out,
     }
 
     if (check.singular == FALSE & converge == TRUE & check.npd==FALSE & check.not.identified==FALSE & check.error == FALSE) {
-      indMI        <- as.matrix(singular[singular$op == "~",])[,1:4]
+      indMI        <- as.matrix(singular[singular$op == "~",])[,c("lhs","op","rhs","mi")]
       indMI        <- as.data.frame(indMI[complete.cases(indMI),])
       indMI$param  <- paste(indMI$lhs, indMI$op, indMI$rhs, sep="")
       indMI        <- subset(indMI,param %in% candidate.paths)
@@ -1882,7 +1884,7 @@ subsetup <- function (setup.out,
     ## code here grabs MIs and grabs beta values
     ## puts into matrices
     if (check.singular==FALSE & converge==TRUE) {
-      mi           <- as.matrix(singular[singular$op == "~",])[,c(1:5)]
+      mi           <- as.matrix(singular[singular$op == "~",])[,c("lhs","op","rhs","mi","epc")]
       mi           <- as.data.frame(mi)
       mi$param     <- paste(mi$lhs, mi$op, mi$rhs, sep="")
       mi           <- mi[-c(1:3)]
@@ -1905,8 +1907,8 @@ subsetup <- function (setup.out,
       p.matrix[,k]      <- NA
       beta.matrix[,k]   <- NA
     } else {
-      mi.matrix[,k]     <- mi$thresh
-      epc.matrix[,k]    <- mi$epc
+      mi.matrix[1:(nrow(mi)),k]     <- mi$thresh
+      epc.matrix[1:(nrow(mi)),k]    <- mi$epc
       p.matrix[,k]      <- beta$thresh
       beta.matrix[,k]   <- beta$est.std
     }
