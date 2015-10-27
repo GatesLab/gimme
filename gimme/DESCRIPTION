@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.1-5
-Date: 2015-10-20
+Version: 0.1-6
+Date: 2015-10-27
 Author: Stephanie Lane [aut, cre, trl],
             Kathleen Gates [aut], 
             Peter Molenaar [aut],
@@ -11,7 +11,7 @@ Maintainer: Stephanie Lane <slane@unc.edu>
 Depends:
     R (>= 3.0.2)
 Imports:
-    lavaan (>= 0.5-17),
+    lavaan (>= 0.5-19),
     MASS,
     doSNOW,
     foreach,
