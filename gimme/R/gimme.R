@@ -408,7 +408,7 @@ fit.model <- function (varnames,
                        syntax,
                        data.file) {
 
-  fit <- tryCatch(lavaan(syntax,
+  fit <- tryCatch(lavaan(syntax,                   
                     data            = data.file,
                     model.type      = "sem",
                     missing         = "fiml",
@@ -517,7 +517,7 @@ miSEM <- function (setup.out,
 
       check.npd           <- any(grepl("error",class(fit))==TRUE)
 
-      check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+      check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0 
       if (ar == FALSE & count.group.paths == 0){check.not.identified <- FALSE}
 
       if (check.npd == FALSE & check.not.identified==FALSE) {
@@ -526,7 +526,7 @@ miSEM <- function (setup.out,
       check.singular      <- any(grepl("singular",singular)==TRUE)
       check.error         <- any(grepl("error",class(singular))==TRUE)
 
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
       } else {
         if (subgroup.step==FALSE) {writeLines(paste("group-level search, subject", k, "nonconvergence"))
         } else {writeLines(paste("subgroup-level search, subject", k, "nonconvergence"))
@@ -677,12 +677,12 @@ evalbetas <- function (setup.out,
                                        data.file = data.file)
 
       check.npd             <- any(grepl("error",class(fit))==TRUE)
-      check.not.identified  <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+      check.not.identified  <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
 
       if (check.npd == FALSE & check.not.identified==FALSE) {
         singular            <- tryCatch(modindices(fit),error=function(e) e)
         check.singular      <- any(grepl("singular",singular)==TRUE)
-        converge            <- lavInspect(fit, "converged")
+        converge            <- lavInspect(fit, "converged")  
         check.error         <- any(grepl("error",class(singular))==TRUE)
       } else {
         check.singular <- TRUE
@@ -807,20 +807,20 @@ addind <- function (done,
                      data.file = data.file)
 
     check.npd            <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
     if (ar == FALSE & count.ind.paths == 0) check.not.identified <- FALSE
 
     if (check.npd == FALSE & check.not.identified==FALSE) {
 
       singular            <- tryCatch(modindices(fit, op = "~"),error=function(e) e)    # is.matrix
       check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
       check.error         <- any(grepl("error",class(singular))==TRUE)
       
-      if (converge == FALSE){
+      if (converge == FALSE){  
         check.fit <- FALSE
       } else if (converge == TRUE){
-        check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",
+        check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea", 
                                                  "srmr","nnfi","cfi"))))
       }
 
@@ -839,7 +839,7 @@ addind <- function (done,
       indMI$mi       <- as.numeric(as.character(indMI$mi))
       indparamadd    <- indMI[which.max(indMI$mi),5]
       indparamaddval <- indMI[which.max(indMI$mi),4]
-      indices        <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
+      indices        <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",   
                                           "nnfi","cfi"))
       rmsea   <- indices[4]
       srmr    <- indices[5]
@@ -870,18 +870,18 @@ addind <- function (done,
                      data.file = data.file)
 
     check.npd           <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
 
     if (check.npd == FALSE & check.not.identified==FALSE) {
       singular            <- tryCatch(modindices(fit),error=function(e) e)
       check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
       check.error         <- any(grepl("error",class(singular))==TRUE)
     
       if (converge == FALSE){
         check.fit <- FALSE
       } else if (converge == TRUE){
-        check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",
+        check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",  
                                                  "srmr","nnfi","cfi"))))
       }
       
@@ -893,7 +893,7 @@ addind <- function (done,
     }
 
     if (converge==TRUE & check.singular==FALSE & check.npd ==FALSE & check.not.identified==FALSE & check.error == FALSE & check.fit==FALSE) {
-      indices   <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
+      indices   <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",   
                                      "nnfi","cfi"))
       rmsea     <- indices[4]
       srmr      <- indices[5]
@@ -942,12 +942,12 @@ evalind <- function (addind.out,
                      data.file = data.file)
 
     check.npd            <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
 
     if (check.npd == FALSE & check.not.identified==FALSE) {
       singular            <- tryCatch(modindices(fit),error=function(e) e)
       check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
       check.error         <- any(grepl("error",class(singular))==TRUE)
     } else {
       check.singular <- TRUE
@@ -978,12 +978,12 @@ evalind <- function (addind.out,
                        syntax=syntax,
                        data.file=data.file)
       check.npd            <- any(grepl("error",class(fit))==TRUE)
-      check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+      check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
 
       if (check.npd == FALSE & check.not.identified==FALSE) {
         singular            <- tryCatch(modindices(fit),error=function(e) e)
         check.singular      <- any(grepl("singular",singular)==TRUE)
-        converge            <- lavInspect(fit, "converged")
+        converge            <- lavInspect(fit, "converged")  
         check.error         <- any(grepl("error",class(singular))==TRUE)
       } else {
         check.singular <- TRUE
@@ -992,7 +992,7 @@ evalind <- function (addind.out,
       }
 
       if (converge==TRUE & check.singular==FALSE & check.npd==FALSE & check.not.identified==FALSE & check.error == FALSE){
-        indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
+        indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",  
                                           "nnfi","cfi"))
         rmsea     <- indices[4]
         srmr      <- indices[5]
@@ -1036,17 +1036,17 @@ fixfitind <- function (setup.out,
     check.npd            <- any(grepl("error",class(fit))==TRUE)
     ## only for fixfit, temporary solution
     if (ar==FALSE){
-      check.se.zero   <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-      check.beta.zero <- sum(lavInspect(fit,"est")$beta,na.rm=TRUE)==0
+      check.se.zero   <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
+      check.beta.zero <- sum(lavInspect(fit,"est")$beta,na.rm=TRUE)==0  
       if (check.beta.zero == FALSE & check.se.zero == TRUE) {
         check.not.identified <- TRUE
       } else check.not.identified <- FALSE
-    } else check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+    } else check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
 
     if (check.npd == FALSE & check.not.identified==FALSE) {
       singular            <- tryCatch(modindices(fit),error=function(e) e)
       check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
       check.error         <- any(grepl("error",class(singular))==TRUE)
     } else {
       check.singular <- TRUE
@@ -1065,12 +1065,12 @@ fixfitind <- function (setup.out,
       fit          <- fit.model(varnames = varnames,
                                 syntax = syntax,
                                 data.file = data.file)
-      converge       <- lavInspect(fit, "converged")
+      converge       <- lavInspect(fit, "converged")  
       singular       <- tryCatch(modindices(fit),error=function(e) e)
       check.singular <- any(grepl("singular",singular)==TRUE)
       check.error    <- any(grepl("error",class(singular))==TRUE)
       if (check.singular==FALSE & converge==TRUE & check.error == FALSE) {
-        indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
+        indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",  
                                           "nnfi","cfi"))
         rmsea  <- indices[4]
         srmr   <- indices[5]
@@ -1121,12 +1121,12 @@ final.fit <- function(setup.out,
                    data.file = data.file)
 
   check.npd            <- any(grepl("error",class(fit))==TRUE)
-  check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+  check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0  
 
   if (check.npd == FALSE & check.not.identified==FALSE) {
     singular            <- tryCatch(modindices(fit),error=function(e) e)
     check.singular      <- any(grepl("singular",singular)==TRUE)
-    converge            <- lavInspect(fit, "converged")
+    converge            <- lavInspect(fit, "converged")  
     check.error         <- any(grepl("error",class(singular))==TRUE)
   } else {
     check.singular <- TRUE
@@ -1147,12 +1147,12 @@ final.fit <- function(setup.out,
                         data.file = data.file)
 
     check.npd            <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0 
 
     if (check.npd == FALSE & check.not.identified==FALSE) {
       singular            <- tryCatch(modindices(fit),error=function(e) e)
       check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
       check.error         <- any(grepl("error",class(singular))==TRUE)
     } else {
       check.singular <- TRUE
@@ -1163,7 +1163,7 @@ final.fit <- function(setup.out,
 
   ind.fit <- matrix(NA,nrow=1,ncol=9)
   if (converge==TRUE & check.singular==FALSE) {
-    indices <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
+    indices <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",  
                                  "nnfi","cfi"))
     rmsea  <- indices[4]
     srmr   <- indices[5]
@@ -1884,7 +1884,7 @@ subsetup <- function (setup.out,
     if (check.npd == FALSE) {
       singular            <- tryCatch(modindices(fit),error=function(e) e)
       check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
+      converge            <- lavInspect(fit, "converged")  
     } else {
       check.singular <- TRUE
       converge       <- FALSE
