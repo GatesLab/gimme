@@ -7,12 +7,15 @@
 #'          out      = "",
 #'          sep      = "",
 #'          header   = ,
-#'          ar       = FALSE,
+#'          ar       = TRUE,
 #'          plot     = TRUE,
 #'          subgroup = FALSE,
 #'          paths    = NULL,
+#'          groupcutoff = .75,
+#'          subcutoff   = .5,
 #'          deconvolve_hrf = FALSE,
-#'          control  = NULL)
+#'          control  = NULL,
+#'          diagnos  = FALSE)
 #' @param data The path to the directory where the data files are located. Each file must contain one matrix for each
 #' individual containing a T (time) by p (number of variables) matrix where the columns represent variables and
 #' the rows represent time.
@@ -21,22 +24,33 @@
 #' @param sep The spacing of the data files. "" indicates space-delimited, "/t" indicates tab-delimited, ","
 #' indicates comma delimited.
 #' @param header Logical. Indicate TRUE for data files with a header.
-#' @param ar Logical. If TRUE, begins search for group model with autoregressive (AR) paths open. Defaults to FALSE.
-#' @param paths \code{lavaan}-style syntax containing paths with which to begin model estimation. That is, Y~X indicates that Y is regressed on X, or X predicts Y. If no header is used,
+#' @param ar Logical. If TRUE, begins search for group model with autoregressive (AR) paths open. Defaults to TRUE.
+#' @param paths \code{lavaan}-style syntax containing paths with which to begin model estimation. That is, Y~X indicates that Y 
+#' is regressed on X, or X predicts Y. If no header is used,
 #' then variables should be referred to with V followed (with no separation) by the column number. If a
 #' header is used, variables should be referred to using variable names. To reference lag variables, "lag"
 #' should be added to the end of the variable name with no separation. Defaults to NULL.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables of interest will automatically be
-#' created. For individual-level plots, red paths represent positive weights and blue paths represent negative weights. For the group-level plot, black represents group-level paths, grey represents individual-level paths, and (if subgroup = TRUE) green represents subgroup-level paths. For the group-level plot, the width of the edge corresponds to the count. Defaults to TRUE.
+#' created. For individual-level plots, red paths represent positive weights and blue paths represent negative weights. 
+#' For the group-level plot, black represents group-level paths, grey represents individual-level paths, and (if subgroup = TRUE) 
+#' green represents subgroup-level paths. For the group-level plot, 
+#' the width of the edge corresponds to the count. Defaults to TRUE.
 #' @param subgroup Logical. If TRUE, subgroups are generated based on similarities in model features using the \code{walktrap.community} function from the \code{igraph} package.
+#' @param groupcutoff Cutoff value for group- level paths. Defaults to .75, indicating that a path must be significant across 75\% of individuals to be included as a group-level path.
+#' @param subcutoff Cutoff value for subgroup- level paths. Defaults to .5, indicating that a path must be significant 
+#' across at least 50\% of the individuals in a subgroup to be considered a subgroup-level path.
 #' @param deconvolve_hrf In development. Defaults to FALSE.
 #' @param control In development. Defaults to NULL.
+#' @param diagnos In development. Defaults to FALSE.
 #' @details
 #'  In main output directory:
 #'  \itemize{
-#'  \item{\strong{indivPathEstimates}} {Contains estimate, standard error, p-value, and z-value for each path for each individual}
-#'  \item{\strong{summaryFit}} {Contains model fit information for individual-level models. If subgroups are requested, this file also contains the subgroup membership for each individual.}
-#'  \item{\strong{summaryPathCountMatrix}} Contains counts of total number of paths, both contemporaneous and lagged, estimated for the sample. The row variable is the outcome and the column variable is the predictor variable.
+#'  \item{\strong{indivPathEstimates}} {Contains estimate, standard error, p-value, and z-value for each path for each individual. 
+#'  If subgroup = TRUE and subgroups are found, then a column is present containing the subgroup membership for each individual. Also contains the level at which each path was estimated: group, subgroup, or individual.}
+#'  \item{\strong{summaryFit}} {Contains model fit information for individual-level models. If subgroups are requested,
+#'   this file also contains the subgroup membership for each individual.}
+#'  \item{\strong{summaryPathCountMatrix}} Contains counts of total number of paths, both contemporaneous and lagged, estimated for the sample. The row variable is the 
+#'  outcome and the column variable is the predictor variable.
 #'  \item{\strong{summaryPathCounts}} {Contains summary count information for paths identified at the group-, subgroup (if subgroup = TRUE), and individual-level.}
 #'  \item{\strong{summaryPathsPlot}} {Produced if plot = TRUE. Contains figure with group, subgroup (if subgroup = TRUE), and individual-level paths 
 #'  for the sample. Black paths are group-level, green paths are subgroup-level, and grey paths are individual-level, where the thickness of the line
@@ -45,7 +59,8 @@
 #'  In subgroup output directory (if subgroup = TRUE):
 #'  \itemize{
 #'  \item{\strong{subgroup\emph{k}PathCounts}} Contains counts of relations among lagged and contemporaneous variables for the \strong{\emph{k}}th subgroup.
-#'  \item{\strong{subgroup\emph{k}Plot}} Contains plot of group, subgroup, and individual level paths for the \strong{\emph{k}}th subgroup. Black represents group-level paths, grey represents individual-level paths, and green represents subgroup-level paths.
+#'  \item{\strong{subgroup\emph{k}Plot}} Contains plot of group, subgroup, and individual level paths for the \strong{\emph{k}}th subgroup. 
+#'  Black represents group-level paths, grey represents individual-level paths, and green represents subgroup-level paths.
 #'  }
 #'  Note: if a subgroup of size n = 1 is discovered, subgroup-level output is not produced. \cr
 
@@ -72,19 +87,22 @@
 #'          paths    = paths,
 #'          subgroup = FALSE)
 #'  }
-#'  @keywords gimmeSEM
-#'  @export gimme gimmeSEM
+#' @keywords gimmeSEM
+#' @export gimme gimmeSEM
 gimmeSEM <- gimme <- function(data,
                               out,
                               sep,
                               header,
-                              ar   = FALSE,
-                              plot = TRUE,
-                              subgroup = FALSE,
-                              paths = NULL,
+                              ar             = TRUE,
+                              plot           = TRUE,
+                              subgroup       = FALSE,
+                              paths          = NULL,
+                              groupcutoff    = .75,
+                              subcutoff      = .5,
                               deconvolve_hrf = FALSE,
-                              control = NULL){
-
+                              control        = NULL,
+                              diagnos        = FALSE){
+  
   setup.out         <- setup(data                 = data,
                              sep                  = sep,
                              header               = header,
@@ -93,10 +111,18 @@ gimmeSEM <- gimme <- function(data,
                              ar                   = ar,
                              paths                = paths,
                              subgroup             = subgroup,
+                             ind                  = FALSE,
                              agg                  = FALSE,
+                             groupcutoff          = groupcutoff,
+                             subcutoff            = subcutoff,
                              deconvolve_hrf       = deconvolve_hrf,
                              control              = control)
-
+ 
+   if (diagnos == TRUE){
+    dir.create(file.path(out, "diagnos"))
+    saveRDS(setup.out, file.path(out, "diagnos", "01_setup.RDS"))
+  }
+  
   miSEM.out         <- miSEM(setup.out            = setup.out,
                              previous.out         = setup.out,
                              subgroup.step        = FALSE,
@@ -105,7 +131,11 @@ gimmeSEM <- gimme <- function(data,
                              syntax               = NULL,
                              subgroup.paths       = NULL,
                              second.round         = FALSE)
-
+ 
+   if (diagnos == TRUE){
+    saveRDS(miSEM.out, file.path(out, "diagnos", "02_miSEM.RDS"))
+   }
+  
   evalbetas.out <- evalbetas(setup.out            = setup.out,
                              previous.out         = miSEM.out,
                              subgroup.step        = FALSE,
@@ -115,26 +145,45 @@ gimmeSEM <- gimme <- function(data,
                              post.sub.prune       = FALSE,
                              evalbetas.out        = NULL)
   ## begin subgroup steps ##
-  if (subgroup==TRUE){
-
-    ## runs models again and gets subgroup assignment
+  if (diagnos == TRUE){
+    saveRDS(evalbetas.out, file.path(out, "diagnos", "03_evalbetas.RDS"))
+  }
+  
+  if (subgroup == TRUE){
+    ## runs group-level model for each individual, 
+    ## creates similarity matrix, obtains subgroup assignments
     subsetup.out         <- subsetup(setup.out    = setup.out,
                                      previous.out = evalbetas.out)
-
-    ## subgroup-level path search
+    
+    if (diagnos == TRUE){
+      saveRDS(subsetup.out, file.path(out, "diagnos", "04_subsetup.RDS"))
+    }
+    
+    ## searches for paths common to each subgroup
+    ## using same general procedure as group-level search, 
+    ## but using different cutoff for what constitutes "majority"
     miSEMsub.out         <- miSEMsub(subsetup.out = subsetup.out,
                                      setup.out    = setup.out,
                                      previous.out = evalbetas.out,
                                      second.round = FALSE,
                                      evalbetassub.out = NULL)
-
-    ## subgroup-level pruning
+    if (diagnos == TRUE){
+      saveRDS(miSEMsub.out, file.path(out, "diagnos", "05_miSEMsub.RDS"))
+    }
+    ## prunes paths which may have become nonsignificant 
+    ## for the majority of the subgroup
     evalbetassub.out <- evalbetassub(subsetup.out  = subsetup.out,
                                      previous.out  = miSEMsub.out,
                                      setup.out     = setup.out,
                                      evalbetas.out = evalbetas.out)
-
-    ## looks for group paths to prune after running subgroup search and pruning
+    
+    if (diagnos == TRUE){
+      saveRDS(evalbetassub.out, file.path(out, "diagnos", "06_evalbetassub.RDS"))
+    }
+    
+    ## searches for paths to prune which may have become nonsignificant
+    ## for the group-level model now that subgroup-level paths
+    ## have been obtained
     prune.group.post.out <- evalbetas(setup.out      = setup.out,
                                       previous.out   = evalbetassub.out,
                                       subgroup.step  = FALSE,
@@ -143,76 +192,88 @@ gimmeSEM <- gimme <- function(data,
                                       files          = NULL,
                                       post.sub.prune = TRUE,
                                       evalbetas.out  = evalbetas.out)
-
-    ## this only runs if a group path was removed in the post-subgrouping pruning
+    
+    if (diagnos == TRUE){
+      saveRDS(prune.group.post.out, file.path(out, "diagnos", "07_prune_group_post.RDS"))
+    }
+    
+    ## only runs if a group-level path was removed in the previous step
     if (evalbetas.out$count.group.paths != prune.group.post.out$count.group.paths){
-
+      ## searches for any final subgroup-level paths following the group-level pruning
       miSEMsub.round2.out <- miSEMsub(subsetup.out = subsetup.out,
                                       setup.out    = setup.out,
                                       previous.out = prune.group.post.out,
                                       second.round = TRUE,
                                       evalbetassub.out = evalbetassub.out)
-
+      
+      if (diagnos == TRUE){
+        saveRDS(miSEMsub.round2.out, file.path(out, "diagnos", "08_miSEMsub_round2.RDS"))
+      }
+      
       ## only run another round of subgroup-level pruning if another subgroup-level path got added
       check.again <- any(miSEMsub.round2.out$unique.syntax[,4] != evalbetassub.out$sub.paths[,2])
-
       if (check.again == TRUE){
-
         evalbetassub.round2.out <- evalbetassub(subsetup.out  = subsetup.out,
                                                 previous.out  = miSEMsub.round2.out,
                                                 setup.out     = setup.out,
                                                 evalbetas.out = evalbetas.out)
-
+        # replace first round with second round results
         evalbetassub.out <- evalbetassub.round2.out
-
       } else {
         # if evalbetas isn't run again, grabs most recent syntax from miSEMsub.round2
         # for use in indsem
-        test <- merge(evalbetassub.out$syntax.sub,miSEMsub.round2.out$unique.syntax,by.x="membership",by.y="V1")
-        test <- as.matrix(test[-c(3,5,6)])
-        colnames(test) <- c("membership","files","syntax")
-        evalbetassub.out$syntax.sub   <- test
-        evalbetassub.out$final.syntax <- unique(test[,c(1,3)])
+        combine_syntax                <- merge(evalbetassub.out$syntax.sub,
+                                               miSEMsub.round2.out$unique.syntax,
+                                               by.x = "membership", by.y = "V1")
+        combine_syntax                <- as.matrix(combine_syntax[-c(3,5,6)])
+        colnames(combine_syntax)      <- c("membership", "files", "syntax")
+        # replace subgroup-level syntax from post-subgrouping-pruning
+        # with subgroup-level syntax from round 2 subgroup-level search
+        evalbetassub.out$syntax.sub   <- combine_syntax
+        evalbetassub.out$final.syntax <- unique(combine_syntax[ ,c(1,3)])
       }
     }
-
-#     sub.paths <- evalbetassub.out$sub.paths
-#     colnames(sub.paths) <- c("subgroup","subgroup-level paths")
-#     ## does not need to be here
-#     write.csv(sub.paths,file.path(setup.out$out,"subgroup_paths.csv"),row.names=FALSE)
-    ## end subgroup steps ##
-
+    
+    if (diagnos == TRUE){
+      saveRDS(evalbetassub.out, file.path(out, "diagnos", "09_evalbetassub_final.RDS"))
+    }
+    
   }
-
-  if (subgroup==FALSE) evalbetassub.out <- NULL
-
+  
+  if (subgroup == FALSE) evalbetassub.out <- NULL
+  
   ## this is the individual-level search, adds path for each individual
   ## runs one person at a time  indsem.internal.out <- list
   indsem.internal.out <- indsem.internal(setup.out        = setup.out,
                                          evalbetassub.out = evalbetassub.out,
                                          evalbetas.out    = evalbetas.out)
-
-  ## just grabs information from individual-level search (once complete) and prints
-  ## summary output and makes tables
+  
+  if (diagnos == TRUE){
+    saveRDS(indsem.internal.out, file.path(out, "diagnos", "10_indSEM_internal.RDS"))
+  }
+  
+  ## grabs information from individual-level search (once complete) 
+  ## prints summary output and makes tables
   wrapup.out <- wrapup(indsem.internal.out = indsem.internal.out,
                        setup.out           = setup.out)
-
-  print.gimme(x=subsetup.out,
-              y=subgroup,
-              z=setup.out)
+  
+  if (diagnos == TRUE){
+    saveRDS(wrapup.out, file.path(out, "diagnos", "11_wrapup.RDS"))
+  }
+  
+  print.gimme(x = subsetup.out,
+              y = subgroup,
+              z = setup.out)
 }
 
-print.gimme <- function(x,y,z){
+print.gimme <- function(x, y, z){
   writeLines("gimme finished running normally")
   writeLines(paste("output is stored in", z$out))
   if (y == TRUE) {
     writeLines(paste("Number of subgroups =", x$n.subgroups))
-    writeLines(paste("Modularity =", round(x$modularity,digits=5)))
+    writeLines(paste("Modularity =", round(x$modularity, digits = 5)))
   }
 }
-################################################################################
-# setup_through_evalbetas_funcs_MOD.R
-################################################################################
 
 ## this setup function creates many values that later code refers back to
 setup <- function (data,
@@ -224,100 +285,129 @@ setup <- function (data,
                    paths,
                    subgroup,
                    agg,
+                   ind,
+                   groupcutoff,
+                   subcutoff,
                    deconvolve_hrf,
                    control) {
-
-  files            <- list.files(data, full.names=TRUE)
+  
+  files <- list.files(data, full.names = TRUE)
   
   ## code to check whether output directory specified by the user actually exists
   ## if it doesn't exist, the code wouldn't crash until the individual-level search
   ## this checks and throws an error at the start
-  if (file_test(op="-d",out) == FALSE) {
+  if (file_test(op = "-d", out) == FALSE) {
     stop("gimme ERROR: specified output directory doesn't seem to exist. Please create the directory or check to make sure the file path is accurate.")
   }
-     
+  
   if (deconvolve_hrf) {
-      ## deconvolve_inputs deconvolves the HRF from time series for each subject and returns a vector
-      ## of input files to use in GIMME (this supplants the files above, which are not deconvolved)
-      ## current methods are "bush" and "wu". the control list above follows the R style of lme, lmer, etc.
-      ## where the list specifies details of how the algorithm is run, such as TR (required) and learning rate.
-      ## 
-      ## deconvolve_inputs creates a parallel set of text files in the deconvolved_inputs folder within the gimme out directory.
-      files <- deconvolve_inputs(files, sep, header, out, control)
-      data <- file.path(out, "deconvolved_inputs") #test
+    ## deconvolve_inputs deconvolves the HRF from time series for each subject and returns a vector
+    ## of input files to use in GIMME (this supplants the files above, which are not deconvolved)
+    ## current methods are "bush" and "wu". the control list above follows the R style of lme, lmer, etc.
+    ## where the list specifies details of how the algorithm is run, such as TR (required) and learning rate.
+    ## 
+    ## deconvolve_inputs creates a parallel set of text files in the deconvolved_inputs folder within the gimme out directory.
+    files <- deconvolve_inputs(files, sep, header, out, control)
+    data  <- file.path(out, "deconvolved_inputs") #test
   }
   
-  
   subjects         <- length(files)
-  trackparts       <- matrix(0,nrow=subjects,ncol=2)
+  trackparts       <- matrix(0, nrow = subjects, ncol = 2)
   trackparts[,1]   <- seq(1:subjects)
-  trackparts[,2]   <- sapply(strsplit(basename(files),"\\."),
-                             function(x) paste(x[1:(length(x)-1)], collapse="."))
-
-  all               <- as.matrix(read.table(files[1],sep=sep,header=header))
-  # check to see if number of columns is equal to 1. if so, user likely
-  # misspecified the sep argument
+  trackparts[,2]   <- sapply(strsplit(basename(files), "\\."),
+                             function(x) paste(x[1:(length(x)-1)], collapse = "."))
+  all               <- as.matrix(read.table(files[1], sep = sep, header = header))
+  # check to see if number of columns is equal to 1. 
+  # if so, user likely misspecified the sep argument
   rois              <- ncol(all)
-  if (rois == 1) stop('gimme ERROR: only one column of data read in. Check if sep argument properly specified.')
-  
+  if (rois == 1) {
+    stop('gimme ERROR: only one column of data read in. Check if sep argument properly specified.')
+  }
   ## check to see if all individuals have same number of columns. 
-  ## if not, code will fail with ambiguous error later
-
+  ## otherwise, code will fail with ambiguous error later
   cols        <- numeric()
   missingCols <- numeric()
   for (k in 1:subjects){
-    data.file <- read.table(files[k],sep=sep,header=header)
+    data.file <- read.table(files[k], sep = sep, header = header)
     cols[k]   <- ncol(data.file)
-    missingCols[k] <- sum(colSums(is.na(data.file))<nrow(data.file)) 
+    missingCols[k] <- sum(colSums(is.na(data.file)) < nrow(data.file)) 
   }
-  if (sd(cols) != 0) stop('gimme ERROR: not all data files have the same number of columns. Fix or remove file before continuing.')
-  if (sd(missingCols) != 0) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
-  if (any(cols != missingCols)) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
+  if (subjects != 1) {
+    if (sd(cols) != 0) stop('gimme ERROR: not all data files have the same number of columns. Fix or remove file before continuing.')
+    if (sd(missingCols) != 0) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
+    if (any(cols != missingCols)) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
+  } 
+  if (subjects == 1 & ind == FALSE) {
+    stop('gimme ERROR: only one subject detected in data directory. Please use indSEM function instead.')
+  }
   vars              <- rois*2
   varnames          <- colnames(all)
-  varnames          <- rep(varnames,2)
-  cutoffind         <- qchisq(.99,1)
+  varnames          <- rep(varnames, 2)
+  cutoffind         <- qchisq(.99, 1)
   lvarnames         <- character()
   count.group.paths <- 0
-
-  for (j in 1:(rois)) varnames[j]           <- paste(varnames[j],"lag",sep="")
-
-  for (j in 1:rois) lvarnames[j]            <- paste("VAR",j,"lag",sep="")
-
-  for (j in (rois+1):(rois*2)) lvarnames[j] <- paste("VAR",j-rois,sep="")
-
+  
+  for (j in 1:(rois)) {
+    varnames[j]  <- paste0(varnames[j], "lag")
+    lvarnames[j] <- paste0("VAR", j, "lag")
+  }
+  
+  for (j in (rois+1):(rois*2)) {
+    lvarnames[j] <- paste0("VAR", j - rois)
+  }
+  
   x                 <- seq(1:vars)
   y                 <- substring(lvarnames,4)
-  individual        <- file.path(out,"individual")
-  subgroup.dir      <- file.path(out,"subgroup")
-  fitted            <- file.path(out,"fitted")
+  individual        <- file.path(out, "individual")
+  subgroup.dir      <- file.path(out, "subgroup")
+  fitted            <- file.path(out, "fitted")
   
-  ## need to insert a TRUE/FALSE to only create if user selects subgroup=TRUE
-  if (subgroup == TRUE) dir.create(subgroup.dir,  showWarnings=FALSE)
-  if (agg      == FALSE) dir.create(individual,    showWarnings=FALSE)
-  if (plot==TRUE) {plots      <- file.path(individual,"plots")
-                   # dir.create(plots,showWarnings=FALSE)
-                   plot.names <-  varnames[(rois+1):(rois*2)]
-  } else {plots <- ""; plot.names <-""}
-
-
-#------------------------------------------------------------------------------#
-# prepare paths if semigimme is specified
-if (!is.null(paths))
+  if (subgroup == TRUE)  {
+    dir.create(subgroup.dir, showWarnings=FALSE)
+  }
+  if (agg      == FALSE) {
+    dir.create(individual, showWarnings=FALSE)
+  }
+  if (plot == TRUE) {
+    plot.names <- varnames[(rois+1):(rois*2)]
+  } else {
+    plot.names <- ""
+  }
+  
+  
+  #------------------------------------------------------------------------------#
+  # prepare paths if semigimme is specified
+  if (!is.null(paths))
   {
     prep.paths <- function(paths, varnames,lvarnames)
-      {
+    {
       table    <- lavParTable(paths)
-      table    <- table[table$op == "~", ]
-      dvs      <- recoderFunc(table$lhs,varnames,lvarnames)
-      ivs      <- recoderFunc(table$rhs,varnames,lvarnames)
-      vs       <- paste(dvs, "~", ivs, sep = "")
-      return(vs)
+      # only include paths in the syntax which are specified free by the user
+      # allows the possibility for the user to fix certain paths to zero
+      tableFree    <- table[table$op == "~" & table$free != 0, ]
+      dvsFree      <- recoderFunc(tableFree$lhs,varnames,lvarnames)
+      ivsFree      <- recoderFunc(tableFree$rhs,varnames,lvarnames)
+      vsFree       <- paste0(dvsFree, "~", ivsFree)
+      # table up the paths which are fixed to a certain value by the user
+      tableFixed   <- table[table$op == "~" & table$free == 0,]
+      if (nrow(tableFixed) > 0){
+        dvsFixed     <- recoderFunc(tableFixed$lhs,varnames,lvarnames)
+        ivsFixed     <- recoderFunc(tableFixed$rhs,varnames,lvarnames)
+        vsFixed      <- paste0(dvsFixed, "~", ivsFixed)
+      } else {
+        vsFixed = NULL
       }
-  paths <- prep.paths(paths, varnames, lvarnames)
+      list = list(paths  = vsFree,
+                  remove = vsFixed)
+      return(list)
+    }
+    remove <- prep.paths(paths, varnames, lvarnames)$remove  
+    paths  <- prep.paths(paths, varnames, lvarnames)$paths
+  } else {
+    remove <- NULL
   }
-#------------------------------------------------------------------------------#
-
+  #------------------------------------------------------------------------------#
+  
   ## code below creates the starting null syntax file
   line1             <- paste(capture.output(for (i in 1:(rois*2)){
     cat(lvarnames[i],"=~","1*",varnames[i],
@@ -328,50 +418,60 @@ if (!is.null(paths))
   line3             <- paste(capture.output(for (i in (rois+1):(rois*2)) {
     cat (lvarnames[i],"~~",lvarnames[i],
          sep="","\n")}),collapse="\n")
-
+  
   if (ar==TRUE) {line4 <- paste(capture.output(for (j in 1:rois) {
     cat (lvarnames[j+rois],"~",lvarnames[j],
          sep="","\n")}),collapse="\n")}
-
+  
   if (ar==FALSE) {line4 <- paste(capture.output(for (j in 1:rois) {
     cat (lvarnames[j],"~0*",lvarnames[j+rois],
          sep="","\n")}),collapse="\n")}
-
+  
   if (!is.null(paths))
+  {
+    line5 <- paste(capture.output(for (j in 1:length(paths))
     {
-      line5 <- paste(capture.output(for (j in 1:length(paths))
-        {
-          cat (paths[j], sep="","\n")
-        }
-      ),collapse="\n")
+      cat (paths[j], sep="","\n")
     }
+    ),collapse="\n")
+  }
   if (is.null(paths)){
     syntax            <- paste(line1,line2,line3,line4,sep="\n")
   } else {
     syntax            <- paste(line1,line2,line3,line4,line5,sep="\n")
   }
   ## end creating syntax
-
+  
   ## this code creates list of paths that make sense to gimme to open
   ## for example, it doesn't include paths where time would predict time-1
   candidate.paths   <- capture.output(
-    for (i in (rois+1):(rois*2))
-    {for (j in 1:(rois*2))
-    {cat(lvarnames[i],"~",lvarnames[j],
-         sep="","\n")}})
-
+    for (i in (rois+1):(rois*2)){
+      for (j in 1:(rois*2)){
+        cat(lvarnames[i], "~", lvarnames[j], sep="", "\n")}
+    }
+  )
+  
+  # if path specified by a user is fixed to a certain value, 
+  # we want to remove it from consideration when looking at MIs, 
+  # especially if that path was fixed to zero
+  candidate.paths <- candidate.paths[!candidate.paths %in% remove]
+  
   ## just creates list of AR paths so that later code doesn't kick them out
   ## code is designed so that if user selects ar=TRUE, they stay in
   ## even if they become nonsignificant for the majority
-  ar.paths          <- capture.output(for (i in 1:rois){
-    cat(lvarnames[i+rois],"~",lvarnames[i],
-        sep="","\n")})
-
-
-  if (!is.null(paths)){ ar.paths <- c(ar.paths, paths) }
-
+  ar.paths          <- capture.output(
+    for (i in 1:rois){
+      cat(lvarnames[i+rois], "~", lvarnames[i], sep="", "\n")
+    }
+  )
+  
+  
+  if (!is.null(paths)){
+    ar.paths <- c(ar.paths, paths) 
+  }
+  
   fixed.paths <- length(ar.paths)
-
+  
   list <- list("subjects"          = subjects,
                "rois"              = rois,
                "x"                 = x,
@@ -383,7 +483,6 @@ if (!is.null(paths))
                "cutoffind"         = cutoffind,
                "fitted"            = fitted,
                "individual"        = individual,
-               "plots"             = plots,
                "plot.names"        = plot.names,
                "syntax"            = syntax,
                "candidate.paths"   = candidate.paths,
@@ -398,7 +497,9 @@ if (!is.null(paths))
                "subgroup.dir"      = subgroup.dir,
                "fixed.paths"       = fixed.paths,
                "subgroup"          = subgroup,
-               "agg"               = agg)
+               "agg"               = agg,
+               "groupcutoff"       = groupcutoff,
+               "subcutoff"         = subcutoff)
   return(list)
 }
 
@@ -407,38 +508,49 @@ if (!is.null(paths))
 fit.model <- function (varnames,
                        syntax,
                        data.file) {
-
-  fit <- tryCatch(lavaan(syntax,
-                    data            = data.file,
-                    model.type      = "sem",
-                    missing         = "fiml",
-                    estimator       = "ml",
-                    int.ov.free     = TRUE,
-                    int.lv.free     = FALSE,
-                    auto.fix.first  = TRUE,
-                    auto.var        = TRUE,
-                    auto.cov.lv.x   = TRUE,
-                    auto.th         = TRUE,
-                    auto.delta      = TRUE,
-                    auto.cov.y      = FALSE,
-                    auto.fix.single = TRUE,
-                    warn            = FALSE),
+  
+  fit <- tryCatch(lavaan::lavaan(syntax,
+                                 data            = data.file,
+                                 model.type      = "sem",
+                                 missing         = "fiml",
+                                 estimator       = "ml",
+                                 int.ov.free     = TRUE,
+                                 int.lv.free     = FALSE,
+                                 auto.fix.first  = TRUE,
+                                 auto.var        = TRUE,
+                                 auto.cov.lv.x   = TRUE,
+                                 auto.th         = TRUE,
+                                 auto.delta      = TRUE,
+                                 auto.cov.y      = FALSE,
+                                 auto.fix.single = TRUE,
+                                 warn            = FALSE),
                   error=function(e) e)
   return(fit)
 }
-
 
 ## quick function that bypasses the need to read in data and write it back out
 ## just reads in file and creates the lagged vars
 read.data <- function (file,
                        sep,
                        header) {
-  all    <- as.matrix(read.table(file,sep=sep,header=header))
-  first  <- all[1:(nrow(all)-1),]
-  second <- all[2:nrow(all),]
-  full   <- cbind(first,second)
-  data.file <- as.data.frame(full)
+  all       <- as.matrix(read.table(file, sep = sep, header = header))
+  first     <- all[1:(nrow(all)-1), ]
+  second    <- all[2:nrow(all), ]
+  data.file <- data.frame(first, second)
   return(data.file)
+}
+
+count_excellent <- function(indices){
+  rmsea     <- indices[4]
+  srmr      <- indices[5]
+  cfi       <- indices[6]
+  nnfi      <- indices[7]
+  rmseaE    <- ifelse(rmsea < .05, 1, 0)
+  srmrE     <- ifelse(srmr  < .05, 1, 0)
+  cfiE      <- ifelse(cfi   > .95, 1, 0)
+  nnfiE     <- ifelse(nnfi  > .95, 1, 0)
+  excellent <- sum(rmseaE, srmrE, cfiE, nnfiE)
+  return(excellent)
 }
 
 ## this function is responsible for the group-level search procedure
@@ -450,59 +562,59 @@ miSEM <- function (setup.out,
                    syntax,
                    subgroup.paths,
                    second.round) {
-
+  
   vars            <- setup.out$vars
   varnames        <- setup.out$varnames
   candidate.paths <- setup.out$candidate.paths
-
   ar              <- setup.out$ar
   sep             <- setup.out$sep
   header          <- setup.out$header
   data            <- setup.out$data
-
+  groupcutoff     <- setup.out$groupcutoff
+  subcutoff       <- setup.out$subcutoff
+  
   count.group.paths <- previous.out$count.group.paths
-
+  
   param = NULL
   Freq  = NULL
   
-  mi.index            <- matrix(1:((vars-1)*vars),nrow=((vars-1)*vars),ncol=1)
-
-  ## it gets tricky in this part. this function is used in several stages of gimme (after
-  ## most recent revision), so it sets up some values depending on what stage it's in.
-  ## if subgroup.step==FALSE, it means that it's the first round (group-level search).
-  ## subgroup.step==TRUE & second.round==FALSE means it's using the function to find
+  mi.index            <- matrix(1:((vars-1)*vars), nrow = ((vars-1)*vars), ncol = 1)
+  
+  ## the miSEM function is used in several stages of gimme 
+  ## it sets up some values depending on what stage it's in.
+  ## if subgroup.step == FALSE, it means that it's the first round (group-level search).
+  ## subgroup.step == TRUE & second.round == FALSE means it's using the function to find
   ## group-level paths within the subgroups, or in other words, it's the subgroup-level search
-  ## subgroup.step == TRUE & second.round==TRUE means that the group-level search and subgroup-level
+  ## subgroup.step == TRUE & second.round == TRUE means that the group-level search and subgroup-level
   ## search have already taken place, but that it's going back through to check for any additional
   ## subgroup-level paths. this only happens if group-level paths were pruned after the subgroup-level
   ## search took place the first go-around.
   if (subgroup.step == FALSE) {
-    count.group.paths <- 0
+    count.group.paths    <- 0
     count.subgroup.paths <- 0
-    subjects          <- setup.out$subjects
-    files  <- list.files(data, full.names=TRUE) 
-    syntax            <- previous.out$syntax
+    subjects             <- setup.out$subjects
+    files                <- list.files(data, full.names = TRUE) 
+    syntax               <- previous.out$syntax
   }
-
-  if (subgroup.step == TRUE & second.round==FALSE){
-  count.subgroup.paths <- 0
-  subgroup.paths       <- character()
+  
+  if (subgroup.step == TRUE & second.round == FALSE){
+    count.subgroup.paths <- 0
+    subgroup.paths       <- character()
   }
-
-  if (subgroup.step == TRUE & second.round==TRUE){
+  
+  if (subgroup.step == TRUE & second.round == TRUE){
     subgroup.paths       <- unlist(strsplit(subgroup.paths, "[,]"))
     count.subgroup.paths <- length(subgroup.paths)
   }
-
-  cutoff               <- qchisq(.95,subjects)
-  cutoffgroup          <- qchisq(1-.05/subjects,1)
+  
+  cutoff               <- qchisq(.95, subjects)
+  cutoffgroup          <- qchisq(1-.05/subjects, 1)
   continue <- 1
-
+  
   while (continue == 1) {
-    mi.list            <- matrix(0, nrow=vars*(vars-1)*subjects, ncol=6)
+    mi.list            <- matrix(0, nrow = vars*(vars-1)*subjects, ncol = 6)
     colnames(mi.list)  <- c("subject", "index", "lhs", "op", "rhs", "mi")
-    count.converge   <- 0
-
+    count.converge     <- 0
     ## section below just iteratively fits model, grabs MIs, selects one significant
     ## for most people, adds to syntax, continues until no path sig for majority (75%)
     for (k in 1:subjects)
@@ -514,82 +626,94 @@ miSEM <- function (setup.out,
       fit                 <- fit.model(varnames  = varnames,
                                        syntax    = syntax,
                                        data.file = data.file)
-
-      check.npd           <- any(grepl("error",class(fit))==TRUE)
-
-      check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+      
+      check.npd            <- any(grepl("error", class(fit)) == TRUE)
+      if (check.npd == FALSE) {
+        check.not.identified <- sum(lavInspect(fit,"se")$beta, na.rm = TRUE) == 0
+      } else check.not.identified = TRUE
       if (ar == FALSE & count.group.paths == 0){check.not.identified <- FALSE}
-
-      if (check.npd == FALSE & check.not.identified==FALSE) {
-
-      singular            <- tryCatch(modindices(fit),error=function(e) e)
-      check.singular      <- any(grepl("singular",singular)==TRUE)
-      check.error         <- any(grepl("error",class(singular))==TRUE)
-
-      converge            <- lavInspect(fit, "converged")
+      
+      if (check.npd == FALSE & check.not.identified == FALSE) {
+        singular            <- tryCatch(modindices(fit), error = function(e) e)
+        check.singular      <- any(grepl("singular", singular) == TRUE)
+        check.error         <- any(grepl("error", class(singular)) == TRUE)
+        converge            <- lavInspect(fit, "converged")
       } else {
-        if (subgroup.step==FALSE) {writeLines(paste("group-level search, subject", k, "nonconvergence"))
-        } else {writeLines(paste("subgroup-level search, subject", k, "nonconvergence"))
+        if (subgroup.step == FALSE) {
+          writeLines(paste("group-level search, subject", k, "nonconvergence"))
+        } else {
+          writeLines(paste("subgroup-level search, subject", k, "nonconvergence"))
         }
         check.singular <- TRUE
         converge       <- FALSE
         check.error    <- TRUE
       }
-
-      if (check.singular==FALSE & converge==TRUE & check.not.identified==FALSE & check.error == FALSE) {
-        if (subgroup.step==FALSE) {writeLines(paste("group-level search, subject", k))
+      
+      if (check.singular == FALSE & converge == TRUE & check.not.identified == FALSE & 
+          check.error == FALSE) {
+        if (subgroup.step == FALSE) {
+          writeLines(paste("group-level search, subject", k))
         } else {writeLines(paste("subgroup-level search, subject", k))
         }
-        mi                <- as.matrix(singular[singular$op == "~",])[,c("lhs","op","rhs","mi")]
+        mi                <- as.matrix(singular[singular$op == "~",])[ ,c("lhs","op","rhs","mi")]
         padLength         <- ((vars-1)*vars) - nrow(mi)
         pad               <- matrix(NA, nrow = padLength, ncol = 4)
-        mi                <- rbind(mi,pad)
+        mi                <- rbind(mi, pad)
         count.converge    <- count.converge + 1
       }
       # if it doesn't converge or is computationally singular or NPD
-      if (converge==FALSE | check.singular==TRUE | check.npd == TRUE | check.not.identified==TRUE) {
-        mi                <- matrix(NA, nrow=((vars-1)*vars), ncol=4)
+      if (converge == FALSE | check.singular == TRUE | check.npd == TRUE | check.not.identified == TRUE) {
+        mi                <- matrix(NA, nrow=((vars-1)*vars), ncol = 4)
       }
       #stacking matrices
-      mi.subject          <- matrix(k,nrow=((vars-1)*vars),ncol=1)
+      mi.subject          <- matrix(k, nrow = ((vars-1)*vars), ncol = 1)
       mi.list[(((nrow(mi)*k)-nrow(mi))+1):(nrow(mi)*k),(1:6)] <-
-        as.matrix(cbind(mi.subject,mi.index,mi),rownames.force=FALSE)
+        as.matrix(cbind(mi.subject, mi.index, mi), 
+                  rownames.force = FALSE)
     }
-
+    
     ## this section just sorts the matrix of MIs and grabs the best one
     mi.all                <- as.data.frame(mi.list[complete.cases(mi.list),])
-    mi.all$param          <- paste(mi.all$lhs, mi.all$op, mi.all$rhs, sep="")
+    mi.all$param          <- paste0(mi.all$lhs, mi.all$op, mi.all$rhs)
     mi.all                <- mi.all[-c(3:5)]
     mi.all                <- subset(mi.all,param %in% candidate.paths)
     mi.all[,3]            <- as.numeric(as.character(mi.all[,3]))
     mi.all[,1]            <- as.numeric(as.character(mi.all[,1]))
     mi.all                <- transform(mi.all, sum = ave(mi, param, FUN=sum))
     mi.high               <- subset(mi.all, mi>cutoffgroup)
-    mi.count              <- subset(as.data.frame(table(mi.high$param)),Freq>0)
-    mi.high.count         <- subset(mi.high, !duplicated(param))
-    mi.merge              <- merge(x=mi.high.count, y=mi.count,
-                                   by.x="param", by.y="Var1")
-    paramadd              <- mi.merge[order(-mi.merge$Freq, -mi.merge$sum),][1,1]
-    ## list of every individual's MIs for the selected path
-    y                     <- subset(mi.all, param==paramadd, select=mi)$mi
-    drop.element          <- ifelse(max(y)<cutoffgroup,TRUE,FALSE)
-    prop                  <- sum(y > cutoffgroup)/count.converge
-
-    if (subgroup.step==TRUE)  cutoffprop <- .5
-    if (subgroup.step==FALSE) cutoffprop <- .75
-
+    # make sure that at least one MI is above cutoff, or it will error
+    if (nrow(mi.high) != 0){
+      mi.count              <- subset(as.data.frame(table(mi.high$param)),Freq>0)
+      mi.high.count         <- subset(mi.high, !duplicated(param))
+      mi.merge              <- merge(x=mi.high.count, y=mi.count,
+                                     by.x="param", by.y="Var1")
+      paramadd              <- mi.merge[order(-mi.merge$Freq, -mi.merge$sum),][1,1]
+      ## list of every individual's MIs for the selected path
+      y                     <- subset(mi.all, param==paramadd, select=mi)$mi
+      drop.element          <- ifelse(max(y)<cutoffgroup,TRUE,FALSE)
+      prop                  <- sum(y > cutoffgroup)/count.converge
+      halt <- length(y)<=subjects/2
+    } else {
+      halt <- TRUE
+      prop <- 0
+      drop.element = TRUE
+    }
+    
     ## stops the search if less than half of subjects are terminating normally
-    halt <- length(y)<=subjects/2
-
+    
+    
+    if (subgroup.step==TRUE)  cutoffprop <- subcutoff
+    if (subgroup.step==FALSE) cutoffprop <- groupcutoff
+    
     if (prop <= cutoffprop | drop.element==TRUE | halt==TRUE) {continue <-0
     } else {
       continue            <- 1
       syntax              <- paste(syntax,as.name(paramadd),sep="\n")
       if (subgroup.step==FALSE) count.group.paths    <- count.group.paths + 1
       if (subgroup.step==TRUE) {count.subgroup.paths <- count.subgroup.paths + 1
-                                subgroup.paths       <- append(subgroup.paths,paramadd)}
+      subgroup.paths       <- append(subgroup.paths,paramadd)}
     }
-
+    
   }  #end of while continue>0
   list <- list("syntax"               = syntax,
                "count.group.paths"    = count.group.paths,
@@ -597,7 +721,6 @@ miSEM <- function (setup.out,
                "subgroup.paths"       = subgroup.paths)
   return(list)
 }
-
 ## this function is used for pruning, both for group-level and subgroup-level
 ## it basically runs the models again and looks for paths that are now nonsignificant
 ## for the majority
@@ -609,7 +732,7 @@ evalbetas <- function (setup.out,
                        files,
                        post.sub.prune,
                        evalbetas.out) {
-
+  
   data              = setup.out$data
   ar.paths          = setup.out$ar.paths
   ar                = setup.out$ar
@@ -618,56 +741,62 @@ evalbetas <- function (setup.out,
   sep               = setup.out$sep
   header            = setup.out$header
   fixed.paths       = setup.out$fixed.paths
-
+  groupcutoff       = setup.out$groupcutoff
+  subcutoff         = setup.out$subcutoff
+  
   op    = NULL
   sig   = NULL
   param = NULL
   z     = NULL
-
-
-## flags are similar to miSEM
-  if (subgroup.step==FALSE & post.sub.prune == FALSE) {
-    bad                  = ifelse(identical(setup.out$syntax,previous.out$syntax),0,1)
+  
+  ## flags are similar to miSEM
+  if (subgroup.step == FALSE & post.sub.prune == FALSE) {
+    bad                  = ifelse(identical(setup.out$syntax, previous.out$syntax), 0, 1)
     syntax               = previous.out$syntax
     subjects             = setup.out$subjects
     count.subgroup.paths = 0
-    files                <- list.files(data, full.names=TRUE)
-    count.group.paths = previous.out$count.group.paths
-  }
-
-  if (subgroup.step==TRUE){
-    bad = ifelse(previous.out$unique.syntax[s,3]==0,0,1)
-    count.subgroup.paths = as.numeric(previous.out$unique.syntax[s,3])
-    syntax               =  previous.out$unique.syntax[s,2]
-    subgroup.paths       <- previous.out$unique.syntax[s,4]
-    subgroup.paths       <- unlist(strsplit(subgroup.paths, "[,]"))
+    files                = list.files(data, full.names = TRUE)
     count.group.paths    = previous.out$count.group.paths
   }
-
+  
+  if (subgroup.step == TRUE){
+    bad = ifelse(previous.out$unique.syntax[s,3] == 0, 0, 1)
+    count.subgroup.paths = as.numeric(previous.out$unique.syntax[s,3])
+    syntax               = previous.out$unique.syntax[s,2]
+    subgroup.paths       = previous.out$unique.syntax[s,4]
+    subgroup.paths       = unlist(strsplit(subgroup.paths, "[,]"))
+    count.group.paths    = previous.out$count.group.paths
+  }
+  
   if (post.sub.prune == TRUE){
     bad         = 1
-    group       <- unlist(strsplit(evalbetas.out$syntax,"\n"))
-    start       <- unlist(strsplit(setup.out$syntax,"\n"))
+    group       <- unlist(strsplit(evalbetas.out$syntax, "\n"))
+    start       <- unlist(strsplit(setup.out$syntax, "\n"))
     group.paths <- group[-(1:length(start))]
     subjects    <- setup.out$subjects
     syntax.all  <- as.matrix(previous.out$syntax.sub$syntax)
     files       <- as.matrix(previous.out$syntax.sub$files)
     count.group.paths <- length(group.paths)
   }
-
+  
   cutoffz           = abs(qnorm(.05/subjects))
-  if (count.group.paths==0) bad = 0
+  if (count.group.paths == 0) bad = 0
   #getting coefficients for final model
   while (bad == 1) {
-    if (post.sub.prune == FALSE) list.all <- matrix(NA, nrow=(fixed.paths+count.group.paths+count.subgroup.paths)*subjects, ncol=2)
-    if (post.sub.prune == TRUE) list.all <- matrix(NA,nrow=count.group.paths*subjects,ncol=2)
+    if (post.sub.prune == FALSE){
+      list.all  <- matrix(NA, nrow = (fixed.paths + count.group.paths + 
+                                        count.subgroup.paths)*subjects, ncol = 2)
+    } else {
+      list.all  <- matrix(NA, nrow = count.group.paths*subjects, ncol = 2)
+    }
+    
     colnames(list.all) <- c("param", "z")
     count.converge     <- 0
-
+    
     for (k in 1:subjects)
     {
-      if (post.sub.prune==TRUE) syntax  <- syntax.all[k,]
-
+      if (post.sub.prune == TRUE) syntax  <- syntax.all[k, ]
+      
       data.file           <- read.data(file   = files[k],
                                        sep    = sep,
                                        header = header)
@@ -675,108 +804,126 @@ evalbetas <- function (setup.out,
       fit                 <- fit.model(varnames  = varnames,
                                        syntax    = syntax,
                                        data.file = data.file)
-
-      check.npd             <- any(grepl("error",class(fit))==TRUE)
-      check.not.identified  <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
-      if (check.npd == FALSE & check.not.identified==FALSE) {
-        singular            <- tryCatch(modindices(fit),error=function(e) e)
-        check.singular      <- any(grepl("singular",singular)==TRUE)
+      
+      check.npd             <- any(grepl("error", class(fit)) == TRUE)
+      check.not.identified  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+      
+      if (check.npd == FALSE & check.not.identified == FALSE) {
+        singular            <- tryCatch(modindices(fit), error = function(e) e)
+        check.singular      <- any(grepl("singular", singular) == TRUE)
         converge            <- lavInspect(fit, "converged")
-        check.error         <- any(grepl("error",class(singular))==TRUE)
+        check.error         <- any(grepl("error", class(singular)) == TRUE)
       } else {
         check.singular <- TRUE
         converge       <- FALSE
         check.error    <- TRUE
       }
-
-      if (check.singular==FALSE & converge==TRUE & check.not.identified==FALSE & check.error ==FALSE) {
+      
+      if (check.singular == FALSE & converge == TRUE & 
+          check.not.identified == FALSE & check.error == FALSE) {
         ## printing the step
-        if (subgroup.step==FALSE) {writeLines(paste("group-level search, subject", k))
-        } else {writeLines(paste("subgroup-level search, subject", k))
+        if (subgroup.step == FALSE) {
+          writeLines(paste("group-level pruning, subject", k))
+        } else {
+          writeLines(paste("subgroup-level pruning, subject", k))
         }
-
-        z.list         <- subset(standardizedSolution(fit),op=="~")
-        z.list$param   <- paste(z.list$lhs, z.list$op, z.list$rhs, sep="")
-        z.list         <- z.list[c("param","z")]
-        z.list         <- z.list[complete.cases(z.list),]
-        if (post.sub.prune == TRUE) z.list <- z.list[z.list$param %in% group.paths,]
+        z.list         <- subset(standardizedSolution(fit), op == "~")
+        z.list$param   <- paste0(z.list$lhs, z.list$op, z.list$rhs)
+        z.list         <- z.list[, c("param", "z")]
+        z.list         <- z.list[complete.cases(z.list), ]
+        if (post.sub.prune == TRUE) z.list <- z.list[z.list$param %in% group.paths, ]
+        # below line added because a group path could have an NA std. error
+        # for a person, which could result in it not being in the z.list object
+        # this would then cause the object to be empty and throw an error later
+        if (nrow(z.list) == 0 & post.sub.prune == TRUE){
+          z.list <- matrix(NA, nrow = length(group.paths), ncol = 2)
+        } 
+        if (nrow(z.list) == 0 & post.sub.prune == FALSE){
+          z.list <- matrix(NA, nrow = (rois+count.group.paths), ncol = 2)
+        }
         count.converge <- count.converge + 1
       }
       # if it doesn't converge
-      if (converge == FALSE | check.singular == TRUE | check.npd == TRUE | check.not.identified==TRUE | check.error == TRUE) {
-        z.list <- matrix(NA, nrow=(rois+count.group.paths), ncol=2)
-        if (post.sub.prune == TRUE) z.list <- matrix(NA, nrow=length(group.paths), ncol=2)
+      if (converge == FALSE | check.singular == TRUE | check.npd == TRUE | 
+          check.not.identified == TRUE | check.error == TRUE) {
+        if (post.sub.prune == FALSE){
+          z.list <- matrix(NA, nrow = (rois + count.group.paths), ncol = 2)
+        } else {
+          z.list <- matrix(NA, nrow = length(group.paths), ncol = 2)
+        }
         ## printing the step
-        if(subgroup.step==FALSE) {writeLines(paste("group-level search, subject", k, "nonconvergence"))
-        } else {writeLines(paste("subgroup-level search, subject", k, "nonconvergence"))
+        if(subgroup.step == FALSE) {
+          writeLines(paste("group-level pruning, subject", k, "nonconvergence"))
+        } else {
+          writeLines(paste("subgroup-level pruning, subject", k, "nonconvergence"))
         }
       }
-      list.all[(((nrow(z.list)*k)-nrow(z.list)+1):(nrow(z.list)*k)),] <- as.matrix(z.list)
+      list.all[(((nrow(z.list)*k)-nrow(z.list)+1):(nrow(z.list)*k)), ] <- as.matrix(z.list)
     }
-
+    
     list.all     <- as.data.frame(list.all)
     list.all$z   <- as.numeric(as.character(list.all$z))
-    list.all$sig <- ifelse(abs(list.all$z)>cutoffz, 1, 0)
-    list.all     <- transform(list.all, sum=ave(sig, param, FUN=sum))
+    list.all$sig <- ifelse(abs(list.all$z) > cutoffz, 1, 0)
+    list.all     <- transform(list.all, sum = ave(sig, param, FUN = sum))
     # add line to not include AR as
-    if (ar==TRUE){
-      list.all <- subset(list.all,!(param %in% ar.paths))
+    if (ar == TRUE){
+      list.all <- subset(list.all, !(param %in% ar.paths))
     }
     # only those paths
     # added unique to subgrouping can be removed in evalbetas
-    if (subgroup.step==TRUE) list.all <- subset(list.all,param %in% subgroup.paths)
-    if ((nrow(list.all)==0)==TRUE) bad <- 0
-    paramdrop <- as.character(list.all[which.min(list.all$sum),1])
+    if (subgroup.step == TRUE) list.all <- subset(list.all, param %in% subgroup.paths)
+    if ((nrow(list.all) == 0) == TRUE) bad <- 0
+    paramdrop <- as.character(list.all[which.min(list.all$sum), 1])
     #create histogram of t/z values
-
-    y2   <- abs(subset(list.all, param==paramdrop, select=z)$z)
-
-    prop <- sum(y2>=cutoffz)/count.converge
-
-    drop.element <- ifelse(max(y2)<cutoffz,TRUE,FALSE)
-
-    if (subgroup.step == TRUE) cutoffprop <- .5
-    if (subgroup.step == FALSE)  cutoffprop <- .75
-
-    if (prop <= cutoffprop | drop.element==TRUE) {
+    
+    y2   <- abs(subset(list.all, param == paramdrop, select = z)$z)
+    
+    prop <- sum(y2 >= cutoffz)/count.converge
+    
+    drop.element <- ifelse(max(y2) < cutoffz, TRUE, FALSE)
+    
+    if (subgroup.step == TRUE)   cutoffprop <- subcutoff
+    if (subgroup.step == FALSE)  cutoffprop <- groupcutoff
+    
+    if (prop <= cutoffprop | drop.element == TRUE) {
       ## drops offending path from syntax character string
       syntax <- unlist(strsplit(syntax, "[\n]"))
       syntax <- syntax[!syntax %in% paramdrop]
-      syntax <- paste(syntax,sep="",collapse="\n")
+      syntax <- paste(syntax, sep = "", collapse = "\n")
       bad    <- 1
-      if (subgroup.step==TRUE) {count.subgroup.paths <- count.subgroup.paths - 1
-                                if ((count.subgroup.paths==0)==TRUE) bad <- 0
-                                subgroup.paths <- subgroup.paths[!subgroup.paths %in% paramdrop]
+      if (subgroup.step == TRUE) {count.subgroup.paths <- count.subgroup.paths - 1
+      if ((count.subgroup.paths == 0) == TRUE) bad <- 0
+      subgroup.paths <- subgroup.paths[!subgroup.paths %in% paramdrop]
       }
-      if (subgroup.step==FALSE) {count.group.paths <- count.group.paths - 1
-                                 if ((count.group.paths==0)==TRUE) bad <- 0
-                                 subgroup.paths <- NULL
+      if (subgroup.step == FALSE) {count.group.paths <- count.group.paths - 1
+      if ((count.group.paths == 0) == TRUE) bad <- 0
+      subgroup.paths <- NULL
       }
-      if (post.sub.prune==TRUE) {
+      if (post.sub.prune == TRUE) {
         for (i in 1:nrow(syntax.all)){
           syntax.all.paths <- unlist(strsplit(syntax.all[i,],"\n"))
           syntax.all.paths <- syntax.all.paths[!syntax.all.paths %in% paramdrop]
-          syntax.all[i,]   <- paste(syntax.all.paths,sep="",collapse="\n")
+          syntax.all[i,]   <- paste(syntax.all.paths, sep="", collapse="\n")
         }
       }
     } else {bad <- 0
-            if (subgroup.step==FALSE) subgroup.paths <- NULL
+    if (subgroup.step == FALSE) subgroup.paths <- NULL
     }
-    if (length(y2)<=subjects/2) bad <- 0
+    if (length(y2) <= subjects/2) bad <- 0
   }
-
-
-  if (subgroup.step==FALSE) subgroup.paths <- NULL
-  if (subgroup.step==TRUE)  subgroup.paths <- paste(subgroup.paths,sep="",collapse=",")
-  if (post.sub.prune==TRUE) {syntax <- syntax.all
-                             count.subgroup.paths <- NULL
+  
+  
+  if (subgroup.step == FALSE) subgroup.paths <- NULL
+  if (subgroup.step == TRUE)  subgroup.paths <- paste(subgroup.paths, sep="", collapse=",")
+  if (post.sub.prune == TRUE) {
+    syntax <- syntax.all
+    count.subgroup.paths <- NULL
   }
-
-  list <- list("syntax"               =syntax,
-               "count.group.paths"    =count.group.paths,
-               "count.subgroup.paths" =count.subgroup.paths,
-               "subgroup.paths"       =subgroup.paths)
+  
+  list <- list("syntax"               = syntax,
+               "count.group.paths"    = count.group.paths,
+               "count.subgroup.paths" = count.subgroup.paths,
+               "subgroup.paths"       = subgroup.paths)
   return(list)
 }
 ################################################################################
@@ -789,67 +936,61 @@ addind <- function (done,
                     syntax,
                     data.file,
                     setup.out) {
-
+  
   varnames        = setup.out$varnames
   cutoffind       = setup.out$cutoffind
   candidate.paths = setup.out$candidate.paths
   ar              = setup.out$ar
-
+  
   param = NULL
-
-  while (done==0) { # done <- 0
+  
+  while (done == 0) { # done <- 0
     count.ind.paths     <- 0
     vec.MI              <- character()
     colnames(data.file) <- c(varnames)
-
+    
     fit <- fit.model(varnames  = varnames,
                      syntax    = syntax,
                      data.file = data.file)
-
-    check.npd            <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
+    
+    check.npd            <- any(grepl("error",class(fit)) == TRUE)
+    check.not.identified <- sum(lavInspect(fit,"se")$beta, na.rm = TRUE) == 0
     if (ar == FALSE & count.ind.paths == 0) check.not.identified <- FALSE
-
-    if (check.npd == FALSE & check.not.identified==FALSE) {
-
+    converge             <- lavInspect(fit, "converged")
+    
+    if (check.npd == FALSE & check.not.identified==FALSE & converge == TRUE) {
+      
       singular            <- tryCatch(modindices(fit, op = "~"),error=function(e) e)    # is.matrix
-      check.singular      <- any(grepl("singular",singular)==TRUE)
+      check.singular      <- any(grepl("singular",singular) == TRUE)
+      empty.mi            <- ifelse(nrow(singular) == 0, TRUE, FALSE)
       converge            <- lavInspect(fit, "converged")
       check.error         <- any(grepl("error",class(singular))==TRUE)
-      
       if (converge == FALSE){
         check.fit <- FALSE
       } else if (converge == TRUE){
         check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",
                                                  "srmr","nnfi","cfi"))))
       }
-
     } else {
       check.singular <- TRUE
       converge       <- FALSE
       check.error    <- TRUE
       check.fit      <- TRUE
+      empty.mi       <- TRUE
     }
-
-    if (check.singular==FALSE & converge==TRUE & check.npd == FALSE & check.not.identified==FALSE & check.error == FALSE & check.fit==FALSE) {
-      indMI          <- as.matrix(singular[, 1:4])
+    if (check.singular == FALSE & converge == TRUE & check.npd == FALSE & 
+        check.not.identified == FALSE & check.error == FALSE & 
+        check.fit == FALSE & empty.mi == FALSE) {
+      indMI          <- as.matrix(singular[,c("lhs","op","rhs","mi")])
       indMI          <- as.data.frame(indMI[complete.cases(indMI),])
-      indMI$param    <- paste(indMI$lhs, indMI$op, indMI$rhs, sep="")
+      indMI$param    <- paste0(indMI$lhs, indMI$op, indMI$rhs)
       indMI          <- subset(indMI,param %in% candidate.paths)
       indMI$mi       <- as.numeric(as.character(indMI$mi))
       indparamadd    <- indMI[which.max(indMI$mi),5]
       indparamaddval <- indMI[which.max(indMI$mi),4]
-      indices        <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
-                                          "nnfi","cfi"))
-      rmsea   <- indices[4]
-      srmr    <- indices[5]
-      cfi     <- indices[6]
-      nnfi    <- indices[7]
-      rmseaE  <- ifelse(rmsea<.05, 1, 0)
-      srmrE   <- ifelse(srmr<.05, 1, 0)
-      cfiE    <- ifelse(cfi>.95, 1, 0)
-      nnfiE   <- ifelse(nnfi>.95, 1, 0)
-      excellent <- sum(rmseaE, srmrE, cfiE, nnfiE)
+      indices        <- fitMeasures(fit,c("chisq","df","pvalue",
+                                          "rmsea","srmr", "nnfi","cfi"))
+      excellent <- count_excellent(indices)
       if (excellent >= 2) {
         done   <- 1
         fixfit <- 0
@@ -864,53 +1005,48 @@ addind <- function (done,
           fixfit <- 1
         }
       }
-    } else {done=1;fixfit=0}
+    } else {done = 1; fixfit = 0}
     fit <- fit.model(varnames  = varnames,
                      syntax    = syntax,
                      data.file = data.file)
-
-    check.npd           <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
-    if (check.npd == FALSE & check.not.identified==FALSE) {
-      singular            <- tryCatch(modindices(fit),error=function(e) e)
-      check.singular      <- any(grepl("singular",singular)==TRUE)
-      converge            <- lavInspect(fit, "converged")
-      check.error         <- any(grepl("error",class(singular))==TRUE)
     
+    check.npd            <- any(grepl("error",class(fit)) == TRUE)
+    check.not.identified <- sum(lavInspect(fit,"se")$beta, na.rm = TRUE) == 0
+    
+    if (check.npd == FALSE & check.not.identified == FALSE) {
+      singular            <- tryCatch(modindices(fit), error=function(e) e)
+      check.singular      <- any(grepl("singular", singular) == TRUE)
+      empty.mi            <- ifelse(nrow(singular) == 0, TRUE, FALSE)
+      converge            <- lavInspect(fit, "converged")
+      check.error         <- any(grepl("error", class(singular)) == TRUE)
       if (converge == FALSE){
         check.fit <- FALSE
       } else if (converge == TRUE){
         check.fit <- any(is.na(fitMeasures(fit,c("chisq","df","pvalue","rmsea",
                                                  "srmr","nnfi","cfi"))))
       }
-      
     } else {
       check.singular <- TRUE
       converge       <- FALSE
       check.error    <- TRUE
       check.fit      <- TRUE
+      empty.mi       <- TRUE
     }
-
-    if (converge==TRUE & check.singular==FALSE & check.npd ==FALSE & check.not.identified==FALSE & check.error == FALSE & check.fit==FALSE) {
-      indices   <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
-                                     "nnfi","cfi"))
-      rmsea     <- indices[4]
-      srmr      <- indices[5]
-      cfi       <- indices[6]
-      nnfi      <- indices[7]
-      rmseaE    <- ifelse(rmsea<.05, 1, 0)
-      srmrE     <- ifelse(srmr<.05, 1, 0)
-      cfiE      <- ifelse(cfi>.95, 1, 0)
-      nnfiE     <- ifelse(nnfi>.95, 1, 0)
-      excellent <- sum(rmseaE, srmrE, cfiE, nnfiE)
+    
+    if (converge==TRUE & check.singular==FALSE & check.npd ==FALSE &
+        check.not.identified==FALSE & check.error == FALSE & 
+        check.fit==FALSE & empty.mi == FALSE) {
+      indices   <- fitMeasures(fit,c("chisq","df","pvalue","rmsea",
+                                     "srmr", "nnfi","cfi"))
+      excellent <- count_excellent(indices)
       if (excellent >= 2) {done <- 1; fixfit <- 0}
-    } else {done <- 1;  fixfit <- 0;evaluate <- 0}
-    if (converge==FALSE) done <- 1
-    if (check.singular==TRUE) done <-1
-    if (check.fit==TRUE) done <-1
-    if (check.error==TRUE) done <-1
-    if (check.npd == TRUE) done <- 1
+    } else {done <- 1;  fixfit <- 0; evaluate <- 0}
+    if (converge == FALSE)      done <- 1
+    if (check.singular == TRUE) done <-1
+    if (check.fit == TRUE)      done <-1
+    if (check.error == TRUE)    done <-1
+    if (check.npd == TRUE)      done <- 1
+    if (empty.mi == TRUE)       done <- 1
   }
   if (count.ind.paths==0) evaluate <- 0
   list <- list("evaluate" = evaluate,
@@ -925,25 +1061,25 @@ addind <- function (done,
 evalind <- function (addind.out,
                      setup.out,
                      data.file) {
-
+  
   evaluate  = addind.out$evaluate
   varnames  = setup.out$varnames
   syntax    = addind.out$syntax
   fixfit    = addind.out$fixfit
   vec.MI    = addind.out$vec.MI
-
+  
   op    = NULL
   param = NULL
-
-
+  
+  
   while (evaluate==1) {
     fit <- fit.model(varnames  = varnames,
                      syntax    = syntax,
                      data.file = data.file)
-
+    
     check.npd            <- any(grepl("error",class(fit))==TRUE)
     check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
+    
     if (check.npd == FALSE & check.not.identified==FALSE) {
       singular            <- tryCatch(modindices(fit),error=function(e) e)
       check.singular      <- any(grepl("singular",singular)==TRUE)
@@ -954,7 +1090,7 @@ evalind <- function (addind.out,
       converge       <- FALSE
       check.error    <- TRUE
     }
-
+    
     if (check.singular==FALSE & converge==TRUE & check.npd==FALSE & check.error==FALSE) {
       indlist        <- subset(standardizedSolution(fit),op=="~")
       indlist$param  <- paste(indlist$lhs, indlist$op, indlist$rhs, sep="")
@@ -979,7 +1115,7 @@ evalind <- function (addind.out,
                        data.file=data.file)
       check.npd            <- any(grepl("error",class(fit))==TRUE)
       check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
+      
       if (check.npd == FALSE & check.not.identified==FALSE) {
         singular            <- tryCatch(modindices(fit),error=function(e) e)
         check.singular      <- any(grepl("singular",singular)==TRUE)
@@ -990,23 +1126,16 @@ evalind <- function (addind.out,
         converge       <- FALSE
         check.error    <- TRUE
       }
-
+      
       if (converge==TRUE & check.singular==FALSE & check.npd==FALSE & check.not.identified==FALSE & check.error == FALSE){
-        indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
+        indices      <- fitMeasures(fit,c("chisq","df","pvalue",
+                                          "rmsea","srmr",
                                           "nnfi","cfi"))
-        rmsea     <- indices[4]
-        srmr      <- indices[5]
-        cfi       <- indices[6]
-        nnfi      <- indices[7]
-        rmseaE    <- ifelse(rmsea<.05, 1, 0)
-        srmrE     <- ifelse(srmr<.05, 1, 0)
-        cfiE      <- ifelse(cfi>.95, 1, 0)
-        nnfiE     <- ifelse(nnfi>.95, 1, 0)
-        excellent <- sum(rmseaE, srmrE, cfiE, nnfiE)
-        if (excellent >= 2) fixfit <-0 else fixfit <-1
+        excellent <- count_excellent(indices)
+        fixfit    <- ifelse(excellent >= 2, 0, 1)
         # if it doesn't converge
       }
-      if (converge==FALSE | check.singular==TRUE) {evaluate <- 0; fixfit <- 0}
+      if (converge == FALSE | check.singular == TRUE) {evaluate <- 0; fixfit <- 0}
     }
   }
   list <- list("fixfit" = fixfit,
@@ -1019,74 +1148,66 @@ evalind <- function (addind.out,
 fixfitind <- function (setup.out,
                        evalind.out,
                        data.file) {
-
+  
   fixfit          = evalind.out$fixfit
   varnames        = setup.out$varnames
   syntax          = evalind.out$syntax
   candidate.paths = setup.out$candidate.paths
   ar              = setup.out$ar
-
+  
   param = NULL
-
-  while (fixfit==1) {
+  
+  while (fixfit == 1) {
     fit <- fit.model(varnames  = varnames,
                      syntax    = syntax,
                      data.file = data.file)
-
-    check.npd            <- any(grepl("error",class(fit))==TRUE)
+    
+    check.npd            <- any(grepl("error", class(fit)) == TRUE)
     ## only for fixfit, temporary solution
-    if (ar==FALSE){
-      check.se.zero   <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-      check.beta.zero <- sum(lavInspect(fit,"est")$beta,na.rm=TRUE)==0
+    if (ar == FALSE){
+      check.se.zero   <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+      check.beta.zero <- sum(lavInspect(fit, "est")$beta, na.rm = TRUE) == 0
       if (check.beta.zero == FALSE & check.se.zero == TRUE) {
         check.not.identified <- TRUE
       } else check.not.identified <- FALSE
-    } else check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
-    if (check.npd == FALSE & check.not.identified==FALSE) {
-      singular            <- tryCatch(modindices(fit),error=function(e) e)
-      check.singular      <- any(grepl("singular",singular)==TRUE)
+    } else check.not.identified <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+    
+    if (check.npd == FALSE & check.not.identified == FALSE) {
+      singular            <- tryCatch(modindices(fit), error = function(e) e)
+      check.singular      <- any(grepl("singular", singular) == TRUE)
       converge            <- lavInspect(fit, "converged")
-      check.error         <- any(grepl("error",class(singular))==TRUE)
+      check.error         <- any(grepl("error", class(singular)) == TRUE)
     } else {
       check.singular <- TRUE
       converge       <- FALSE
       check.error    <- FALSE
     }
-
-    if (check.singular == FALSE & converge == TRUE & check.npd==FALSE & check.not.identified==FALSE & check.error == FALSE) {
-      indMI        <- as.matrix(singular[singular$op == "~",])[,c("lhs","op","rhs","mi")]
+    
+    if (check.singular == FALSE & converge == TRUE & check.npd == FALSE & check.not.identified == FALSE & check.error == FALSE) {
+      indMI        <- as.matrix(singular[singular$op == "~", ])[,c("lhs","op","rhs","mi")]
       indMI        <- as.data.frame(indMI[complete.cases(indMI),])
-      indMI$param  <- paste(indMI$lhs, indMI$op, indMI$rhs, sep="")
+      indMI$param  <- paste0(indMI$lhs, indMI$op, indMI$rhs)
       indMI        <- subset(indMI,param %in% candidate.paths)
       indMI$mi     <- as.numeric(as.character(indMI$mi))
       indparamadd  <- indMI[which.max(indMI$mi),5]
-      syntax       <- paste(syntax,as.name(indparamadd),sep="\n")
-      fit          <- fit.model(varnames = varnames,
-                                syntax = syntax,
+      syntax       <- paste(syntax, as.name(indparamadd), sep = "\n")
+      fit          <- fit.model(varnames  = varnames,
+                                syntax    = syntax,
                                 data.file = data.file)
       converge       <- lavInspect(fit, "converged")
-      singular       <- tryCatch(modindices(fit),error=function(e) e)
-      check.singular <- any(grepl("singular",singular)==TRUE)
-      check.error    <- any(grepl("error",class(singular))==TRUE)
-      if (check.singular==FALSE & converge==TRUE & check.error == FALSE) {
-        indices      <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
-                                          "nnfi","cfi"))
-        rmsea  <- indices[4]
-        srmr   <- indices[5]
-        cfi    <- indices[6]
-        nnfi   <- indices[7]
+      singular       <- tryCatch(modindices(fit), error = function(e) e)
+      check.singular <- any(grepl("singular", singular) == TRUE)
+      check.error    <- any(grepl("error", class(singular)) == TRUE)
+      if (check.singular == FALSE & converge == TRUE & check.error == FALSE) {
+        indices      <- fitMeasures(fit,c("chisq", "df", "pvalue",
+                                          "rmsea", "srmr", "nnfi", "cfi"))
         df     <- indices[2]
-        rmseaE <- ifelse(rmsea<.05, 1, 0)
-        srmrE  <- ifelse(srmr<.05, 1, 0)
-        cfiE   <- ifelse(cfi>.95, 1, 0)
-        nnfiE  <- ifelse(nnfi>.95, 1, 0)
         if (df == 0) fixfit <- 0
-        excellent <- sum(rmseaE, srmrE, cfiE, nnfiE)
-        if (excellent >= 2) fixfit<-0 else fixfit<-1
+        excellent <- count_excellent(indices)
+        fixfit    <- ifelse(excellent >= 2, 0, 1)
       }
       # if it doesn't converge
-      if (converge==FALSE | check.singular == TRUE | check.error == TRUE) fixfit      <- 0
+      if (converge == FALSE | check.singular == TRUE | check.error == TRUE) fixfit <- 0
     } else fitfix <- 0
   }
   return(syntax)
@@ -1098,7 +1219,7 @@ final.fit <- function(setup.out,
                       fixfitind.out,
                       data.file,
                       k){
-
+  
   varnames   = setup.out$varnames
   lvarnames  = setup.out$lvarnames
   syntax     = fixfitind.out
@@ -1107,149 +1228,151 @@ final.fit <- function(setup.out,
   plot.names = setup.out$plot.names
   x          = setup.out$x
   y          = setup.out$y
-  plots      = setup.out$plots
   fitted     = setup.out$fitted
   individual = setup.out$individual
   out        = setup.out$out
   plot       = setup.out$plot
   agg        = setup.out$agg
-
+  
   op = NULL
-
+  
   fit <- fit.model(varnames  = varnames,
                    syntax    = syntax,
                    data.file = data.file)
-
-  check.npd            <- any(grepl("error",class(fit))==TRUE)
-  check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
-  if (check.npd == FALSE & check.not.identified==FALSE) {
-    singular            <- tryCatch(modindices(fit),error=function(e) e)
-    check.singular      <- any(grepl("singular",singular)==TRUE)
+  
+  check.npd            <- any(grepl("error", class(fit)) == TRUE)
+  check.not.identified <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  
+  if (check.npd == FALSE & check.not.identified == FALSE) {
+    singular            <- tryCatch(modindices(fit), error = function(e) e)
+    check.singular      <- any(grepl("singular", singular) == TRUE)
     converge            <- lavInspect(fit, "converged")
-    check.error         <- any(grepl("error",class(singular))==TRUE)
+    check.error         <- any(grepl("error", class(singular)) == TRUE)
   } else {
     check.singular <- TRUE
     converge       <- FALSE
     check.error    <- TRUE
   }
-  if (converge==TRUE) last.converge <- TRUE
-
-
+  if (converge == TRUE) last.converge <- TRUE
+  
+  
   ## update code here to remove last element
-  if (converge==FALSE | check.error == TRUE) {
+  if (converge == FALSE | check.error == TRUE) {
     last.converge <- FALSE
     syntax <- unlist(strsplit(syntax, "[\n]"))
     syntax <- syntax[-length(syntax)]
-    syntax <- paste(syntax,sep="",collapse="\n")
+    syntax <- paste(syntax, sep = "", collapse = "\n")
     fit    <- fit.model(varnames  = varnames,
                         syntax    = syntax,
                         data.file = data.file)
-
-    check.npd            <- any(grepl("error",class(fit))==TRUE)
-    check.not.identified <- sum(lavInspect(fit,"se")$beta,na.rm=TRUE)==0
-
-    if (check.npd == FALSE & check.not.identified==FALSE) {
-      singular            <- tryCatch(modindices(fit),error=function(e) e)
-      check.singular      <- any(grepl("singular",singular)==TRUE)
+    
+    check.npd            <- any(grepl("error", class(fit)) == TRUE)
+    if (check.npd == F) {
+      check.not.identified <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+    } else check.not.identifed = T
+    
+    if (check.npd == FALSE & check.not.identified == FALSE) {
+      singular            <- tryCatch(modindices(fit), error = function(e) e)
+      check.singular      <- any(grepl("singular", singular) == TRUE)
       converge            <- lavInspect(fit, "converged")
-      check.error         <- any(grepl("error",class(singular))==TRUE)
+      check.error         <- any(grepl("error", class(singular)) == TRUE)
     } else {
       check.singular <- TRUE
       converge       <- FALSE
       check.error    <- TRUE
     }
   }
-
-  ind.fit <- matrix(NA,nrow=1,ncol=9)
-  if (converge==TRUE & check.singular==FALSE) {
-    indices <- fitMeasures(fit,c("chisq","df","pvalue","rmsea","srmr",
-                                 "nnfi","cfi"))
-    rmsea  <- indices[4]
-    srmr   <- indices[5]
-    cfi    <- indices[6]
-    nnfi   <- indices[7]
-    chisq  <- indices[1]
-    df     <- indices[2]
-    pval   <- indices[3]
+  
+  ind.fit <- matrix(NA, nrow = 1, ncol = 9)
+  if (converge==TRUE & check.singular == FALSE) {
+    indices <- fitMeasures(fit,c("chisq","df","pvalue","rmsea",
+                                 "srmr", "nnfi","cfi"))
     # insert indfit
-    ind.fit[1,2] <- round(chisq,digits=4)
-    ind.fit[1,3] <- df
-    ind.fit[1,4] <- round(pval, digits=4)
-    ind.fit[1,5] <- round(rmsea,digits=4)
-    ind.fit[1,6] <- round(srmr, digits=4)
-    ind.fit[1,7] <- round(nnfi, digits=4)
-    ind.fit[1,8] <- round(cfi,  digits=4)
-    if (last.converge==FALSE) {ind.fit[1,9] <- "last known convergence"
-    } else {ind.fit[1,9] <- "converged normally"}
-
-    indlist              <- subset(standardizedSolution(fit),op=="~")
-    indlist$param        <- paste(indlist$lhs, indlist$op, indlist$rhs, sep="")
-    indlist              <- indlist[complete.cases(indlist),]
+    ind.fit[1,2] <- round(indices[1], digits = 4)
+    ind.fit[1,3] <- indices[2]
+    ind.fit[1,4] <- round(indices[3], digits = 4)
+    ind.fit[1,5] <- round(indices[4], digits = 4)
+    ind.fit[1,6] <- round(indices[5], digits = 4)
+    ind.fit[1,7] <- round(indices[7], digits = 4)
+    ind.fit[1,8] <- round(indices[6], digits = 4)
+    if (last.converge == FALSE) {
+      ind.fit[1,9] <- "last known convergence"
+    } else {
+      ind.fit[1,9] <- "converged normally"
+    }
+    
+    indlist              <- subset(standardizedSolution(fit), op == "~")
+    indlist$param        <- paste0(indlist$lhs, indlist$op, indlist$rhs)
+    indlist              <- indlist[complete.cases(indlist), ]
     indlist              <- as.data.frame(indlist)
-    indsubject           <- matrix(k,nrow=(nrow(indlist)), ncol=1)
+    indsubject           <- matrix(k, nrow = (nrow(indlist)), ncol = 1)
     colnames(indsubject) <- c("subject")
     indlist <- cbind(indsubject, indlist)
     #creating individual-level beta matrices
-    individual.paths     <- matrix(0,nrow=(rois*2), ncol=(rois*2))
-    individual.SEs       <- matrix(0,nrow=(rois*2), ncol=(rois*2))
-    indlist$row          <- substring(indlist$lhs,4)
-    indlist$col          <- substring(indlist$rhs,4)
+    individual.paths     <- matrix(0, nrow = (rois*2), ncol = (rois*2))
+    individual.SEs       <- matrix(0, nrow = (rois*2), ncol = (rois*2))
+    indlist$row          <- substring(indlist$lhs, 4)
+    indlist$col          <- substring(indlist$rhs, 4)
     indrows              <- indlist$row
     indcols              <- indlist$col
     ## multiple steps to recode column names to appropriate numerics
-
-    indcols     <- as.numeric(recoderFunc(indcols,y,x))
-    indrows     <- as.numeric(recoderFunc(indrows,y,x))
-
+    
+    indcols     <- as.numeric(recoderFunc(indcols, y, x))
+    indrows     <- as.numeric(recoderFunc(indrows, y, x))
+    
     indbetas    <- as.numeric(as.character(indlist$est.std))
     indSEs      <- as.numeric(as.character(indlist$se))
     indelements <- nrow(indlist)
-
+    
     for (s in 1:indelements){
       individual.paths[indrows[s], indcols[s]] <- indbetas[s]
     }
-
+    
     for (q in 1:indelements){
       individual.SEs[indrows[q], indcols[q]] <- indSEs[q]
     }
-
-    individual.paths <- round(individual.paths,digits=4)
+    
+    individual.paths <- round(individual.paths, digits = 4)
     individual.paths[is.na(individual.paths)] <- 0
-
+    
     individual.SEs <- round(individual.SEs,digits=4)
     individual.SEs[is.na(individual.SEs)] <- 0
-
+    
     individual.paths.all         <- individual.paths[(rois+1):(rois*2),1:(rois*2)]
     rownames(individual.paths.all) <- varnames[(rois+1):(rois*2)]
     colnames(individual.paths.all) <- varnames[1:(rois*2)]
     individual.SEs             <- individual.SEs[(rois+1):(rois*2),1:(rois*2)]
     rownames(individual.SEs)   <- varnames[(rois+1):(rois*2)]
     colnames(individual.SEs)   <- varnames[1:(rois*2)]
-
-    if (agg==TRUE) {
-      write.csv(individual.paths.all,file=file.path(out,"allBetas.csv"),row.names=TRUE)
-      write.csv(individual.SEs,file=file.path(out,"allStdErrors.csv"),row.names=TRUE)
+    
+    if (agg == TRUE) {
+      write.csv(individual.paths.all, file = file.path(out,"allBetas.csv"),     row.names = TRUE)
+      write.csv(individual.SEs,       file = file.path(out,"allStdErrors.csv"), row.names = TRUE)
     } else {
-      write.csv(individual.paths.all,file=file.path(individual,paste(trackparts[k,2],"Betas.csv",sep="")),row.names=TRUE)
-      write.csv(individual.SEs,file=file.path(individual,paste(trackparts[k,2],"StdErrors.csv",sep="")),row.names=TRUE)
+      write.csv(individual.paths.all, file = file.path(individual, paste0(trackparts[k,2],"Betas.csv")),     row.names = TRUE)
+      write.csv(individual.SEs,       file = file.path(individual, paste0(trackparts[k,2],"StdErrors.csv")), row.names = TRUE)
     }
-
-    if (plot==TRUE){
+    
+    if (plot == TRUE){
       individual.paths.t     <- t(individual.paths)
       Lagged                 <- individual.paths.t[1:(rois),(rois+1):(rois*2)]
       Contemporaneous        <- individual.paths.t[(rois+1):(rois*2),(rois+1):(rois*2)]
       eLagged                <- W2E(Lagged)
       eContemporaneous       <- W2E(Contemporaneous)
-      isLagged               <- c(rep(TRUE,nrow(eLagged)), rep(FALSE,nrow(eContemporaneous)))
-      plotind                <- file.path(individual,paste(trackparts[k,2],"Plot.pdf",sep=""))
-      if (agg==TRUE) plotind <- file.path(out,"summaryPathsPlot.pdf")
+      isLagged               <- c(rep(TRUE, nrow(eLagged)), rep(FALSE, nrow(eContemporaneous)))
+      # if an element is repeated, change its curve value
+      curve                  <- rep(1, length(isLagged))
+      curve[which(duplicated(rbind(eLagged, eContemporaneous)[,1:2]))] <- .5
+      plotind                <- file.path(individual,paste0(trackparts[k,2],"Plot.pdf"))
+      if (agg == TRUE) {
+        plotind <- file.path(out, "summaryPathsPlot.pdf")
+      }
       pdf(plotind)
-      tryCatch(qgraph(rbind(eLagged,eContemporaneous),
+      tryCatch(qgraph(rbind(eLagged, eContemporaneous),
                       layout              = "circle",
                       lty                 = ifelse(isLagged,2, 1),
                       edge.labels         = F,
-                      curve               = TRUE,
+                      curve               = curve,
                       fade                = FALSE,
                       posCol              = "red",
                       negCol              = "blue",
@@ -1260,15 +1383,15 @@ final.fit <- function(setup.out,
       dev.off()
     }
   }
-  if (converge==FALSE) {
+  if (converge == FALSE) {
     ind.fit[1,9] <- "nonconvergence"
     indlist      <- data.frame()
   }
-  if (check.singular==TRUE) {
+  if (check.singular == TRUE) {
     ind.fit[1,9] <- "computationally singular"
     indlist      <- data.frame()
   }
-  if (check.error==TRUE) {
+  if (check.error == TRUE) {
     ind.fit[1,9] <- "error"
     indlist      <- data.frame()
   }
@@ -1282,7 +1405,7 @@ final.fit <- function(setup.out,
 indsem.internal <- function(setup.out,
                             evalbetassub.out,
                             evalbetas.out){
-
+  
   subjects         = setup.out$subjects
   varnames         = setup.out$varnames
   trackparts       = setup.out$trackparts
@@ -1292,94 +1415,96 @@ indsem.internal <- function(setup.out,
   plot             = setup.out$plot
   modularity       = evalbetassub.out$modularity
   subgroup         = setup.out$subgroup
-
+  
   all.elements      <- data.frame()
   all.fit           <- matrix(NA, nrow=subjects, ncol=9)
   all.syntax        <- matrix(NA, nrow=subjects,ncol=4)
   colnames(all.fit) <- c("subject", "chisq", "df", "pval",
                          "rmsea", "srmr", "nnfi", "cfi", "status")
-
+  
   files            <- list.files(data, full.names=TRUE)
-
-  all.diff.subgroups <- length(unique(evalbetassub.out$syntax.sub[,1]))==subjects
-
-  if (subgroup==TRUE & all.diff.subgroups==FALSE){
-    all <- unlist(strsplit(evalbetassub.out$final.syntax[,2][1],"\n"))
-    sub <- unlist(strsplit(evalbetassub.out$sub.paths[,2][1],","))
-    all <- head(all,-length(sub))
-    all <- paste(all,sep="",collapse="\n")
-
-    sub.info <- as.data.frame(evalbetassub.out$syntax.sub,stringsAsFactors=FALSE)
-    sorted   <- sub.info[order(sub.info$files),]
+  
+  all.diff.subgroups <- length(unique(evalbetassub.out$syntax.sub[,1])) == subjects
+  
+  if (subgroup == TRUE & all.diff.subgroups == FALSE){
+    all <- unlist(strsplit(evalbetassub.out$final.syntax[,2][1], "\n"))
+    # if subgroup paths are empty, then just leave final syntax as above "all"
+    if (is.na(evalbetassub.out$sub.paths[,2][1]) == FALSE){
+      sub <- unlist(strsplit(evalbetassub.out$sub.paths[,2][1],","))
+      all <- head(all, -length(sub))
+      all <- paste(all, sep = "", collapse = "\n")
+    }
+    sub.info <- as.data.frame(evalbetassub.out$syntax.sub, stringsAsFactors = FALSE)
+    sorted   <- sub.info[order(sub.info$files), ]
   }
-
-  if (subgroup==TRUE & all.diff.subgroups==TRUE){
+  
+  if (subgroup == TRUE & all.diff.subgroups == TRUE){
     all      <- evalbetassub.out$final.syntax[,2][1]
-    sub.info <- as.data.frame(evalbetassub.out$syntax.sub,stringsAsFactors=FALSE)
-    sorted   <- sub.info[order(sub.info$files),]
+    sub.info <- as.data.frame(evalbetassub.out$syntax.sub, stringsAsFactors = FALSE)
+    sorted   <- sub.info[order(sub.info$files), ]
   }
-
-  if (subgroup==FALSE){
+  
+  if (subgroup == FALSE){
     all <- evalbetas.out$syntax
   }
-
+  
   if (is.null(evalbetas.out)){
     all <- setup.out$syntax
   }
-
+  
   for (k in 1:subjects) {
-
+    
     writeLines(paste("individual-level search, subject", k))
-
-    if (subgroup==TRUE) {
+    
+    if (subgroup == TRUE) {
       syntax    <- sorted[k,3]
-
+      
       data.file <- read.data(file   = sorted[k,2],
                              sep    = sep,
                              header = header)
-
-      if (is.na(sorted[k,1])==T) syntax <- all # subgroup assignment check
-
+      
+      if (is.na(sorted[k,1]) == T) syntax <- all # subgroup assignment check
+      
     } else {
-
+      
       data.file <- read.data(file   = files[k],
                              sep    = sep,
                              header = header)
       syntax    <- all
     }
-
+    
     colnames(data.file) <- c(varnames)
-
+    
     addind.out <- addind(done            = 0,
                          evaluate        = 1,
                          syntax          = syntax,
                          data.file       = data.file,
                          setup.out       = setup.out)
-
+    
     evalind.out <- evalind(addind.out = addind.out,
                            setup.out  = setup.out,
                            data.file  = data.file)
-
+    
     fixfitind.out <- fixfitind(setup.out   = setup.out,
                                evalind.out = evalind.out,
                                data.file   = data.file)
-
+    
     final.fit.out <- final.fit(setup.out     = setup.out,
                                fixfitind.out = fixfitind.out,
                                data.file     = data.file,
                                k             = k)
-
-    all.elements    <- rbind(all.elements,final.fit.out$ind.elements)
+    
+    all.elements    <- rbind(all.elements, final.fit.out$ind.elements)
     all.fit[k,]     <- as.matrix(final.fit.out$ind.fit)
     all.syntax[k,3] <- as.matrix(final.fit.out$syntax)
     all.syntax[k,1] <- k
   }
-
+  
   all.fit[,1]    <- trackparts[,2]
   all.syntax[,2] <- files
   all.syntax[,4] <- all
-  colnames(all.syntax) <- c("subject","files","syntax.ind","syntax.group")
-
+  colnames(all.syntax) <- c("subject", "files", "syntax.ind", "syntax.group")
+  
   if (subgroup==TRUE){
     colnames(sorted)[3] <- c("syntax.sub")
     #add code here to arrange group, subgroup, and individual-level paths
@@ -1388,10 +1513,11 @@ indsem.internal <- function(setup.out,
     modularity         <- append(modularity, rep("",nrow(all.fit)-1))
     all.fit            <- cbind(all.fit,modularity)
     colnames(all.fit) <- c("subject", "chisq", "df", "pval",
-                           "rmsea", "srmr", "nnfi", "cfi", "status","subgroup","modularity")
-
+                           "rmsea", "srmr", "nnfi", "cfi", 
+                           "status", "subgroup", "modularity")
+    
   } else all.syntax.sub <- as.data.frame(all.syntax)
-
+  
   list <- list("all.elements" = all.elements,
                "all.fit"      = all.fit,
                "all.syntax"   = all.syntax.sub,
@@ -1399,11 +1525,10 @@ indsem.internal <- function(setup.out,
   return(list)
 }
 
-
 ## sorts and organizes information, prints summary files
 wrapup <- function(indsem.internal.out,
                    setup.out){
-
+  
   all.elements = indsem.internal.out$all.elements
   all.fit      = indsem.internal.out$all.fit
   all.syntax   = indsem.internal.out$all.syntax
@@ -1412,7 +1537,6 @@ wrapup <- function(indsem.internal.out,
   out          = setup.out$out
   plot.names   = setup.out$plot.names
   subjects     = setup.out$subjects
-  plots        = setup.out$plots
   x            = setup.out$x
   y            = setup.out$y
   header       = setup.out$header
@@ -1422,13 +1546,13 @@ wrapup <- function(indsem.internal.out,
   plot         = setup.out$plot
   agg          = setup.out$agg
   subgroup     = setup.out$subgroup
-
+  
   present = NULL
   sig     = NULL
   est.std = NULL
   param   = NULL
   membership = NULL
-
+  
   if (subgroup == TRUE & all.diff.sub == FALSE){
     all.merged.sub.final <- data.frame()
     sub.final            <- character()
@@ -1436,136 +1560,139 @@ wrapup <- function(indsem.internal.out,
     sub.fullsub.paths    <- character()
     all.merged           <- merge(all.elements,all.syntax,by="subject")
     n.subgroups          <- length(unique(all.merged$membership))
-
-      for (p in 1:n.subgroups){
-      all.merged.sub         <- subset(all.merged,membership==p)
-      if (nrow(all.merged.sub)!=0){
-      ## add code to add column for "group","subgroup","individual"
-      sub.subjects           <- length(unique(all.merged.sub$files))
-      all.merged.sub$est.std <- as.numeric(as.character(all.merged.sub$est.std))
-      all.merged.sub         <- transform(all.merged.sub,mean.beta = (ave(est.std, param, FUN=sum))/sub.subjects)
-      all.merged.sub$sig     <- ifelse(abs(all.merged.sub$z)>1.96, 1, 0)
-      all.merged.sub$present <- ifelse(all.merged.sub$sig<2,1,0)
-      all.merged.sub         <- transform(all.merged.sub, sum.sig = ave(sig, param, FUN=sum))
-      all.merged.sub         <- transform(all.merged.sub, count   = ave(present, param, FUN=sum))
-
-      if (sub.subjects != 1){
-        ## using syntax to identify group, subgroup, individual level paths
-        group    <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.group)),"\n"))
-        sub      <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.sub)),"\n"))
-        ind      <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.ind)),"\n"))
-        ind      <- unique(subset(ind, !ind %in% sub))
-        sub      <- subset(sub, !sub %in% group)
-        sub.fullsub.paths <- append(sub.fullsub.paths,sub)
-      } else {
-
-        # if there's only one person in the subgroup, then the ind paths are the sub paths
-        # only used to determine whether or not a subgroup path is promoted to a group path
-        group    <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.group)),"\n"))
-        ind      <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.ind)),"\n"))
-        ind      <- subset(ind, !ind %in% group)
-        sub      <- ind
-        sub.ind.paths <- append(sub.ind.paths,sub)
-      }
-
-      label  <- c(rep("group",length(group)),rep("subgroup",length(sub)),rep("ind",length(ind)))
-      color  <- c(rep("black",length(group)),rep("green3",length(sub)),rep("gray50",length(ind)))
-      param  <- c(group,sub,ind)
-      levels <- data.frame(param,label,color)
-
-      all.merged.sub       <- merge(all.merged.sub,levels,by="param")
-      all.merged.sub.final <- rbind(all.merged.sub.final,all.merged.sub)
-      sub.final            <- append(sub.final,sub)
+    
+    for (p in 1:n.subgroups){
+      all.merged.sub         <- subset(all.merged,membership == p)
+      if (nrow(all.merged.sub) != 0){
+        ## add code to add column for "group","subgroup","individual"
+        sub.subjects           <- length(unique(all.merged.sub$files))
+        all.merged.sub$est.std <- as.numeric(as.character(all.merged.sub$est.std))
+        all.merged.sub         <- transform(all.merged.sub, mean.beta = (ave(est.std, param, FUN = sum))/sub.subjects)
+        all.merged.sub$sig     <- ifelse(abs(all.merged.sub$z) > 1.96, 1, 0)
+        all.merged.sub$present <- ifelse(all.merged.sub$sig < 2, 1, 0)
+        all.merged.sub         <- transform(all.merged.sub, sum.sig = ave(sig, param, FUN = sum))
+        all.merged.sub         <- transform(all.merged.sub, count   = ave(present, param, FUN = sum))
+        
+        if (sub.subjects != 1){
+          ## using syntax to identify group, subgroup, individual level paths
+          group    <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.group)), "\n"))
+          sub      <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.sub)), "\n"))
+          ind      <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.ind)), "\n"))
+          ind      <- unique(subset(ind, !ind %in% sub))
+          sub      <- subset(sub, !sub %in% group)
+          sub.fullsub.paths <- append(sub.fullsub.paths,sub)
+        } else {
+          
+          # if there's only one person in the subgroup, then the ind paths are the sub paths
+          # only used to determine whether or not a subgroup path is promoted to a group path
+          group    <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.group)),"\n"))
+          ind      <- unlist(strsplit(as.vector(unique(all.merged.sub$syntax.ind)),"\n"))
+          ind      <- subset(ind, !ind %in% group)
+          sub      <- ind
+          sub.ind.paths <- append(sub.ind.paths, sub)
+        }
+        
+        label  <- c(rep("group", length(group)), rep("subgroup", length(sub)), rep("ind", length(ind)))
+        color  <- c(rep("black", length(group)), rep("green3", length(sub)),   rep("gray50", length(ind)))
+        param  <- c(group, sub, ind)
+        levels <- data.frame(param, label, color)
+        
+        all.merged.sub       <- merge(all.merged.sub, levels, by = "param")
+        all.merged.sub.final <- rbind(all.merged.sub.final, all.merged.sub)
+        sub.final            <- append(sub.final, sub)
       }
     }
-
+    
     ## this portion checks to see if there is a subgroup path that exists for each subgroup
     ## if it does, it bumps it up to the group level
     a            <- table(sub.final)
-    sub.to.group <- names(a[a==n.subgroups])
-    sub.stay.sub <- names(a[a!=n.subgroups])
+    sub.to.group <- names(a[a == n.subgroups])
+    sub.stay.sub <- names(a[a != n.subgroups])
     all.merged.sub.final$label[all.merged.sub.final$param %in% sub.to.group] <- "group"
     all.merged.sub.final$color[all.merged.sub.final$param %in% sub.to.group] <- "black"
-
+    
     ## code to create subgroup-level plots and matrices
     for (p in 1:n.subgroups){
-      all.merged.sub   <- subset(all.merged.sub.final,membership==p)
-      if (nrow(all.merged.sub)!=0){
-      sub.subjects     <- length(unique(all.merged.sub$files))
-      sub.paths        <- matrix(0,nrow=(rois*2), ncol=(rois*2))
-      sub.colors       <- matrix(NA,nrow=(rois*2), ncol=(rois*2))
-      elements         <- nrow(all.merged.sub)
-      rows             <- substring(all.merged.sub$lhs, 4)
-      cols             <- substring(all.merged.sub$rhs, 4)
-      cols             <- as.numeric(recoderFunc(cols,y,x))
-      rows             <- as.numeric(recoderFunc(rows,y,x))
-      counts           <- as.numeric(all.merged.sub$count)
-      beta.weights     <- as.numeric(all.merged.sub$mean.beta)
-      colors           <- as.character(all.merged.sub$color)
-      for (m in 1:elements){
-        sub.paths [rows[m], cols[m]] <- counts[m]
-        sub.colors[rows[m], cols[m]] <- colors[m]
-      }
-      sub.paths <- round(sub.paths,digits=4)
-      sub.paths[is.na(sub.paths)] <- 0
-      sub.paths.all <- sub.paths[(rois+1):(rois*2),(1:(rois*2))]
-      rownames(sub.paths.all) <- varnames[(rois+1):(rois*2)]
-      colnames(sub.paths.all) <- varnames[1:(rois*2)]
-
-      if (sub.subjects != 1)  {
-        write.csv(sub.paths.all, file=file.path(subgroup.dir,paste("subgroup",p,"PathCountsMatrix.csv",sep="")), row.names=TRUE)
-      }
-
-      if (plot==TRUE & sub.subjects != 1){
-        sub.paths.t      <- t(sub.paths)
-        sub.paths.t      <- sub.paths.t/sub.subjects
-        Lagged           <- sub.paths.t[1:(rois),(rois+1):(rois*2)]
-        Contemporaneous  <- sub.paths.t[(rois+1):(rois*2),(rois+1):(rois*2)]
-        eLagged          <- W2E(Lagged)
-        eContemporaneous <- W2E(Contemporaneous)
-        sub.colors.t     <- t(sub.colors)
-        colorLagged           <- sub.colors.t[1:(rois),(rois+1):(rois*2)]
-        colorContemporaneous  <- sub.colors.t[(rois+1):(rois*2),(rois+1):(rois*2)]
-        color.list       <- c(colorLagged,colorContemporaneous)
-        color.list       <- color.list[!is.na(color.list)]
-        isLagged         <- c(rep(TRUE,nrow(eLagged)), rep(FALSE,nrow(eContemporaneous)))
-        plotsub         <- file.path(subgroup.dir,paste("subgroup",p,"Plot.pdf",sep=""))
-        pdf(plotsub)
-        tryCatch(qgraph(rbind(eLagged,eContemporaneous),
-                        layout              = "circle",
-                        lty                 = ifelse(isLagged,2, 1),
-                        edge.labels         = FALSE,
-                        curve               = TRUE,
-                        labels              = plot.names,
-                        edge.color          = color.list,
-                        fade                = FALSE,
-                        label.cex           = 3,
-                        edge.label.cex      = 1.5,
-                        edge.label.position = .3),error=function(e) e)
-        dev.off()
-      }
+      all.merged.sub   <- subset(all.merged.sub.final, membership == p)
+      if (nrow(all.merged.sub) !=0){
+        sub.subjects     <- length(unique(all.merged.sub$files))
+        sub.paths        <- matrix(0, nrow = (rois*2), ncol = (rois*2))
+        sub.colors       <- matrix(NA, nrow = (rois*2), ncol = (rois*2))
+        elements         <- nrow(all.merged.sub)
+        rows             <- substring(all.merged.sub$lhs, 4)
+        cols             <- substring(all.merged.sub$rhs, 4)
+        cols             <- as.numeric(recoderFunc(cols, y, x))
+        rows             <- as.numeric(recoderFunc(rows, y, x))
+        counts           <- as.numeric(all.merged.sub$count)
+        beta.weights     <- as.numeric(all.merged.sub$mean.beta)
+        colors           <- as.character(all.merged.sub$color)
+        for (m in 1:elements){
+          sub.paths [rows[m], cols[m]] <- counts[m]
+          sub.colors[rows[m], cols[m]] <- colors[m]
+        }
+        sub.paths <- round(sub.paths,digits = 4)
+        sub.paths[is.na(sub.paths)] <- 0
+        sub.paths.all <- sub.paths[(rois+1):(rois*2),(1:(rois*2))]
+        rownames(sub.paths.all) <- varnames[(rois+1):(rois*2)]
+        colnames(sub.paths.all) <- varnames[1:(rois*2)]
+        
+        if (sub.subjects != 1)  {
+          write.csv(sub.paths.all, file = file.path(subgroup.dir, paste0("subgroup", p, "PathCountsMatrix.csv")), row.names = TRUE)
+        }
+        
+        if (plot == TRUE & sub.subjects != 1){
+          sub.paths.t      <- t(sub.paths)
+          sub.paths.t      <- sub.paths.t/sub.subjects
+          Lagged           <- sub.paths.t[1:(rois),(rois+1):(rois*2)]
+          Contemporaneous  <- sub.paths.t[(rois+1):(rois*2),(rois+1):(rois*2)]
+          eLagged          <- W2E(Lagged)
+          eContemporaneous <- W2E(Contemporaneous)
+          sub.colors.t     <- t(sub.colors)
+          colorLagged           <- sub.colors.t[1:(rois),(rois+1):(rois*2)]
+          colorContemporaneous  <- sub.colors.t[(rois+1):(rois*2),(rois+1):(rois*2)]
+          color.list       <- c(colorLagged,colorContemporaneous)
+          color.list       <- color.list[!is.na(color.list)]
+          isLagged         <- c(rep(TRUE,nrow(eLagged)), rep(FALSE,nrow(eContemporaneous)))
+          # if an element is repeated, change its curve value
+          curve            <- rep(1, length(isLagged))
+          curve[which(duplicated(rbind(eLagged, eContemporaneous)[,1:2]))] <- .5
+          plotsub          <- file.path(subgroup.dir,paste0("subgroup",p,"Plot.pdf"))
+          pdf(plotsub)
+          tryCatch(qgraph(rbind(eLagged,eContemporaneous),
+                          layout              = "circle",
+                          lty                 = ifelse(isLagged,2, 1),
+                          edge.labels         = FALSE,
+                          curve               = curve,
+                          labels              = plot.names,
+                          edge.color          = color.list,
+                          fade                = FALSE,
+                          label.cex           = 3,
+                          edge.label.cex      = 1.5,
+                          edge.label.position = .3),error=function(e) e)
+          dev.off()
+        }
       }
     }
-
+    
     ## quick fix to make sure subgroup paths are represented as subgroup,
     ## not individual. this could happen if it's subgroup for some and individual for others
     all.elements.final       <- all.merged.sub.final
     all.elements.final$label <- as.character(all.elements.final$label)
-
+    
     ## adjust count of paths, prepare for summary output
-    a1 <- aggregate(present ~ label + param + membership,data=all.elements.final,sum)
-    a1$label <- ifelse(a1$label=='subgroup',
-                       paste(a1$label,a1$membership,sep=""),as.character(a1$label))
-    a2 <- aggregate(present~param+label,data=a1,sum)
-    a2 <- a2[order(-a2$present,a2$label),]
+    a1 <- aggregate(present ~ label + param + membership, data = all.elements.final, sum)
+    a1$label <- ifelse(a1$label == 'subgroup',
+                       paste0(a1$label, a1$membership),as.character(a1$label))
+    a2 <- aggregate(present ~ param + label, data = a1, sum)
+    a2 <- a2[order(-a2$present, a2$label),]
     ## now transpose object to have column per label
-    a2 <- reshape(a2,timevar="label",idvar="param",direction="wide")
+    a2 <- reshape(a2, timevar = "label", idvar = "param", direction = "wide")
     a2[is.na(a2)] <- 0
-
-    all.elements.final <- transform(all.elements.final, present = ave(present, param, FUN=sum))
-    all.elements.final <- transform(all.elements.final, sum.sig = ave(sig, param, FUN=sum))
+    
+    all.elements.final <- transform(all.elements.final, present = ave(present, param, FUN = sum))
+    all.elements.final <- transform(all.elements.final, sum.sig = ave(sig, param, FUN = sum))
     all.elements.final <- subset(all.elements.final, !duplicated(param))
-
+    
     ## removes individual-level paths from this list for subgroup size 1
     ## this way, no paths are marked as subgroup-level that only existed for one person
     ## in the final summary graphic
@@ -1576,46 +1703,46 @@ wrapup <- function(indsem.internal.out,
     ## insert code for group and ind if all.diff.sub = TRUE
     all.elements.final         <- as.data.frame(all.elements)
     all.elements.final$est.std <- as.numeric(as.character(all.elements.final$est.std))
-    if (agg==FALSE) {
-      group    <- unlist(strsplit(as.vector(unique(all.syntax$syntax.group)),"\n"))
-      ind      <- unlist(strsplit(as.vector(unique(all.syntax$syntax.ind)),"\n"))
+    if (agg == FALSE) {
+      group    <- unlist(strsplit(as.vector(unique(all.syntax$syntax.group)), "\n"))
+      ind      <- unlist(strsplit(as.vector(unique(all.syntax$syntax.ind)), "\n"))
       ind      <- unique(subset(ind, !ind %in% group))
-      label  <- c(rep("group",length(group)),rep("ind",length(ind)))
-      color  <- c(rep("black",length(group)),rep("gray50",length(ind)))
-      param  <- c(group,ind)
-      levels <- data.frame(param,label,color)
+      label  <- c(rep("group", length(group)), rep("ind", length(ind)))
+      color  <- c(rep("black", length(group)), rep("gray50", length(ind)))
+      param  <- c(group, ind)
+      levels <- data.frame(param, label, color)
       all.elements.final <- transform(all.elements,
-                            mean.beta = (ave(est.std, param, FUN=sum))/subjects)
-    all.elements.final$sig     <- ifelse(abs(all.elements.final$z)>1.96, 1, 0)
-    all.elements.final$present <- ifelse(all.elements.final$sig<2,1,0)
-    all.elements.final         <- transform(all.elements.final, sum.sig = ave(sig, param, FUN=sum))
-    all.elements.final         <- transform(all.elements.final, present = ave(present, param, FUN=sum))
-
-    all.elements.final         <- subset(all.elements.final, !duplicated(param))
-    all.elements.final  <- merge(all.elements.final,levels,by="param")
-    a1 <- aggregate(present ~ label + param ,data=all.elements.final,sum)
-    a1 <- a1[order(-a1$present,a1$label),]
-    ## now transpose object to have column per label
-    a1 <- reshape(a1,timevar="label",idvar="param",direction="wide")
-    a1[is.na(a1)] <- 0
+                                      mean.beta = (ave(est.std, param, FUN = sum))/subjects)
+      all.elements.final$sig     <- ifelse(abs(all.elements.final$z) > 1.96, 1, 0)
+      all.elements.final$present <- ifelse(all.elements.final$sig < 2, 1, 0)
+      all.elements.final         <- transform(all.elements.final, sum.sig = ave(sig, param, FUN = sum))
+      all.elements.final         <- transform(all.elements.final, present = ave(present, param, FUN = sum))
+      
+      all.elements.final         <- subset(all.elements.final, !duplicated(param))
+      all.elements.final         <- merge(all.elements.final, levels, by = "param")
+      a1 <- aggregate(present ~ label + param ,data = all.elements.final,sum)
+      a1 <- a1[order(-a1$present,a1$label),]
+      ## now transpose object to have column per label
+      a1 <- reshape(a1, timevar = "label", idvar = "param", direction = "wide")
+      a1[is.na(a1)] <- 0
+    }
   }
-  }
-  if (agg==FALSE){
-    final.paths      <- matrix(0,nrow=(rois*2), ncol=(rois*2))
-    final.colors     <- matrix(NA,nrow=(rois*2), ncol=(rois*2))
+  if (agg == FALSE){
+    final.paths      <- matrix(0, nrow = (rois*2), ncol = (rois*2))
+    final.colors     <- matrix(NA, nrow = (rois*2), ncol = (rois*2))
     elements         <- nrow(all.elements.final)
     rows             <- substring(all.elements.final$lhs, 4)
     cols             <- substring(all.elements.final$rhs, 4)
-    cols             <- as.numeric(recoderFunc(cols,y,x))
-    rows             <- as.numeric(recoderFunc(rows,y,x))
+    cols             <- as.numeric(recoderFunc(cols, y, x))
+    rows             <- as.numeric(recoderFunc(rows, y, x))
     counts           <- as.numeric(all.elements.final$present)
     beta.weights     <- as.numeric(all.elements.final$mean.beta)
     colors           <- as.character(all.elements.final$color)
-     ## if all subgroups are different, just use black for group and gray for ind
-    if (subgroup==TRUE & all.diff.sub==TRUE) { # begin
+    ## if all subgroups are different, just use black for group and gray for ind
+    if (subgroup == TRUE & all.diff.sub == TRUE) { # begin
       colors <- character()
-      colors <- replace(colors,counts==subjects,"black")
-      colors <- replace(colors,counts!=subjects,"grey50")
+      colors <- replace(colors, counts == subjects, "black")
+      colors <- replace(colors, counts != subjects, "grey50")
     } # end
     for (m in 1:elements){
       final.paths[rows[m], cols[m]] <- counts[m]
@@ -1627,30 +1754,31 @@ wrapup <- function(indsem.internal.out,
     rownames(final.paths.all) <- varnames[(rois+1):(rois*2)]
     colnames(final.paths.all) <- varnames[1:(rois*2)]
     
-    write.csv(final.paths.all, file=file.path(out,"summaryPathCountMatrix.csv"), row.names=TRUE)
-
-    if (subgroup==FALSE | all.diff.sub==TRUE){
+    write.csv(final.paths.all, file = file.path(out, "summaryPathCountMatrix.csv"), row.names = TRUE)
+    
+    if (subgroup == FALSE | all.diff.sub == TRUE){
       all.elements.summary  <- a1
     } else {
       all.elements.summary  <- a2
     }
-
-    if (plot==TRUE){
+    
+    if (plot == TRUE){
       final.paths.t    <- t(final.paths)
       final.paths.t    <- final.paths.t/subjects
       Lagged           <- final.paths.t[1:(rois),(rois+1):(rois*2)]
       Contemporaneous  <- final.paths.t[(rois+1):(rois*2),(rois+1):(rois*2)]
       eLagged          <- W2E(Lagged)
       eContemporaneous <- W2E(Contemporaneous)
-      #if (subgroup==TRUE){
-        final.colors.t     <- t(final.colors)
-        colorLagged           <- final.colors.t[1:(rois),(rois+1):(rois*2)]
-        colorContemporaneous  <- final.colors.t[(rois+1):(rois*2),(rois+1):(rois*2)]
-        color.list       <- c(colorLagged,colorContemporaneous)
-        color.list       <- color.list[!is.na(color.list)]
-      #}
-      isLagged         <- c(rep(TRUE,nrow(eLagged)), rep(FALSE,nrow(eContemporaneous)))
-      plotfinal       <- file.path(out,"/summaryPathsPlot.pdf")
+      final.colors.t        <- t(final.colors)
+      colorLagged           <- final.colors.t[1:(rois),(rois+1):(rois*2)]
+      colorContemporaneous  <- final.colors.t[(rois+1):(rois*2),(rois+1):(rois*2)]
+      color.list       <- c(colorLagged,colorContemporaneous)
+      color.list       <- color.list[!is.na(color.list)]
+      isLagged         <- c(rep(TRUE, nrow(eLagged)), rep(FALSE, nrow(eContemporaneous)))
+      plotfinal        <- file.path(out,"summaryPathsPlot.pdf")
+      # if an element is repeated, change its curve value
+      curve                  <- rep(1, length(isLagged))
+      curve[which(duplicated(rbind(eLagged, eContemporaneous)[,1:2]))] <- .5
       #if (subgroup==TRUE){edge.color=color.list}else{edge.color=NULL}
       edge.color=color.list
       pdf(plotfinal)
@@ -1658,7 +1786,7 @@ wrapup <- function(indsem.internal.out,
                       layout              = "circle",
                       lty                 = ifelse(isLagged,2, 1),
                       edge.labels         = FALSE,
-                      curve               = TRUE,
+                      curve               = curve,
                       labels              = plot.names,
                       edge.color          = edge.color,
                       fade                = FALSE,
@@ -1668,53 +1796,123 @@ wrapup <- function(indsem.internal.out,
       dev.off()
     }
   }
-
-  all.elements   <- all.elements[c("subject","param","est.std","se","pvalue","z")]
-  all.elements[,3:6] <- round(all.elements[,3:6],digits=4)
-  colnames(setup.out$trackparts) <- c("subject","file")
-  all.elements   <- merge(setup.out$trackparts,all.elements,by.x="subject",by.y="subject")[,-1]
-  all.elements   <- all.elements[order(all.elements$file),]
-
-  if (agg==TRUE) {all.elements[,1] <- "all"; all.elements.summary <- data.frame()}
-
-  dv           <- sapply(strsplit(all.elements$param,"~"),"[",1)
-  iv           <- sapply(strsplit(all.elements$param,"~"),"[",2)
-  dvs.ivs      <- as.data.frame(cbind(dv,iv))
-  all.elements <- cbind(dvs.ivs,all.elements)
-  all.elements <- all.elements[c("file","dv","iv","est.std","se","z","pvalue")]
-
-  if (agg == FALSE){
-    dv        <- sapply(strsplit(all.elements.summary$param,"~"),"[",1)
-    iv        <- sapply(strsplit(all.elements.summary$param,"~"),"[",2)
-    dvs.ivs   <- as.data.frame(cbind(dv,iv))
-    all.elements.summary <- cbind(dvs.ivs,all.elements.summary)
-    all.elements.summary$param <- NULL
-  }
-
-  # insert code here to sub back variable names into all.elements summary and all.elements
-  for (v in 1:length(varnames)){
-    all.elements$dv   <- gsub(lvarnames[v],varnames[v],all.elements$dv)
-    all.elements$iv   <- gsub(lvarnames[v],varnames[v],all.elements$iv)
-    if (agg==FALSE) {
-      all.elements.summary$dv <- gsub(lvarnames[v],varnames[v],all.elements.summary$dv)
-      all.elements.summary$iv <- gsub(lvarnames[v],varnames[v],all.elements.summary$iv) 
+  
+  if (nrow(all.elements) != 0) {
+    all.elements        <- all.elements[c("subject", "param", "est.std", "se", "pvalue", "z")]
+    all.elements[ ,3:6] <- round(all.elements[ ,3:6], digits = 4)
+    colnames(setup.out$trackparts) <- c("subject", "file")
+    all.elements   <- merge(setup.out$trackparts, all.elements, 
+                            by.x = "subject", by.y = "subject")[,-1]
+    all.elements   <- all.elements[order(all.elements$file),]
+    
+    if (agg == TRUE) {
+      all.elements[,1] <- "all"
+      all.elements.summary <- data.frame()
     }
-  }
-  colnames(all.elements)[4]       <- "beta"
-  colnames(all.elements)[7]       <- "pval"
-  row.names(all.elements.summary) <- NULL
-  row.names(all.elements)         <- NULL
-  all.fit                         <- as.data.frame(all.fit)
-  colnames(all.fit)[1]            <- "file"
-  write.csv(all.fit,file.path(out,"summaryFit.csv"),row.names=FALSE)
-  if (agg == FALSE) {write.csv(all.elements,file.path(out,"indivPathEstimates.csv"),row.names=FALSE)
+    
+    dv           <- sapply(strsplit(all.elements$param,"~"),"[",1)
+    iv           <- sapply(strsplit(all.elements$param,"~"),"[",2)
+    dvs.ivs      <- as.data.frame(cbind(dv, iv))
+    all.elements <- cbind(dvs.ivs, all.elements)
+    all.elements <- all.elements[c("file","dv","iv","est.std","se","z","pvalue")]
+    
+    if (agg == FALSE){
+      dv        <- sapply(strsplit(all.elements.summary$param,"~"),"[",1)
+      iv        <- sapply(strsplit(all.elements.summary$param,"~"),"[",2)
+      dvs.ivs   <- as.data.frame(cbind(dv, iv))
+      all.elements.summary <- cbind(dvs.ivs, all.elements.summary)
+      all.elements.summary$param <- NULL
+    }
+    
+    # sub back variable names into all.elements summary and all.elements
+    for (v in 1:length(varnames)){
+     all.elements$dv <- recoderFunc(all.elements$dv, lvarnames, varnames)
+     all.elements$iv <- recoderFunc(all.elements$iv, lvarnames, varnames)
+      if (agg == FALSE) {
+        all.elements.summary$dv <- recoderFunc(all.elements.summary$dv, lvarnames, varnames)
+        all.elements.summary$iv <- recoderFunc(all.elements.summary$iv, lvarnames, varnames)
+      }
+    }
+    colnames(all.elements)[4]       <- "beta"
+    colnames(all.elements)[7]       <- "pval"
+    row.names(all.elements.summary) <- NULL
+    row.names(all.elements)         <- NULL
+    all.fit                         <- as.data.frame(all.fit)
+    colnames(all.fit)[1]            <- "file"
+    write.csv(all.fit, file.path(out, "summaryFit.csv"), row.names = FALSE)
+    
+    # ------- merge level and subgroup information into indivPathEstimates----------
+    ###############################################################################
+    if (subgroup == TRUE & all.diff.sub == FALSE){
+      # merge subgroup assignment into indivPathEstimates file
+      all.elements <- merge(all.elements, all.fit[, c("file", "subgroup")], by = "file")
+      # grab relevant info from all.elements.final
+      label_info   <- all.elements.final[,c("lhs", "rhs", "label", "membership")]
+      # sub in variable names to be consistent with all.elements
+      for (v in 1:length(varnames)){
+        label_info$lhs   <- recoderFunc(label_info$lhs, lvarnames, varnames)
+        label_info$rhs   <- recoderFunc(label_info$rhs, lvarnames, varnames)
+      }
+      sub_ind_to_merge <- label_info[!label_info$label %in% "group", ]
+      group_to_merge   <- label_info[label_info$label %in% "group", ][,-4]
+      # merge all elements with subgroup and ind paths
+      all.elements.a <- merge(all.elements, sub_ind_to_merge, 
+                              by.x = c("dv",  "iv",  "subgroup"),
+                              by.y = c("lhs", "rhs", "membership"),
+                              all.y = TRUE)
+      # merge all elements with group paths
+      all.elements.b <- merge(all.elements, group_to_merge,
+                              by.x = c("dv", "iv"),
+                              by.y = c("lhs", "rhs"), 
+                              all.y = TRUE)
+      # put back together
+      all.elements <- rbind(all.elements.a, all.elements.b)
+      all.elements <- all.elements[,c("file", "dv", "iv", "beta",
+                                      "se", "z", "pval", "subgroup", "label")]
+      colnames(all.elements)[9] <- c("level")
+      all.elements   <- all.elements[order(all.elements$file, all.elements$level),]
+    }
+    
+    # merge level into indivPathEstimates for subgroup = FALSE 
+    # or all.diff.sub = TRUE
+    if (agg == FALSE){
+      if (subgroup == FALSE | all.diff.sub == TRUE){
+        label_info         <- all.elements.final[,c("lhs", "rhs", "label")]
+        for (v in 1:length(varnames)){
+          label_info$lhs   <- recoderFunc(label_info$lhs, lvarnames, varnames)
+          label_info$rhs   <- recoderFunc(label_info$rhs, lvarnames, varnames)
+        }
+        all.elements.b <- merge(all.elements, label_info,
+                                by.x = c("dv", "iv"),
+                                by.y = c("lhs", "rhs"), 
+                                all = TRUE)
+        all.elements   <- all.elements.b
+        all.elements   <- all.elements[,c("file", "dv", "iv", "beta",
+                                          "se", "z", "pval", "label")]
+        colnames(all.elements)[8] <- c("level")
+        # if any paths labeled as subgroup accidentally remain in the all.diff.sub case, 
+        # just label them as individual
+        all.elements$level[all.elements$level == "subgroup"] <- "ind"
+        all.elements <- all.elements[order(all.elements$file, all.elements$level),]
+      }
+    }
+    ###############################################################################
+    ## end merging information into indivPathEstimates--------------------------
+    
+    if (agg == FALSE) {
+      write.csv(all.elements, file.path(out, "indivPathEstimates.csv"), row.names = FALSE)
+    } else {
+      write.csv(all.elements, file.path(out, "allPathEstimates.csv"), row.names = FALSE)
+    }
+    if (agg == FALSE){
+      write.csv(all.elements.summary, file.path(out, "summaryPathCounts.csv"), row.names=FALSE)
+    }
+    
   } else {
-    write.csv(all.elements,file.path(out,"allPathEstimates.csv"),row.names=FALSE)
+    if (agg == T) message("aggSEM: Model could not be estimated due to nonpositive definite matrix")
+    if (agg == F) message("gimmeSEM: No models could be estimated due to nonpositive definite matrices for all individuals")
   }
-  if (agg == FALSE){
-    #write.csv(all.elements.summary,file.path(out,"all.elements.summary.csv"),row.names=FALSE)
-    write.csv(all.elements.summary,file.path(out,"summaryPathCounts.csv"),row.names=FALSE)
-  }
+  
 }
 ################################################################################
 # misem_evalbetas_sub_funcs.R
@@ -1727,33 +1925,33 @@ miSEMsub <- function (subsetup.out,
                       previous.out,
                       second.round,
                       evalbetassub.out) {
-
+  
   membership = NULL
-
-  if (second.round==FALSE) miSEMsub.out = NULL
+  
+  if (second.round == FALSE) miSEMsub.out = NULL
   n.subgroups         = subsetup.out$n.subgroups
   subgroup.membership = subsetup.out$subgroup.membership
   varnames            = setup.out$varnames
   syntax              = previous.out$syntax
   count.group.paths   = previous.out$count.group.paths
-
-  unique.syntax       <- matrix(seq(1:n.subgroups),ncol=4,nrow=n.subgroups)
+  
+  unique.syntax       <- matrix(seq(1:n.subgroups), ncol = 4, nrow = n.subgroups)
   subgroup.membership <- as.data.frame(subgroup.membership)
-  if (second.round==TRUE) {syntax.all <- cbind(subsetup.out$subgroup.membership$membership,
-                                           previous.out$syntax)
-                           syntax.all <- syntax.all[!duplicated(syntax.all),]
-
+  if (second.round == TRUE) {
+    syntax.all <- cbind(subsetup.out$subgroup.membership$membership, previous.out$syntax)
+    syntax.all <- syntax.all[!duplicated(syntax.all), ]
   }
-
+  
   for (s in 1:n.subgroups){
-    if (second.round==TRUE){indx   <- syntax.all[,1]==s
-                            syntax <- syntax.all[indx,2]
-                            indx2  <- evalbetassub.out$sub.paths[,1]==s
-                            subgroup.paths <- evalbetassub.out$sub.paths[indx2,2]
-                            names(subgroup.paths) <- NULL
-
+    if (second.round == TRUE){
+      indx   <- syntax.all[,1] == s
+      syntax <- syntax.all[indx,2]
+      indx2  <- evalbetassub.out$sub.paths[,1] == s
+      subgroup.paths <- evalbetassub.out$sub.paths[indx2,2]
+      names(subgroup.paths) <- NULL
+      
     }
-    sub.out.files     <- as.character(subset(subgroup.membership,membership==s)[,1])
+    sub.out.files     <- as.character(subset(subgroup.membership, membership == s)[ ,1])
     subjects          <- length(sub.out.files)
     if (subjects > 1){
       subgroup.miSEM <- miSEM(setup.out         = setup.out,
@@ -1764,14 +1962,15 @@ miSEMsub <- function (subsetup.out,
                               syntax            = syntax,
                               subgroup.paths    = subgroup.paths,
                               second.round      = second.round)
-
+      
       unique.syntax[s,2] <- subgroup.miSEM$syntax
       unique.syntax[s,3] <- subgroup.miSEM$count.subgroup.paths
-      unique.syntax[s,4] <- paste(subgroup.miSEM$subgroup.paths,sep="",collapse=",")
-
-    } else {unique.syntax[s,2] <- syntax
-            unique.syntax[s,3] <- 0
-            unique.syntax[s,4] <- ""}
+      unique.syntax[s,4] <- paste(subgroup.miSEM$subgroup.paths, sep = "", collapse = ",")
+      
+    } else {
+      unique.syntax[s,2] <- syntax
+      unique.syntax[s,3] <- 0
+      unique.syntax[s,4] <- ""}
   }
   list <- list("unique.syntax"     = unique.syntax,
                "count.group.paths" = count.group.paths)
@@ -1782,24 +1981,24 @@ evalbetassub <- function (subsetup.out,
                           previous.out,
                           setup.out,
                           evalbetas.out) {
-
+  
   n.subgroups         = subsetup.out$n.subgroups
   subgroup.membership = subsetup.out$subgroup.membership
   modularity          = subsetup.out$modularity
   ar.paths            = setup.out$ar.paths
   ar                  = setup.out$ar
   out                 = setup.out$out
-
+  
   membership = NULL
-
+  
   subgroup.membership <- as.data.frame(subgroup.membership)
-  final.syntax        <- matrix(seq(1:n.subgroups),ncol=2,nrow=n.subgroups)
-  sub.paths           <- matrix(seq(1:n.subgroups),ncol=2,nrow=n.subgroups)
-
+  final.syntax        <- matrix(seq(1:n.subgroups), ncol=2, nrow = n.subgroups)
+  sub.paths           <- matrix(seq(1:n.subgroups), ncol=2, nrow = n.subgroups)
+  
   for (s in 1:n.subgroups){
-    sub.out.files     <- as.character(subset(subgroup.membership,membership==s)[,1])
+    sub.out.files     <- as.character(subset(subgroup.membership, membership == s)[ ,1])
     subjects          <- length(sub.out.files)
-
+    
     if (subjects > 1){
       evalbetas.out.sub <- evalbetas(setup.out      = setup.out,
                                      previous.out   = previous.out,
@@ -1808,19 +2007,23 @@ evalbetassub <- function (subsetup.out,
                                      subjects       = subjects,
                                      files          = sub.out.files,
                                      post.sub.prune = FALSE)
-
-      final.syntax[s,2]      <- evalbetas.out.sub$syntax
-      if (length(evalbetas.out.sub$subgroup.paths) !=0) {
-        sub.paths[s,2]         <- evalbetas.out.sub$subgroup.paths
-      } else sub.paths[s,2] <- NA
-    } else { final.syntax[s,2] <- evalbetas.out$syntax
-             sub.paths[s,2] <- NA
+      
+      final.syntax[s,2] <- evalbetas.out.sub$syntax
+      if (length(evalbetas.out.sub$subgroup.paths) != 0) {
+        sub.paths[s,2]  <- evalbetas.out.sub$subgroup.paths
+      } else {
+        sub.paths[s,2] <- NA
+      }
+    } else { 
+      final.syntax[s,2] <- evalbetas.out$syntax
+      sub.paths[s,2]   <- NA
     }
   }
-
-  colnames(final.syntax) <- c("membership","syntax")
-  syntax.sub             <- merge(subgroup.membership,final.syntax,by="membership",all=TRUE)
-  syntax.sub             <- syntax.sub[order(syntax.sub$files),]
+  
+  colnames(final.syntax) <- c("membership", "syntax")
+  syntax.sub             <- merge(subgroup.membership, 
+                                  final.syntax, by = "membership", all = TRUE)
+  syntax.sub             <- syntax.sub[order(syntax.sub$files), ]
   syntax.sub$files       <- as.character(syntax.sub$files)
   syntax.sub$syntax      <- as.character(syntax.sub$syntax)
   list <- list("syntax.sub"   = syntax.sub,
@@ -1829,46 +2032,42 @@ evalbetassub <- function (subsetup.out,
                "modularity"   = modularity)
   return(list)
 }
-################################################################################
-# subgroup_epc_betas_edges_funcs.R
-################################################################################
 
-## this code does the subgrouping
-
+## runs each individual using group-level model 
 subsetup <- function (setup.out,
                       previous.out) {
-
+  
   op         = NULL
   modularity = NULL
   param      = NULL
-
+  
   subjects        = setup.out$subjects
   varnames        = setup.out$varnames
   vars            = setup.out$vars
   candidate.paths = setup.out$candidate.paths
   fixed.paths     = setup.out$fixed.paths
-
+  
   syntax          = previous.out$syntax
-  syntax.paths    = unlist(strsplit(syntax,"\n"))
+  syntax.paths    = unlist(strsplit(syntax, "\n"))
   group.paths     = previous.out$count.group.paths
   sep             <- setup.out$sep
   header          <- setup.out$header
   data            <- setup.out$data
   out             <- setup.out$out
   cutoffind       <- setup.out$cutoffind
-  cutoffgroup     <- qchisq(1-.05/subjects,1)
-  cutoffmi        <- qchisq(1-(.05/((vars*(vars-1)/2)*subjects)),1)
-
+  cutoffgroup     <- qchisq(1-.05/subjects, 1)
+  cutoffmi        <- qchisq(1-(.05/((vars*(vars-1)/2)*subjects)), 1)
+  
   files           <- list.files(data, full.names=TRUE)
   trackparts      <- setup.out$trackparts
-  mi.matrix    <- matrix(0,ncol=subjects,nrow=((vars*(vars-1)/2)))
-  epc.matrix   <- matrix(0,ncol=subjects,nrow=((vars*(vars-1)/2)))
+  mi.matrix    <- matrix(0, ncol = subjects, nrow = ((vars*(vars-1)/2)))
+  epc.matrix   <- matrix(0, ncol = subjects, nrow = ((vars*(vars-1)/2)))
   #p.matrix     <- matrix(0,ncol=subjects,nrow=(group.paths+(vars/2)))
   #beta.matrix  <- matrix(0,ncol=subjects,nrow=(group.paths+(vars/2)))
-  p.matrix     <- matrix(0,ncol=subjects,nrow=(group.paths+(fixed.paths)))
-  beta.matrix  <- matrix(0,ncol=subjects,nrow=(group.paths+(fixed.paths)))
+  p.matrix     <- matrix(0, ncol = subjects, nrow = (group.paths+(fixed.paths)))
+  beta.matrix  <- matrix(0, ncol = subjects, nrow = (group.paths+(fixed.paths)))
   ## create matrix of MIs individual by individual after evalbetas
-
+  
   for (k in 1:subjects)
   {
     data.file           <- read.data(file   = files[k],
@@ -1878,95 +2077,92 @@ subsetup <- function (setup.out,
     fit <- fit.model(varnames  = varnames,
                      syntax    = syntax,
                      data.file = data.file)
-
-    check.npd           <- any(grepl("error",class(fit))==TRUE)
-
+    
+    check.npd           <- any(grepl("error", class(fit)) == TRUE)
+    
     if (check.npd == FALSE) {
-      singular            <- tryCatch(modindices(fit),error=function(e) e)
-      check.singular      <- any(grepl("singular",singular)==TRUE)
+      singular            <- tryCatch(modindices(fit), error = function(e) e)
+      check.singular      <- any(grepl("singular",singular) == TRUE)
+      empty.mi            <- ifelse(nrow(singular) == 0, TRUE, FALSE)
       converge            <- lavInspect(fit, "converged")
     } else {
       check.singular <- TRUE
       converge       <- FALSE
+      empty.mi       <- TRUE
     }
-
+    
     # printing replication
     writeLines(paste("subgroup search, subject", k))
-    ## code here grabs MIs and grabs beta values
-    ## puts into matrices
-    if (check.singular==FALSE & converge==TRUE) {
+    ## grab MIs and grab beta values; put into preallocated matrices
+    if (check.singular == FALSE & converge == TRUE & empty.mi == FALSE) {
       mi           <- as.matrix(singular[singular$op == "~",])[,c("lhs","op","rhs","mi","epc")]
       mi           <- as.data.frame(mi)
-      mi$param     <- paste(mi$lhs, mi$op, mi$rhs, sep="")
+      mi$param     <- paste0(mi$lhs, mi$op, mi$rhs)
       mi           <- mi[-c(1:3)]
       mi           <- subset(mi,param %in% candidate.paths)
-
+      
       mi$mi        <- as.numeric(as.character(mi$mi))
       mi$epc       <- as.numeric(as.character(mi$epc))
-
+      
       mi$mi[mi$param %in% syntax.paths]  <- 0
       mi$epc[mi$param %in% syntax.paths] <- 0
-
-      mi$thresh    <- ifelse(mi$mi>cutoffmi,1,0)
-      beta         <- as.data.frame(subset(standardizedSolution(fit),op=="~"))
-      beta$thresh  <- ifelse(beta$pvalue<(.05/subjects),1,0)
+      
+      mi$thresh    <- ifelse(mi$mi > cutoffmi, 1, 0)
+      beta         <- as.data.frame(subset(standardizedSolution(fit), op == "~"))
+      beta$thresh  <- ifelse(beta$pvalue < (.05/subjects), 1, 0)
     }
     # if it doesn't converge or is computationally singular
-    if (converge==FALSE | check.singular==TRUE | check.npd==TRUE) {
+    if (converge == FALSE | check.singular == TRUE | check.npd == TRUE | empty.mi == TRUE) {
       mi.matrix[,k]     <- NA
       epc.matrix[,k]    <- NA
       p.matrix[,k]      <- NA
       beta.matrix[,k]   <- NA
     } else {
-      mi.matrix[1:(nrow(mi)),k]     <- mi$thresh
-      epc.matrix[1:(nrow(mi)),k]    <- mi$epc
-      p.matrix[,k]      <- beta$thresh
-      beta.matrix[,k]   <- beta$est.std
+      mi.matrix[1:(nrow(mi)),k]  <- mi$thresh
+      epc.matrix[1:(nrow(mi)),k] <- mi$epc
+      p.matrix[,k]               <- beta$thresh
+      beta.matrix[,k]            <- beta$est.std
     }
   }
-
-  all.val.matrix         <- rbind(epc.matrix,beta.matrix)
-  all.p.matrix           <- rbind(mi.matrix,p.matrix)
-
+  
+  all.val.matrix         <- rbind(epc.matrix, beta.matrix)
+  all.p.matrix           <- rbind(mi.matrix, p.matrix)
+  
   colnames(all.val.matrix) <- files
   colnames(all.p.matrix)   <- files
-
+  
   all.val.matrix        <- all.val.matrix[,colSums(is.na(all.val.matrix)) != nrow(all.val.matrix)]
   all.p.matrix          <- all.p.matrix[,colSums(is.na(all.p.matrix)) != nrow(all.p.matrix)]
   names                 <- colnames(all.val.matrix)
-
-  sim <- matrix(0,ncol=ncol(all.val.matrix),nrow=ncol(all.val.matrix))
-
+  
+  sim <- matrix(0, ncol = ncol(all.val.matrix), nrow = ncol(all.val.matrix))
+  
   ## creates similarity matrix to pass to walktrap
   ## counts if sign and significance are the same for EPC or beta weight
   for (i in 1:ncol(all.p.matrix)){
     for (j in 1:ncol(all.p.matrix)){
-      ind1 <- as.matrix(all.p.matrix[,i])
-      ind2 <- as.matrix(all.p.matrix[,j])
-      val1 <- as.matrix(all.val.matrix[,i])
-      val2 <- as.matrix(all.val.matrix[,j])
-      sim[i,j] <- sum(ind1 == 1 & ind2 == 1 & sign(val1)==sign(val2),na.rm=TRUE)
+      ind1 <- as.matrix(all.p.matrix[ ,i])
+      ind2 <- as.matrix(all.p.matrix[ ,j])
+      val1 <- as.matrix(all.val.matrix[ ,i])
+      val2 <- as.matrix(all.val.matrix[ ,j])
+      sim[i,j] <- sum(ind1 == 1 & ind2 == 1 & sign(val1) == sign(val2), na.rm = TRUE)
     }
   }
-
+  
   colnames(sim) <- names
-  sim           <- sim - min(sim, na.rm=TRUE)
+  sim           <- sim - min(sim, na.rm = TRUE)
   diag(sim)     <- 0
   ## here is where walktrap runs on the similarity matrix and gives you subgroups
-  g                   <- graph.adjacency(sim,mode="undirected")
-  membership          <- walktrap.community(g,steps=4)$membership
-  ## writes out the value for modularity value for the subgroup assignment,
-  ## can probably be removed soon
-  #modstem           <- file.path(out,"modularity.txt")
-  modularity.value  <- modularity(walktrap.community(g,steps=4))
-  #write.table(modularity.value,modstem,row.names=FALSE,col.names=FALSE) # error here
+  g                   <- graph.adjacency(sim, mode = "undirected")
+  membership          <- walktrap.community(g, steps = 4)$membership
+  modularity.value    <- modularity(walktrap.community(g, steps = 4))
 
   subgroup.membership <- cbind(names,membership)
-  n.subgroups         <- length(table(subgroup.membership[,2]))
+  n.subgroups         <- length(table(subgroup.membership[ ,2]))
   files               <- as.matrix(files)
-  subgroup.membership <- merge(files,subgroup.membership,
-                               by.x="V1",by.y="names",all.x=TRUE)
-  colnames(subgroup.membership) <- c("files","membership")
+  subgroup.membership <- merge(files, subgroup.membership,
+                               by.x = "V1", by.y = "names", all.x = TRUE)
+  colnames(subgroup.membership) <- c("files", "membership")
   list <- list("epcBetaMatrix"       = all.val.matrix,
                "epcBetaPMatrix"      = all.p.matrix,
                "sim"                 = sim,
@@ -1975,10 +2171,11 @@ subsetup <- function (setup.out,
                "modularity"          = modularity.value)
   return(list)
 }
+
 ################################################################################
-# helper_functions.R
+# helper functions
 ################################################################################
-W2E <-function(x) cbind(which(x!=0,arr.ind=TRUE),x[x!=0])
+W2E <-function(x) cbind(which(x!=0, arr.ind = TRUE), x[x != 0])
 
 recoderFunc <- function(data,
                         oldvalue,

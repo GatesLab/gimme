@@ -7,7 +7,7 @@
 #'        out    = "",
 #'        sep    = "",
 #'        header = ,
-#'        ar     = FALSE,
+#'        ar     = TRUE,
 #'        plot   = TRUE,
 #'        paths  = NULL)
 #' @param data The path to the directory where the data files are located. Each file must contain one matrix for
@@ -19,7 +19,7 @@
 #' indicates comma delimited.
 #' @param header Logical. Indicate TRUE for data files with a header.
 #' @param ar Logical. If TRUE, begins search for group model with autoregressive (AR) paths open. Defaults
-#' to FALSE.
+#' to TRUE.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables of interest will automatically
 #' be created. For aggregate-level plot, red paths represent positive weights and blue paths represent negative weights. Defaults to TRUE.
 #' @param paths \code{lavaan}-style syntax containing paths with which to begin model estimation. That is, Y~X indicates that Y is regressed on X, or X predicts Y. If no header is used,
@@ -59,7 +59,7 @@ aggSEM <- function(data,
                    out,
                    sep,
                    header,
-                   ar    = FALSE,
+                   ar    = TRUE,
                    plot  = TRUE,
                    paths = NULL){
 
@@ -123,8 +123,11 @@ aggSEM <- function(data,
                      out      = out,
                      plot     = plot,
                      ar       = ar,
-                     paths    = NULL,
+                     paths    = paths,
+                     groupcutoff = NULL,
+                     subcutoff = NULL,
                      subgroup = FALSE,
+                     ind      = FALSE,
                      agg      = TRUE,
                      deconvolve_hrf = FALSE,
                      control=list(deconvolve_method="bush"))

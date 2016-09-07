@@ -9,7 +9,7 @@
 #'    Hallie Pike [ctb]  
 #' }
 #' Maintainer: Stephanie Lane \email{slane@@unc.edu}
-#' @import lavaan parallel foreach doSNOW doParallel gWidgets2
+#' @import lavaan parallel foreach doSNOW doParallel gWidgets
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time convolve cov dgamma fft runif sd
 #' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv

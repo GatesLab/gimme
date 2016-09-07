@@ -8,7 +8,7 @@
 #'        out    = "",
 #'        sep    = "",
 #'        header = ,
-#'        ar     = FALSE,
+#'        ar     = TRUE,
 #'        plot   = TRUE,
 #'        paths  = NULL)
 #' @param data The path to the directory where the data files are located. Each file must contain one matrix for
@@ -20,7 +20,7 @@
 #' indicates comma delimited.
 #' @param header Logical. Indicate TRUE for data files with a header.
 #' @param ar Logical. If TRUE, begins search for individual models with autoregressive (AR) paths open.
-#' Defaults to FALSE.
+#' Defaults to TRUE.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables of interest will automatically be
 #' created. Defaults to TRUE. For individual-level plots, red paths represent positive weights and blue paths represent negative weights.
 #' @param paths lavaan-style syntax containing paths with which to begin model estimation. That is, Y~X indicates that Y is regressed on X, or X predicts Y. If no header is used,
@@ -59,21 +59,24 @@ indSEM <- function(data,
                    out,
                    sep,
                    header,
-                   ar = FALSE,
-                   plot = TRUE,
+                   ar    = TRUE,
+                   plot  = TRUE,
                    paths = NULL){
 
-  setup.out        <- setup(data   = data,
-                            sep    = sep,
-                            header = header,
-                            out    = out,
-                            plot   = plot,
-                            ar     = ar,
-                            paths   = paths,
-                            subgroup = FALSE,
-                            agg      = FALSE,
+  setup.out        <- setup(data           = data,
+                            sep            = sep,
+                            header         = header,
+                            out            = out,
+                            plot           = plot,
+                            ar             = ar,
+                            paths          = paths,
+                            subgroup       = FALSE,
+                            groupcutoff    = NULL,
+                            subcutoff      = NULL,
+                            agg            = FALSE,
+                            ind            = TRUE,
                             deconvolve_hrf = FALSE,
-                            control=list(deconvolve_method="bush"))
+                            control        = list(deconvolve_method="bush"))
 
   ## this is the individual-level search, adds path for each individual
   ## runs one person at a time  indsem.internal.out <- list
@@ -86,9 +89,9 @@ indSEM <- function(data,
   wrapup.out <- wrapup(indsem.internal.out = indsem.internal.out,
                        setup.out           = setup.out)
 
-  print.gimme.indSEM(x=NULL,
-              y=NULL,
-              z=setup.out)
+  print.gimme.indSEM(x = NULL,
+                     y = NULL,
+                     z = setup.out)
 }
 
 print.gimme.indSEM <- function(x,y,z){
