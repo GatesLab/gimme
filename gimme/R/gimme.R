@@ -1431,8 +1431,14 @@ indsem.internal <- function(setup.out,
     # if subgroup paths are empty, then just leave final syntax as above "all"
     if (is.na(evalbetassub.out$sub.paths[,2][1]) == FALSE){
       sub <- unlist(strsplit(evalbetassub.out$sub.paths[,2][1],","))
-      all <- head(all, -length(sub))
-      all <- paste(all, sep = "", collapse = "\n")
+      # if syntax has no subgroup paths, use as is
+      if (length(sub) == 0){
+        all <- paste0(all, collapse = "\n")
+      # if syntax has subgroup paths, remove them to get group syntax
+      } else {
+        all <- head(all, -length(sub))
+        all <- paste0(all, collapse = "\n")
+      }
     }
     sub.info <- as.data.frame(evalbetassub.out$syntax.sub, stringsAsFactors = FALSE)
     sorted   <- sub.info[order(sub.info$files), ]
@@ -1691,12 +1697,23 @@ wrapup <- function(indsem.internal.out,
     
     all.elements.final <- transform(all.elements.final, present = ave(present, param, FUN = sum))
     all.elements.final <- transform(all.elements.final, sum.sig = ave(sig, param, FUN = sum))
-    all.elements.final <- subset(all.elements.final, !duplicated(param))
+    # this line causes issues with membership, maybe come back, today = 09.19.2016
+    # all.elements.final <- subset(all.elements.final, !duplicated(param)) ## this line problem
+    
+    # obtains shortened list of each unique path + label + subgroup combination for later merging
+    all.elements.final <- all.elements.final[row.names(unique(all.elements.final[c("param", "label", "membership")])),]
+
+    # grab relevant info from all.elements.final for later use
+    # when merging subgroup and level information into indivPathEstimates
+    # must take place here. otherwise, below code that labels a subgroup level path
+    # as subgroup across ALL individuals will introduce incorrect information
+    label_info   <- all.elements.final[,c("lhs", "rhs", "label", "membership")]
     
     ## removes individual-level paths from this list for subgroup size 1
     ## this way, no paths are marked as subgroup-level that only existed for one person
     ## in the final summary graphic
     sub.fullsub.paths <- unique(subset(sub.fullsub.paths, !sub.fullsub.paths %in% sub.to.group))
+    # prioritizes any subgroup path for summary graphic; shows as green instead of gray
     all.elements.final$label[all.elements.final$param %in% sub.fullsub.paths] <- "subgroup"
     all.elements.final$color[all.elements.final$param %in% sub.fullsub.paths] <- "green3"
   } else {
@@ -1846,8 +1863,6 @@ wrapup <- function(indsem.internal.out,
     if (subgroup == TRUE & all.diff.sub == FALSE){
       # merge subgroup assignment into indivPathEstimates file
       all.elements <- merge(all.elements, all.fit[, c("file", "subgroup")], by = "file")
-      # grab relevant info from all.elements.final
-      label_info   <- all.elements.final[,c("lhs", "rhs", "label", "membership")]
       # sub in variable names to be consistent with all.elements
       for (v in 1:length(varnames)){
         label_info$lhs   <- recoderFunc(label_info$lhs, lvarnames, varnames)
@@ -1871,10 +1886,12 @@ wrapup <- function(indsem.internal.out,
                                       "se", "z", "pval", "subgroup", "label")]
       colnames(all.elements)[9] <- c("level")
       all.elements   <- all.elements[order(all.elements$file, all.elements$level),]
+      # new line below added 9.19.16, removes identical rows
+      # identical rows may happen because we overly preserve information above
+      all.elements   <- unique(all.elements)
     }
     
-    # merge level into indivPathEstimates for subgroup = FALSE 
-    # or all.diff.sub = TRUE
+    # merge level into indivPathEstimates for subgroup = FALSE or all.diff.sub = TRUE
     if (agg == FALSE){
       if (subgroup == FALSE | all.diff.sub == TRUE){
         label_info         <- all.elements.final[,c("lhs", "rhs", "label")]
