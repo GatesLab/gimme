@@ -329,17 +329,20 @@ setup <- function (data,
   }
   ## check to see if all individuals have same number of columns. 
   ## otherwise, code will fail with ambiguous error later
-  cols        <- numeric()
-  missingCols <- numeric()
+  cols         <- numeric()
+  missingCols  <- numeric()
+  constantCols <- logical()
   for (k in 1:subjects){
     data.file <- read.table(files[k], sep = sep, header = header)
     cols[k]   <- ncol(data.file)
-    missingCols[k] <- sum(colSums(is.na(data.file)) < nrow(data.file)) 
+    missingCols[k] <- sum(colSums(is.na(data.file)) < nrow(data.file))
+    constantCols[k] <- any(apply(data.file, 2, sd, na.rm = TRUE) == 0)
   }
   if (subjects != 1) {
     if (sd(cols) != 0) stop('gimme ERROR: not all data files have the same number of columns. Fix or remove file before continuing.')
     if (sd(missingCols) != 0) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
     if (any(cols != missingCols)) stop('gimme ERROR: at least one data file contains a column with all NA. Fix or remove file before continuing.')
+    if (any(constantCols == TRUE)) stop('gimme ERROR: at least one data file contains a column with constant values. Please fix or remove file before continuing.')
   } 
   if (subjects == 1 & ind == FALSE) {
     stop('gimme ERROR: only one subject detected in data directory. Please use indSEM function instead.')
@@ -951,9 +954,14 @@ addind <- function (done,
                      data.file = data.file)
     
     check.npd            <- any(grepl("error",class(fit)) == TRUE)
+    if (check.npd == FALSE){
     check.not.identified <- sum(lavInspect(fit,"se")$beta, na.rm = TRUE) == 0
-    if (ar == FALSE & count.ind.paths == 0) check.not.identified <- FALSE
     converge             <- lavInspect(fit, "converged")
+    } else {
+      check.not.identified <- FALSE
+      converge <- FALSE
+    } 
+    if (ar == FALSE & count.ind.paths == 0) check.not.identified <- FALSE
     
     if (check.npd == FALSE & check.not.identified==FALSE & converge == TRUE) {
       
@@ -1008,7 +1016,9 @@ addind <- function (done,
                      data.file = data.file)
     
     check.npd            <- any(grepl("error",class(fit)) == TRUE)
+    if (check.npd == FALSE){
     check.not.identified <- sum(lavInspect(fit,"se")$beta, na.rm = TRUE) == 0
+    } else check.not.identified = TRUE
     
     if (check.npd == FALSE & check.not.identified == FALSE) {
       singular            <- tryCatch(modindices(fit), error=function(e) e)
@@ -1238,7 +1248,9 @@ final.fit <- function(setup.out,
                    data.file = data.file)
   
   check.npd            <- any(grepl("error", class(fit)) == TRUE)
+  if (check.npd == FALSE){
   check.not.identified <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  } else check.not.identified = FALSE
   
   if (check.npd == FALSE & check.not.identified == FALSE) {
     singular            <- tryCatch(modindices(fit), error = function(e) e)
