@@ -123,6 +123,8 @@ gimmeSEM <- gimme <- function(data,
     saveRDS(setup.out, file.path(out, "diagnos", "01_setup.RDS"))
   }
   
+  ## the miSEM function is responsible for the search procedure
+  ## it is used at both the group and subgroup levels
   miSEM.out         <- miSEM(setup.out            = setup.out,
                              previous.out         = setup.out,
                              subgroup.step        = FALSE,
@@ -136,6 +138,9 @@ gimmeSEM <- gimme <- function(data,
     saveRDS(miSEM.out, file.path(out, "diagnos", "02_miSEM.RDS"))
    }
   
+  ## the evalbetas function is responsible for pruning paths 
+  ## which may have become nonsignificant for the majority of paths
+  ## it is used at both the group and subgroup levels
   evalbetas.out <- evalbetas(setup.out            = setup.out,
                              previous.out         = miSEM.out,
                              subgroup.step        = FALSE,
@@ -750,6 +755,7 @@ evalbetas <- function (setup.out,
     count.subgroup.paths = 0
     files                = list.files(data, full.names = TRUE)
     count.group.paths    = previous.out$count.group.paths
+    if (count.group.paths == 0) bad = 0
   }
   
   if (subgroup.step == TRUE){
@@ -770,10 +776,11 @@ evalbetas <- function (setup.out,
     syntax.all  <- as.matrix(previous.out$syntax.sub$syntax)
     files       <- as.matrix(previous.out$syntax.sub$files)
     count.group.paths <- length(group.paths)
+    if (count.group.paths == 0) bad = 0
   }
   
   cutoffz           = abs(qnorm(.05/subjects))
-  if (count.group.paths == 0) bad = 0
+  
   #getting coefficients for final model
   while (bad == 1) {
     if (post.sub.prune == FALSE){
