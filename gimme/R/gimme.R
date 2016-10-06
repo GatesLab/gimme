@@ -314,9 +314,8 @@ setup <- function (data,
   subjects         <- length(files)
   trackparts       <- matrix(0, nrow = subjects, ncol = 2)
   trackparts[,1]   <- seq(1:subjects)
-  trackparts[,2]   <- sapply(strsplit(basename(files), "\\."),
-                             function(x) paste(x[1:(length(x)-1)], collapse = "."))
-  all               <- as.matrix(read.table(files[1], sep = sep, header = header))
+  trackparts[,2]   <- tools::file_path_sans_ext(basename(files))
+  all              <- as.matrix(read.table(files[1], sep = sep, header = header))
   # check to see if number of columns is equal to 1. 
   # if so, user likely misspecified the sep argument
   rois              <- ncol(all)
@@ -342,22 +341,16 @@ setup <- function (data,
   }
   vars              <- rois*2
   varnames          <- colnames(all)
-  varnames          <- rep(varnames, 2)
   cutoffind         <- qchisq(.99, 1)
   lvarnames         <- character()
   count.group.paths <- 0
   
-  for (j in 1:(rois)) {
-    varnames[j]  <- paste0(varnames[j], "lag")
-    lvarnames[j] <- paste0("VAR", j, "lag")
-  }
-  
-  for (j in (rois+1):(rois*2)) {
-    lvarnames[j] <- paste0("VAR", j - rois)
-  }
+  # simplify creation of variable names
+  varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
+  lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
   
   x                 <- seq(1:vars)
-  y                 <- substring(lvarnames,4)
+  y                 <- substring(lvarnames, 4)
   individual        <- file.path(out, "individual")
   subgroup.dir      <- file.path(out, "subgroup")
   fitted            <- file.path(out, "fitted")
@@ -374,12 +367,11 @@ setup <- function (data,
     plot.names <- ""
   }
   
-  
   #------------------------------------------------------------------------------#
   # prepare paths if semigimme is specified
   if (!is.null(paths))
   {
-    prep.paths <- function(paths, varnames,lvarnames)
+    prep.paths <- function(paths, varnames, lvarnames)
     {
       table    <- lavParTable(paths)
       # only include paths in the syntax which are specified free by the user
@@ -387,7 +379,9 @@ setup <- function (data,
       tableFree    <- table[table$op == "~" & table$free != 0, ]
       dvsFree      <- recoderFunc(tableFree$lhs,varnames,lvarnames)
       ivsFree      <- recoderFunc(tableFree$rhs,varnames,lvarnames)
+      if (nrow(tableFree) != 0){
       vsFree       <- paste0(dvsFree, "~", ivsFree)
+      } else vsFree = NULL
       # table up the paths which are fixed to a certain value by the user
       tableFixed   <- table[table$op == "~" & table$free == 0,]
       if (nrow(tableFixed) > 0){
@@ -409,47 +403,44 @@ setup <- function (data,
   #------------------------------------------------------------------------------#
   
   ## code below creates the starting null syntax file
-  line1             <- paste(capture.output(for (i in 1:(rois*2)){
-    cat(lvarnames[i],"=~","1*",varnames[i],
-        sep="","\n")}),collapse="\n")
-  line2             <- paste(capture.output(for (i in 1:rois) {for (j in 1:i){
-    cat(lvarnames[i],"~~",lvarnames[j],
-        sep="","\n")}}),collapse="\n")
-  line3             <- paste(capture.output(for (i in (rois+1):(rois*2)) {
-    cat (lvarnames[i],"~~",lvarnames[i],
-         sep="","\n")}),collapse="\n")
+  ## creation of syntax simplified Oct 2016
   
-  if (ar==TRUE) {line4 <- paste(capture.output(for (j in 1:rois) {
-    cat (lvarnames[j+rois],"~",lvarnames[j],
-         sep="","\n")}),collapse="\n")}
+  # set up single indicator latent variables 
+  line1 <- paste0(lvarnames, "=~1*", varnames, collapse = "\n") 
   
-  if (ar==FALSE) {line4 <- paste(capture.output(for (j in 1:rois) {
-    cat (lvarnames[j],"~0*",lvarnames[j+rois],
-         sep="","\n")}),collapse="\n")}
+  # covary all exogenous lagged variables
+  line2 <- paste(capture.output(for (i in 1:rois) {for (j in 1:i){
+             cat(lvarnames[i],"~~",lvarnames[j],
+               sep="","\n")}}),collapse="\n")
+  
+  # estimate variance of single-indicator latent variables 
+  line3 <- paste0(lvarnames[(rois+1):vars], "~~", lvarnames[(rois+1):vars], collapse = "\n") 
+  
+  # freely estimate autoregressive relationships if ar = TRUE
+  # if ar = FALSE, set up nonsense paths fixed to zero 
+  # to open beta matrix for MI calculation in lavaan
+  if (ar == TRUE) {
+    line4 <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois], collapse = "\n")
+  } else {
+    line4 <- paste0(lvarnames[1:rois], "~0*", lvarnames[(rois+1):vars], collapse = "\n")
+  }
   
   if (!is.null(paths))
   {
-    line5 <- paste(capture.output(for (j in 1:length(paths))
-    {
-      cat (paths[j], sep="","\n")
-    }
-    ),collapse="\n")
+    line5 <- paste0(paths, collapse = "\n") 
   }
+  
   if (is.null(paths)){
-    syntax            <- paste(line1,line2,line3,line4,sep="\n")
+    syntax            <- paste(line1 ,line2, line3, line4, sep = "\n")
   } else {
-    syntax            <- paste(line1,line2,line3,line4,line5,sep="\n")
+    syntax            <- paste(line1, line2, line3, line4, line5, sep = "\n")
   }
   ## end creating syntax
   
-  ## this code creates list of paths that make sense to gimme to open
+  ## create list of paths that make sense to gimme to open
   ## for example, it doesn't include paths where time would predict time-1
-  candidate.paths   <- capture.output(
-    for (i in (rois+1):(rois*2)){
-      for (j in 1:(rois*2)){
-        cat(lvarnames[i], "~", lvarnames[j], sep="", "\n")}
-    }
-  )
+  candidate.paths   <- apply(expand.grid(lvarnames[(rois+1):vars], 
+                                         lvarnames[1:vars]), 1, paste, collapse = "~")
   
   # if path specified by a user is fixed to a certain value, 
   # we want to remove it from consideration when looking at MIs, 
@@ -457,15 +448,12 @@ setup <- function (data,
   candidate.paths <- candidate.paths[!candidate.paths %in% remove]
   
   ## just creates list of AR paths so that later code doesn't kick them out
-  ## code is designed so that if user selects ar=TRUE, they stay in
+  ## code is designed so that if user selects ar = TRUE, they stay in
   ## even if they become nonsignificant for the majority
-  ar.paths          <- capture.output(
-    for (i in 1:rois){
-      cat(lvarnames[i+rois], "~", lvarnames[i], sep="", "\n")
-    }
-  )
+  ar.paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
   
-  
+  # if user specifies paths, add them to the list of ar.paths
+  # this ensures that they don't get kicked out
   if (!is.null(paths)){
     ar.paths <- c(ar.paths, paths) 
   }
@@ -524,7 +512,7 @@ fit.model <- function (varnames,
                                  auto.cov.y      = FALSE,
                                  auto.fix.single = TRUE,
                                  warn            = FALSE),
-                  error=function(e) e)
+                  error = function(e) e)
   return(fit)
 }
 
@@ -631,6 +619,7 @@ miSEM <- function (setup.out,
       if (check.npd == FALSE) {
         check.not.identified <- sum(lavInspect(fit,"se")$beta, na.rm = TRUE) == 0
       } else check.not.identified = TRUE
+      
       if (ar == FALSE & count.group.paths == 0){check.not.identified <- FALSE}
       
       if (check.npd == FALSE & check.not.identified == FALSE) {
@@ -653,7 +642,8 @@ miSEM <- function (setup.out,
           check.error == FALSE) {
         if (subgroup.step == FALSE) {
           writeLines(paste("group-level search, subject", k))
-        } else {writeLines(paste("subgroup-level search, subject", k))
+        } else {
+          writeLines(paste("subgroup-level search, subject", k))
         }
         mi                <- as.matrix(singular[singular$op == "~",])[ ,c("lhs","op","rhs","mi")]
         padLength         <- ((vars-1)*vars) - nrow(mi)
@@ -663,7 +653,7 @@ miSEM <- function (setup.out,
       }
       # if it doesn't converge or is computationally singular or NPD
       if (converge == FALSE | check.singular == TRUE | check.npd == TRUE | check.not.identified == TRUE) {
-        mi                <- matrix(NA, nrow=((vars-1)*vars), ncol = 4)
+        mi                <- matrix(NA, nrow = ((vars-1)*vars), ncol = 4)
       }
       #stacking matrices
       mi.subject          <- matrix(k, nrow = ((vars-1)*vars), ncol = 1)
@@ -676,23 +666,23 @@ miSEM <- function (setup.out,
     mi.all                <- as.data.frame(mi.list[complete.cases(mi.list),])
     mi.all$param          <- paste0(mi.all$lhs, mi.all$op, mi.all$rhs)
     mi.all                <- mi.all[-c(3:5)]
-    mi.all                <- subset(mi.all,param %in% candidate.paths)
+    mi.all                <- subset(mi.all, param %in% candidate.paths)
     mi.all[,3]            <- as.numeric(as.character(mi.all[,3]))
     mi.all[,1]            <- as.numeric(as.character(mi.all[,1]))
-    mi.all                <- transform(mi.all, sum = ave(mi, param, FUN=sum))
-    mi.high               <- subset(mi.all, mi>cutoffgroup)
+    mi.all                <- transform(mi.all, sum = ave(mi, param, FUN = sum))
+    mi.high               <- subset(mi.all, mi > cutoffgroup)
     # make sure that at least one MI is above cutoff, or it will error
     if (nrow(mi.high) != 0){
-      mi.count              <- subset(as.data.frame(table(mi.high$param)),Freq>0)
+      mi.count              <- subset(as.data.frame(table(mi.high$param)), Freq > 0)
       mi.high.count         <- subset(mi.high, !duplicated(param))
-      mi.merge              <- merge(x=mi.high.count, y=mi.count,
-                                     by.x="param", by.y="Var1")
+      mi.merge              <- merge(x = mi.high.count, y = mi.count,
+                                     by.x = "param", by.y = "Var1")
       paramadd              <- mi.merge[order(-mi.merge$Freq, -mi.merge$sum),][1,1]
       ## list of every individual's MIs for the selected path
-      y                     <- subset(mi.all, param==paramadd, select=mi)$mi
-      drop.element          <- ifelse(max(y)<cutoffgroup,TRUE,FALSE)
+      y                     <- subset(mi.all, param == paramadd, select=mi)$mi
+      drop.element          <- ifelse(max(y) < cutoffgroup, TRUE, FALSE)
       prop                  <- sum(y > cutoffgroup)/count.converge
-      halt <- length(y)<=subjects/2
+      halt <- length(y) <= subjects/2
     } else {
       halt <- TRUE
       prop <- 0
@@ -702,16 +692,19 @@ miSEM <- function (setup.out,
     ## stops the search if less than half of subjects are terminating normally
     
     
-    if (subgroup.step==TRUE)  cutoffprop <- subcutoff
-    if (subgroup.step==FALSE) cutoffprop <- groupcutoff
+    if (subgroup.step == TRUE)  cutoffprop <- subcutoff
+    if (subgroup.step == FALSE) cutoffprop <- groupcutoff
     
-    if (prop <= cutoffprop | drop.element==TRUE | halt==TRUE) {continue <-0
+    if (prop <= cutoffprop | drop.element == TRUE | halt == TRUE) {
+      continue <-0
     } else {
       continue            <- 1
       syntax              <- paste(syntax,as.name(paramadd),sep="\n")
-      if (subgroup.step==FALSE) count.group.paths    <- count.group.paths + 1
-      if (subgroup.step==TRUE) {count.subgroup.paths <- count.subgroup.paths + 1
-      subgroup.paths       <- append(subgroup.paths,paramadd)}
+      if (subgroup.step == FALSE) count.group.paths    <- count.group.paths + 1
+      if (subgroup.step == TRUE) {
+        count.subgroup.paths <- count.subgroup.paths + 1
+        subgroup.paths       <- append(subgroup.paths,paramadd)
+        }
     }
     
   }  #end of while continue>0
@@ -926,9 +919,6 @@ evalbetas <- function (setup.out,
                "subgroup.paths"       = subgroup.paths)
   return(list)
 }
-################################################################################
-# indsem_internal_funcs_MOD.R
-################################################################################
 
 #this function adds individual paths until two of four fit indices are excellent for individual
 addind <- function (done,
