@@ -1321,6 +1321,7 @@ final.fit <- function(setup.out,
   plot       = setup.out$plot
   agg        = setup.out$agg
   
+  ind_plot = NA
   op = NULL
   
   fit <- fit.model(syntax    = syntax,
@@ -1958,7 +1959,7 @@ wrapup <- function(indsem.internal.out,
         plot(all_plot)
         dev.off()
       }
-    }
+    } else all_plot <- NULL
   } else {
     final.paths.all <- NULL
     all_plot        <- NULL
