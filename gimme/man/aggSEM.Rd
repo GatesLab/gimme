@@ -13,17 +13,22 @@ aggSEM(data   = "",
        paths  = NULL)
 }
 \arguments{
-\item{data}{The path to the directory where the data files are located. Each file must contain one matrix for
-each individual containing a T (time) by p (number of variables) matrix where the columns represent variables
-and the rows represent time.}
+\item{data}{The path to the directory where the data files are located, or the name of the
+list containing each individual's time series. Each file or matrix must contain one matrix 
+for each individual containing a T (time) by 
+p (number of variables) matrix where the columns represent variables and
+the rows represent time.}
 
-\item{out}{The path to the directory where the results will be stored. This directory must be generated
-by the user prior to running the function.}
+\item{out}{The path to the directory where the results will be stored (optional). If specified,
+a copy of output files will be replaced in directory. If directory at specified path does not
+exist, it will be created.}
 
-\item{sep}{The spacing of the data files. "" indicates space-delimited, "/t" indicates tab-delimited, ","
-indicates comma delimited.}
+\item{sep}{The spacing of the data files. "" indicates space-delimited, 
+"/t" indicates tab-delimited, "," indicates comma delimited. Only necessary to specify
+if reading data in from physical directory.}
 
-\item{header}{Logical. Indicate TRUE for data files with a header.}
+\item{header}{Logical. Indicate TRUE for data files with a header. Only necessary to specify
+if reading data in from physical directory.}
 
 \item{ar}{Logical. If TRUE, begins search for group model with autoregressive (AR) paths open. Defaults
 to TRUE.}
@@ -50,23 +55,8 @@ In main output directory:
 }
 }
 \examples{
-data(ts1,ts2,ts3,ts4,ts5)
-input.path  <- file.path(tempdir(),"input")
-output.path <- file.path(tempdir(),"output")
-dir.create(input.path)
-dir.create(output.path)
-write.table(ts1,file.path(input.path,"ts1.txt"),col.names=FALSE,row.names=FALSE)
-write.table(ts2,file.path(input.path,"ts2.txt"),col.names=FALSE,row.names=FALSE)
-write.table(ts3,file.path(input.path,"ts3.txt"),col.names=FALSE,row.names=FALSE)
-write.table(ts4,file.path(input.path,"ts4.txt"),col.names=FALSE,row.names=FALSE)
-write.table(ts5,file.path(input.path,"ts5.txt"),col.names=FALSE,row.names=FALSE)
-aggSEM(data   = input.path,
-       out    = output.path,
-       sep    = "",
-       header = FALSE,
-       ar     = TRUE,
-       plot   = TRUE,
-       paths  = NULL)
+fit <- aggSEM(data = ts)
+print(fit, fitMeasures = TRUE)
 }
 \author{
 Stephanie Lane

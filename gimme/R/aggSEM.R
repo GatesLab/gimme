@@ -10,14 +10,19 @@
 #'        ar     = TRUE,
 #'        plot   = TRUE,
 #'        paths  = NULL)
-#' @param data The path to the directory where the data files are located. Each file must contain one matrix for
-#' each individual containing a T (time) by p (number of variables) matrix where the columns represent variables
-#' and the rows represent time.
-#' @param out The path to the directory where the results will be stored. This directory must be generated
-#' by the user prior to running the function.
-#' @param sep The spacing of the data files. "" indicates space-delimited, "/t" indicates tab-delimited, ","
-#' indicates comma delimited.
-#' @param header Logical. Indicate TRUE for data files with a header.
+#' @param data The path to the directory where the data files are located, or the name of the
+#' list containing each individual's time series. Each file or matrix must contain one matrix 
+#' for each individual containing a T (time) by 
+#' p (number of variables) matrix where the columns represent variables and
+#' the rows represent time. 
+#' @param out The path to the directory where the results will be stored (optional). If specified,
+#' a copy of output files will be replaced in directory. If directory at specified path does not
+#' exist, it will be created.
+#' @param sep The spacing of the data files. "" indicates space-delimited, 
+#' "/t" indicates tab-delimited, "," indicates comma delimited. Only necessary to specify
+#' if reading data in from physical directory.
+#' @param header Logical. Indicate TRUE for data files with a header. Only necessary to specify
+#' if reading data in from physical directory.
 #' @param ar Logical. If TRUE, begins search for group model with autoregressive (AR) paths open. Defaults
 #' to TRUE.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables of interest will automatically
@@ -37,28 +42,13 @@
 #' }
 #' @author Stephanie Lane
 #' @examples
-#' data(ts1,ts2,ts3,ts4,ts5)
-#' input.path  <- file.path(tempdir(),"input")
-#' output.path <- file.path(tempdir(),"output")
-#' dir.create(input.path)
-#' dir.create(output.path)
-#' write.table(ts1,file.path(input.path,"ts1.txt"),col.names=FALSE,row.names=FALSE)
-#' write.table(ts2,file.path(input.path,"ts2.txt"),col.names=FALSE,row.names=FALSE)
-#' write.table(ts3,file.path(input.path,"ts3.txt"),col.names=FALSE,row.names=FALSE)
-#' write.table(ts4,file.path(input.path,"ts4.txt"),col.names=FALSE,row.names=FALSE)
-#' write.table(ts5,file.path(input.path,"ts5.txt"),col.names=FALSE,row.names=FALSE)
-#' aggSEM(data   = input.path,
-#'        out    = output.path,
-#'        sep    = "",
-#'        header = FALSE,
-#'        ar     = TRUE,
-#'        plot   = TRUE,
-#'        paths  = NULL)
+#' fit <- aggSEM(data = ts)
+#' print(fit, fitMeasures = TRUE)
 #' @export
 aggSEM <- function(data,
-                   out,
-                   sep,
-                   header,
+                   out = NULL,
+                   sep = NULL,
+                   header = NULL,
                    ar    = TRUE,
                    plot  = TRUE,
                    paths = NULL){
@@ -69,20 +59,24 @@ aggSEM <- function(data,
   varnames = setup.out$varnames
   syntax   = setup.out$syntax
   plot     = setup.out$plot
-  files    = list.files(setup.out$data,full.names=TRUE)
+  # files    = list.files(setup.out$data,full.names=TRUE)
   header   = setup.out$header
   sep      = setup.out$sep
+  data_list  = setup.out$ts_list
   subgroup = setup.out$subgroup
   agg      = setup.out$agg
   plot     = setup.out$plot
 
-  data.all <- data.frame()
-  for (k in 1:subjects){
-    data.file <- read.data(files[k],
-                           header = header,
-                           sep    = sep)
-    data.all  <- rbind(data.all,data.file)
-  }
+  # data.all <- data.frame()
+  # for (k in 1:subjects){
+  #   data.file <- read.data(files[k],
+  #                          header = header,
+  #                          sep    = sep)
+  #   data.all  <- rbind(data.all,data.file)
+  # }
+  
+  data.all <- do.call(rbind, data_list)
+  
   colnames(data.all) <- c(varnames)
 
   addind.out <- addind(done            = 0,
@@ -104,16 +98,22 @@ aggSEM <- function(data,
                              data.file     = data.all,
                              k             = 1)
 
-  all.elements <- final.fit.out$ind.elements
-  all.fit      <- as.matrix(final.fit.out$ind.fit)
-  all.fit[,1]  <- "all"
-  colnames(all.fit) <- c("subject", "chisq", "df", "pval",
+  all_ind_paths <- final.fit.out$ind.paths
+  all_elem <- final.fit.out$ind.elements
+  all_fit  <- as.matrix(final.fit.out$ind.fit)
+  all_fit[,1]  <- "all"
+  colnames(all_fit) <- c("subject", "chisq", "df", "pval",
                          "rmsea", "srmr", "nnfi", "cfi", "status")
-  row.names(all.elements) <- NULL
-  list <- list("all.elements" = all.elements,
-               "all.fit"      = all.fit,
-               "all.syntax"   = NULL,
-               "all.diff.sub" = FALSE)
+  row.names(all_elem) <- NULL
+  
+  ind_plot <- final.fit.out$ind_plot
+  
+  list <- list("all_elem" = all_elem,
+               "all_fit"      = all_fit,
+               "all_syntax"   = NULL,
+               "all_diff_sub" = FALSE,
+               "all_ind_paths" = all_ind_paths,
+               "ind_plot"      = ind_plot)
   return(list)
 }
 
@@ -128,9 +128,7 @@ aggSEM <- function(data,
                      subcutoff = NULL,
                      subgroup = FALSE,
                      ind      = FALSE,
-                     agg      = TRUE,
-                     deconvolve_hrf = FALSE,
-                     control=list(deconvolve_method="bush"))
+                     agg      = TRUE)
 
   agg.internal.out <- agg.internal(setup.out = setup.out)
 
@@ -138,11 +136,26 @@ aggSEM <- function(data,
                        setup.out           = setup.out)
 
   print.gimme.aggSEM(z=setup.out)
+  
+  final <- list(a = agg.internal.out$all_ind_paths,
+                b = setup.out$varnames,
+                c = setup.out$rois,
+                d = wrapup.out$fit,
+                e = wrapup.out$param_est,
+                f = NULL,
+                g = agg.internal.out$ind_plot,
+                h = NULL,
+                i = NULL)
+
+  class(final) <- "aggSEMp"
+  
+  invisible(final)
+  
 }
 
 print.gimme.aggSEM <- function(z){
   writeLines("aggSEM finished running normally")
-  writeLines(paste("output is stored in", z$out))
+  if (!is.null(z$out)) writeLines(paste("output is stored in", z$out))
 }
 ################################################################################
 ################################################################################
