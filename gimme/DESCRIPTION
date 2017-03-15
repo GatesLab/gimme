@@ -24,4 +24,4 @@ Description: Automated identification and estimation of group- and
 License: GPL-2
 LazyData: Yes
 Packaged: 2015-09-18 12:55:27 UTC; stlane
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

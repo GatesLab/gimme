@@ -61,4 +61,3 @@ print(fit, fitMeasures = TRUE)
 \author{
 Stephanie Lane
 }
-
