@@ -1055,10 +1055,10 @@ addind <- function (done,
     if (ar == FALSE & count.ind.paths == 0) check_zero_se <- FALSE
     
     if (check_npd == FALSE & check_zero_se == FALSE & converge == TRUE) {
-      
       all_mi          <- tryCatch(modindices(fit, op = "~"), error = function(e) e)  
       check_singular  <- any(grepl("singular", all_mi) == TRUE)
       empty_mi        <- ifelse(nrow(all_mi) == 0, TRUE, FALSE)
+      if (check_singular == TRUE) empty_mi <- TRUE
       converge        <- lavInspect(fit, "converged")
       check_error     <- any(grepl("error", class(all_mi))==TRUE)
       if (converge == FALSE){
@@ -1114,6 +1114,7 @@ addind <- function (done,
       all_mi            <- tryCatch(modindices(fit), error=function(e) e)
       check_singular    <- any(grepl("singular", all_mi) == TRUE)
       empty_mi          <- ifelse(nrow(all_mi) == 0, TRUE, FALSE)
+      if (check_singular == TRUE) empty_mi <- TRUE
       converge          <- lavInspect(fit, "converged")
       check_error       <- any(grepl("error", class(all_mi)) == TRUE)
       if (converge == FALSE){
