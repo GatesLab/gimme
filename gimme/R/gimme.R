@@ -307,7 +307,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
                 h = wrapup.out$sub_plots,
                 i = setup.out$subgroup,
                 j = wrapup.out$all_counts,
-                k = wrapup.out$sub_paths)
+                k = wrapup.out$sub_paths,
+                l = indsem.internal.out$vcov_params)
   
   class(final) <- "gimmep"
   
@@ -834,7 +835,7 @@ evalbetas <- function (setup.out,
   ar                = setup.out$ar
   varnames          = setup.out$varnames
   rois              = setup.out$rois
-  n_fixed_paths       = setup.out$n_fixed_paths
+  n_fixed_paths     = setup.out$n_fixed_paths
   groupcutoff       = setup.out$groupcutoff
   subcutoff         = setup.out$subcutoff
   
@@ -931,7 +932,7 @@ evalbetas <- function (setup.out,
         # for a person, which could result in it not being in the z.list object
         # this would then cause the object to be empty and throw an error later
         if (nrow(z.list) == 0 & post_sub_prune == TRUE){
-          z.list <- matrix(NA, nrow = length(group_paths), ncol = 2)
+          z.list <- matrix(NA, nrow = n_group_paths, ncol = 2)
         } 
         if (nrow(z.list) == 0 & post_sub_prune == FALSE){
           z.list <- matrix(NA, nrow = (rois + n_group_paths), ncol = 2)
@@ -944,7 +945,7 @@ evalbetas <- function (setup.out,
         if (post_sub_prune == FALSE){
           z.list <- matrix(NA, nrow = (rois + n_group_paths), ncol = 2)
         } else {
-          z.list <- matrix(NA, nrow = length(group_paths), ncol = 2)
+          z.list <- matrix(NA, nrow = n_group_paths, ncol = 2)
         }
         ## printing the step
         if(subgroup.step == FALSE) {
@@ -1380,10 +1381,11 @@ final.fit <- function(setup.out,
     }
   }
   
-  ind.fit <- matrix(NA, nrow = 1, ncol = 9)
+  ind.fit <- matrix(NA, nrow = 1, ncol = 10)
   if (converge == TRUE & check_singular == FALSE) {
+    vcov_ind <- lavInspect(fit, "vcov.std.all")
     indices <- fitMeasures(fit,c("chisq","df","pvalue","rmsea",
-                                 "srmr", "nnfi","cfi"))
+                                 "srmr", "nnfi","cfi", "bic"))
     # insert indfit
     ind.fit[1,2] <- round(indices[1], digits = 4)
     ind.fit[1,3] <- indices[2]
@@ -1392,10 +1394,11 @@ final.fit <- function(setup.out,
     ind.fit[1,6] <- round(indices[5], digits = 4)
     ind.fit[1,7] <- round(indices[7], digits = 4)
     ind.fit[1,8] <- round(indices[6], digits = 4)
+    ind.fit[1,9] <- round(indices[8], digits = 4)
     if (last.converge == FALSE) {
-      ind.fit[1,9] <- "last known convergence"
+      ind.fit[1,10] <- "last known convergence"
     } else {
-      ind.fit[1,9] <- "converged normally"
+      ind.fit[1,10] <- "converged normally"
     }
     
     indlist              <- subset(standardizedSolution(fit), op == "~")
@@ -1460,10 +1463,7 @@ final.fit <- function(setup.out,
       Contemporaneous        <- individual.paths.t[(rois+1):(rois*2),(rois+1):(rois*2)]
       eLagged                <- W2E(Lagged)
       eContemporaneous       <- W2E(Contemporaneous)
-      isLagged               <- c(rep(TRUE, nrow(eLagged)), rep(FALSE, nrow(eContemporaneous)))
-      # if an element is repeated, change its curve value
-      curve                  <- rep(1, length(isLagged))
-      curve[which(duplicated(rbind(eLagged, eContemporaneous)[,1:2]))] <- .5
+      isLagged               <- c(rep(TRUE, sum(Lagged != 0)), rep(FALSE, sum(Contemporaneous != 0)))
       plotind                <- file.path(individual,paste0(trackparts[k,2],"Plot.pdf"))
       if (agg == TRUE) {
         plotind <- file.path(out, "summaryPathsPlot.pdf")
@@ -1472,7 +1472,6 @@ final.fit <- function(setup.out,
                                   layout              = "circle",
                                   lty                 = ifelse(isLagged,2, 1),
                                   edge.labels         = F,
-                                  # curve               = curve,
                                   curve               = FALSE,
                                   parallelEdge        = TRUE,
                                   fade                = FALSE,
@@ -1483,7 +1482,8 @@ final.fit <- function(setup.out,
                                   edge.label.cex      = 1.5,
                                   edge.label.position = .3,
                                   DoNotPlot           = TRUE),error=function(e) e)
-      if (!is.null(out)){
+      donotplot <- ifelse("error" %in% class(ind_plot), TRUE, FALSE)
+      if (!is.null(out) & !donotplot){
         pdf(plotind)
         plot(ind_plot)
         dev.off()
@@ -1491,25 +1491,29 @@ final.fit <- function(setup.out,
     }
   }
   if (converge == FALSE) {
-    ind.fit[1,9] <- "nonconvergence"
+    ind.fit[1,10] <- "nonconvergence"
     indlist      <- data.frame()
     individual.paths <- data.frame()
+    vcov_ind <- NA
   }
   if (check_singular == TRUE) {
-    ind.fit[1,9] <- "computationally singular"
+    ind.fit[1,10] <- "computationally singular"
     indlist      <- data.frame()
     individual.paths <- data.frame()
+    vcov_ind <- NA
   }
   if (check_error == TRUE) {
-    ind.fit[1,9] <- "error"
+    ind.fit[1,10] <- "error"
     indlist      <- data.frame()
     individual.paths <- data.frame()
+    vcov_ind <- NA
   }
   list <- list("ind.fit"      = ind.fit,
                "ind.elements" = indlist,
                "syntax"       = syntax,
                "ind.paths"    = individual.paths,
-               "ind_plot"     = ind_plot)
+               "ind_plot"     = ind_plot,
+               "vcov_ind"     = vcov_ind)
   return(list)
 }
 
@@ -1527,12 +1531,13 @@ indsem.internal <- function(setup.out,
   ts_list          = setup.out$ts_list
   
   all_elem          <- data.frame()
-  all_fit           <- matrix(NA, nrow=subjects, ncol=9)
+  all_fit           <- matrix(NA, nrow=subjects, ncol=10)
   all_syntax        <- matrix(NA, nrow=subjects,ncol=4)
   all_ind_paths     <- list()
   all_plots         <- list()
+  vcov_params       <- list()
   colnames(all_fit) <- c("subject", "chisq", "df", "pval",
-                         "rmsea", "srmr", "nnfi", "cfi", "status")
+                         "rmsea", "srmr", "nnfi", "cfi", "bic", "status")
   
   #files            <- list.files(data, full.names=TRUE)
   
@@ -1621,6 +1626,7 @@ indsem.internal <- function(setup.out,
     all_syntax[k,1]    <- k
     all_ind_paths[[k]] <- final.fit.out$ind.paths
     all_plots[[k]]     <- final.fit.out$ind_plot
+    vcov_params[[k]]   <- final.fit.out$vcov_ind
     # names(all_ind_paths[k]) <- trackparts[k,2]
   }
   
@@ -1631,6 +1637,7 @@ indsem.internal <- function(setup.out,
   colnames(all_syntax) <- c("subject", "files", "syntax_ind", "syntax_group")
   names(all_ind_paths) <- trackparts[ ,2]
   names(all_plots)     <- trackparts[ ,2]
+  names(vcov_params)   <- trackparts[ ,2]
   
   if (subgroup == TRUE){
     colnames(sorted)[3] <- c("syntax_sub")
@@ -1640,7 +1647,7 @@ indsem.internal <- function(setup.out,
     modularity         <- append(modularity, rep("",nrow(all_fit)-1))
     all_fit            <- cbind(all_fit,modularity)
     colnames(all_fit)  <- c("subject", "chisq", "df", "pval",
-                            "rmsea", "srmr", "nnfi", "cfi", 
+                            "rmsea", "srmr", "nnfi", "cfi", "bic",
                             "status", "subgroup", "modularity")
     
   } else all.syntax_sub <- as.data.frame(all_syntax)
@@ -1650,7 +1657,8 @@ indsem.internal <- function(setup.out,
                "all_syntax"   = all.syntax_sub,
                "all_diff_sub" = all.diff.subgroups,
                "all_ind_paths" = all_ind_paths, 
-               "all_plots"     = all_plots)
+               "all_plots"     = all_plots,
+               "vcov_params"   = vcov_params)
   return(list)
 }
 
@@ -1675,7 +1683,7 @@ wrapup <- function(indsem.internal.out,
   agg          = setup.out$agg
   subgroup     = setup.out$subgroup
   all_ind_paths = indsem.internal.out$all_ind_paths
-  
+
   present = NULL
   sig     = NULL
   est.std = NULL

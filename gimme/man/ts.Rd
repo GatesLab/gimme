@@ -13,3 +13,4 @@ This object contains a list of simulated time series data for five individuals
 with 50 time points and 3 variables, or regions of interest.
 }
 \keyword{datasets}
+

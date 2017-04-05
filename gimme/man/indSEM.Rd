@@ -75,3 +75,4 @@ plot(fit, file = "group1.1")
 Stephanie Lane
 }
 \keyword{indSEM}
+

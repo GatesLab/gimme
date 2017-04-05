@@ -105,7 +105,8 @@ indSEM <- function(data,
                 g = wrapup.out$all_plot, 
                 h = NULL,
                 i = NULL,
-                j = wrapup.out$all_counts)
+                j = wrapup.out$all_counts,
+                l = indsem.internal.out$vcov_params)
   
   class(final) <- "indSEMp"
   

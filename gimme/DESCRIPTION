@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.2-1
-Date: 2017-3-8
+Version: 0.2-2
+Date: 2017-3-30
 Author: Stephanie Lane [aut, cre, trl],
     Kathleen Gates [aut],
     Peter Molenaar [aut],
@@ -15,7 +15,7 @@ Imports:
     igraph,
     qgraph,
     gWidgets
-Suggests: 
+Suggests:
     gWidgetsRGtk2,
     RGtk2
 Description: Automated identification and estimation of group- and
@@ -24,4 +24,4 @@ Description: Automated identification and estimation of group- and
 License: GPL-2
 LazyData: Yes
 Packaged: 2015-09-18 12:55:27 UTC; stlane
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1

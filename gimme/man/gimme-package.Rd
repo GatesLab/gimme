@@ -31,3 +31,4 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
 Maintainer: Stephanie Lane \email{slane@unc.edu}
 }
 \keyword{gimme}
+
