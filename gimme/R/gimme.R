@@ -272,7 +272,10 @@ gimmeSEM <- gimme <- function(data           = NULL,
     
   }
   
-  if (subgroup == FALSE) evalbetassub.out <- NULL
+  if (subgroup == FALSE) {
+    evalbetassub.out <- NULL
+    subsetup.out <- NULL
+  }
   
   ## this is the individual-level search, adds path for each individual
   ## runs one person at a time  indsem.internal.out <- list
@@ -308,7 +311,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
                 i = setup.out$subgroup,
                 j = wrapup.out$all_counts,
                 k = wrapup.out$sub_paths,
-                l = indsem.internal.out$vcov_params)
+                l = indsem.internal.out$vcov_params,
+                m = subsetup.out$sim)
   
   class(final) <- "gimmep"
   
@@ -601,10 +605,8 @@ setup <- function (data,
   return(list)
 }
 
-
 ## model for lavaan
-fit.model <- function (varnames,
-                       syntax,
+fit.model <- function (syntax,
                        data.file) {
   
   fit <- tryCatch(lavaan::lavaan(syntax,
@@ -626,18 +628,6 @@ fit.model <- function (varnames,
   return(fit)
 }
 
-## quick function that bypasses the need to read in data and write it back out
-## just reads in file and creates the lagged vars
-# read.data <- function (file,
-#                        sep,
-#                        header) {
-#   all       <- as.matrix(read.table(file, sep = sep, header = header))
-#   first     <- all[1:(nrow(all)-1), ]
-#   second    <- all[2:nrow(all), ]
-#   data.file <- data.frame(first, second)
-#   return(data.file)
-# }
-
 count_excellent <- function(indices){
   rmsea     <- indices[4]
   srmr      <- indices[5]
@@ -650,6 +640,13 @@ count_excellent <- function(indices){
   excellent <- sum(rmseaE, srmrE, cfiE, nnfiE)
   return(excellent)
 }
+
+# -- new note -- #
+# create function that just takes the highest MI 
+# feed it syntax, cutoff value, and cutoff proportion
+# it updates the syntax object
+# need to also feed in whether or not it is first round or second round?
+# move toward storing everything in a list
 
 ## this function is responsible for the group-level search procedure
 miSEM <- function (setup.out,
@@ -713,10 +710,6 @@ miSEM <- function (setup.out,
     ## section below just iteratively fits model, grabs MIs, selects one significant
     ## for most people, adds to syntax, continues until no path sig for majority (75%)
     for (k in 1:subjects){
-      # data.file           <- read.data(file   = files[k],
-      #                                  sep    = sep,
-      #                                  header = header)
-      # colnames(data.file) <- c(varnames)
       fit                 <- fit.model(syntax    = syntax,
                                        data.file = ts_list[[k]])
       
@@ -1199,7 +1192,7 @@ evalind <- function (addind.out,
       indlist        <- subset(indlist, param %in% vec.MI)
       parampruneposs <- as.character(indlist[which.min(indlist$z),1])
       parampruneval  <- as.numeric(indlist[which.min(indlist$z),2])
-      prune          <- ifelse(parampruneval>1.96, 0, 1)
+      prune          <- ifelse(abs(parampruneval)>1.96, 0, 1)
       if (nrow(indlist) == 0) prune <- 0
       if (prune == 1) {
         syntax       <- unlist(strsplit(syntax, "[\n]"))
@@ -1537,7 +1530,7 @@ indsem.internal <- function(setup.out,
   all_plots         <- list()
   vcov_params       <- list()
   colnames(all_fit) <- c("subject", "chisq", "df", "pval",
-                         "rmsea", "srmr", "nnfi", "cfi", "bic", "status")
+                         "rmsea", "srmr", "cfi", "nnfi", "bic", "status")
   
   #files            <- list.files(data, full.names=TRUE)
   
@@ -1647,7 +1640,7 @@ indsem.internal <- function(setup.out,
     modularity         <- append(modularity, rep("",nrow(all_fit)-1))
     all_fit            <- cbind(all_fit,modularity)
     colnames(all_fit)  <- c("subject", "chisq", "df", "pval",
-                            "rmsea", "srmr", "nnfi", "cfi", "bic",
+                            "rmsea", "srmr", "cfi", "nnfi", "bic",
                             "status", "subgroup", "modularity")
     
   } else all.syntax_sub <- as.data.frame(all_syntax)
@@ -1800,7 +1793,7 @@ wrapup <- function(indsem.internal.out,
           colorContemporaneous  <- sub.colors.t[(rois+1):(rois*2),(rois+1):(rois*2)]
           color.list       <- c(colorLagged,colorContemporaneous)
           color.list       <- color.list[!is.na(color.list)]
-          isLagged         <- c(rep(TRUE,nrow(eLagged)), rep(FALSE,nrow(eContemporaneous)))
+          isLagged         <- c(rep(TRUE, sum(Lagged != 0)), rep(FALSE, sum(Contemporaneous != 0)))
           # if an element is repeated, change its curve value
           curve            <- rep(1, length(isLagged))
           curve[which(duplicated(rbind(eLagged, eContemporaneous)[,1:2]))] <- .5
@@ -1951,7 +1944,7 @@ wrapup <- function(indsem.internal.out,
       colorContemporaneous  <- final.colors.t[(rois+1):(rois*2),(rois+1):(rois*2)]
       color.list       <- c(colorLagged,colorContemporaneous)
       color.list       <- color.list[!is.na(color.list)]
-      isLagged         <- c(rep(TRUE, nrow(eLagged)), rep(FALSE, nrow(eContemporaneous)))
+      isLagged         <- c(rep(TRUE, sum(Lagged != 0)), rep(FALSE, sum(Contemporaneous != 0)))
       plotfinal        <- file.path(out,"summaryPathsPlot.pdf")
       # if an element is repeated, change its curve value
       curve                  <- rep(1, length(isLagged))
@@ -2386,3 +2379,10 @@ recoderFunc <- function(data,
   newvec
 }
 ################################################################################
+expand.grid.unique <- function(x, y, incl.eq = TRUE){
+  g <- function(i){
+    z <- setdiff(y, x[seq_len(i - incl.eq)])
+    if(length(z)) cbind(x[i], z, deparse.level = 0)
+  }
+  do.call(rbind, lapply(seq_along(x), g))
+}
