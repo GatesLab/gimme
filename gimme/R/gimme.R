@@ -1190,8 +1190,8 @@ evalind <- function (addind.out,
       indlist        <- as.data.frame(indlist)
       indlist$z      <- as.numeric(as.character(indlist$z))
       indlist        <- subset(indlist, param %in% vec.MI)
-      parampruneposs <- as.character(indlist[which.min(indlist$z),1])
-      parampruneval  <- as.numeric(indlist[which.min(indlist$z),2])
+      parampruneposs <- as.character(indlist[which.min(abs(indlist$z)),1])
+      parampruneval  <- as.numeric(indlist[which.min(abs(indlist$z)),2])
       prune          <- ifelse(abs(parampruneval)>1.96, 0, 1)
       if (nrow(indlist) == 0) prune <- 0
       if (prune == 1) {
