@@ -11,7 +11,7 @@
 #' Maintainer: Stephanie Lane \email{slane@@unc.edu}
 #' @import lavaan gWidgets
 #' @importFrom grDevices dev.off pdf
-#' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd
+#' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit
 #' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv
 #' @importFrom qgraph qgraph
 #' @importFrom igraph graph.adjacency walktrap.community modularity

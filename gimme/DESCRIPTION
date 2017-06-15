@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.2-2
-Date: 2017-05-15
+Version: 0.3-0
+Date: 2017-06-09
 Author: Stephanie Lane [aut, cre, trl],
     Kathleen Gates [aut],
     Peter Molenaar [aut],
@@ -22,6 +22,6 @@ Description: Automated identification and estimation of group- and
     individual-level relations in time series data from within a structural
     equation modeling framework.
 License: GPL-2
-LazyData: Yes
+LazyData: true
 Packaged: 2015-09-18 12:55:27 UTC; stlane
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
