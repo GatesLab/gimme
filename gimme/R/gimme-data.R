@@ -1,55 +1,24 @@
-#' Example heterogeneous data, 1
+#' Small example, heterogeneous data, group and individual level effects
 #'
-#' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
+#' This object contains a list of simulated time series data for five individuals 
+#' with 50 time points and 3 variables, or regions of interest.
 #'
 #' @docType data
 #' @keywords datasets
-#' @name ts1
-#' @usage ts1
-#' @format A data frame with 50 observations on 3 variables.
+#' @name ts
+#' @usage ts
+#' @format A list of data frames with 5 individuals, who each have 50 observations on 3 variables.
 NULL
 
-#' Example heterogeneous data, 2
+#' Large example, heterogeneous data, group, subgroup, and individual level effects.
 #'
-#' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
-#'
-#' @docType data
-#' @keywords datasets
-#' @name ts2
-#' @usage ts2
-#' @format A data frame with 50 observations on 3 variables.
-NULL
-
-#' Example heterogeneous data, 3
-#'
-#' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
+#' This object contains a list of simulated time series data for twenty-five individuals 
+#' with 200 time points and 10 variables, or regions of interest. 
 #'
 #' @docType data
 #' @keywords datasets
-#' @name ts3
-#' @usage ts3
-#' @format A data frame with 50 observations on 3 variables.
-NULL
-
-#' Example heterogeneous data, 4
-#'
-#' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
-#'
-#' @docType data
-#' @keywords datasets
-#' @name ts4
-#' @usage ts4
-#' @format A data frame with 50 observations on 3 variables.
-NULL
-
-#' Example heterogeneous data, 5
-#'
-#' This data contains simulated time-series data for a single individual with 50 time points and 3 variables, or regions of interest.
-#'
-#' @docType data
-#' @keywords datasets
-#' @name ts5
-#' @usage ts5
-#' @format A data frame with 50 observations on 3 variables.
+#' @name simData
+#' @usage simData
+#' @format A list of data frames with 25 individuals, who each have 200 observations on 10 variables.
 NULL
 
