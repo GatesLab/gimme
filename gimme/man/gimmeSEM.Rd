@@ -12,6 +12,7 @@ gimmeSEM(data        = "",
          ar          = TRUE,
          plot        = TRUE,
          subgroup    = FALSE,
+         confirm_subgroup = NULL,
          paths       = NULL,
          groupcutoff = .75,
          subcutoff   = .5,
@@ -51,6 +52,10 @@ the width of the edge corresponds to the count. Defaults to TRUE.}
 \item{subgroup}{Logical. If TRUE, subgroups are generated based on
 similarities in model features using the \code{walktrap.community} 
 function from the \code{igraph} package.}
+
+\item{confirm_subgroup}{Dataframe. If subgroup is also TRUE , subgroups are generated
+based on the given subgroup labels contained in the dataframe. Dataframe has 2 columns,
+the first referring to file labels, and the second an integer variable referring to subgroup label.}
 
 \item{paths}{\code{lavaan}-style syntax containing paths with which
 to begin model estimation. That is, Y~X indicates that Y 

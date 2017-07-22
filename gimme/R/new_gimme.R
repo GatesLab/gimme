@@ -11,6 +11,7 @@
 #'          ar          = TRUE,
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
+#'          confirm_subgroup = NULL,
 #'          paths       = NULL,
 #'          groupcutoff = .75,
 #'          subcutoff   = .5,
@@ -50,6 +51,9 @@
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community} 
 #' function from the \code{igraph} package.
+#' @param confirm_subgroup Dataframe. If subgroup is also TRUE , subgroups are generated
+#' based on the given subgroup labels contained in the dataframe. Dataframe has 2 columns,
+#' the first referring to file labels, and the second an integer variable referring to subgroup label.
 #' @param groupcutoff Cutoff value for group- level paths. Defaults to .75, 
 #' indicating that a path must be significant across 75\% of individuals to be 
 #' included as a group-level path.
@@ -134,6 +138,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               ar             = TRUE,
                               plot           = TRUE,
                               subgroup       = FALSE,
+                              confirm_subgroup = NULL,
                               paths          = NULL,
                               groupcutoff    = .75,
                               subcutoff      = .5,
@@ -194,7 +199,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
                                n_subj       = dat$n_subj,
                                chisq_cutoff = dat$chisq_cutoff_mi_epc,
                                file_order   = dat$file_order,
-                               elig_paths   = dat$candidate_paths)
+                               elig_paths   = dat$candidate_paths,
+                               confirm_subgroup = confirm_subgroup)
     
   # begin subgroup-level search for paths ------------------------------------ #
   
