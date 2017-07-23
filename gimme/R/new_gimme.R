@@ -131,6 +131,10 @@
 #'  }
 #' @keywords gimmeSEM
 #' @export gimme gimmeSEM
+
+# TODO: Add exogenous paths argument and description of exogenous paths to documentation text
+
+# TODO: Add exogenous paths argument
 gimmeSEM <- gimme <- function(data           = NULL,
                               out            = NULL,
                               sep            = NULL,
@@ -146,6 +150,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
   
   membership = NULL
   
+  # TODO: Add exogenous paths argument
   dat         <- setup(data                 = data,
                        sep                  = sep,
                        header               = header,

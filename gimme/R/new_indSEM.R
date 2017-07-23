@@ -75,6 +75,10 @@
 #'  }
 #'@keywords indSEM
 #'@export
+
+# TODO: Add information to documentation
+
+# TODO: Add exogenous argument
 indSEM <- function(data,
                    out    = NULL,
                    sep    = NULL,
@@ -83,6 +87,8 @@ indSEM <- function(data,
                    plot   = TRUE,
                    paths  = NULL){
   
+
+# TODO: Add exogenous argument
   dat  <- setup(data        = data,
                 sep         = sep,
                 header      = header,

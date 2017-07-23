@@ -65,6 +65,10 @@
 #' }
 #' plot(exFit)
 #' @export
+
+# TODO: Add information to documentation
+# TODO: Add argument for exogenous variables
+
 aggSEM <- function(data,
                    out    = NULL,
                    sep    = NULL,
@@ -77,6 +81,8 @@ aggSEM <- function(data,
   grp      = NULL # appease CRAN check
   sub_spec = NULL # appease CRAN check
 
+  # TODO: Add argument for exogenous variables
+  
   dat  <- setup(data        = data,
                 sep         = sep,
                 header      = header,

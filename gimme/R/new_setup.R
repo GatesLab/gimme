@@ -1,5 +1,6 @@
 
 ## this setup function creates many values that later code refers back to
+# TODO: Add exogenous argument
 setup <- function (data,
                    sep,
                    header,
@@ -147,6 +148,9 @@ setup <- function (data,
   }
   
   #------------------------------------------------------------------------------#
+  
+  # TODO: Add warning if directionality of exogenous variable is incorrectly specified
+  
   # prepare paths if semigimme is specified
   if (!is.null(paths))
   {
@@ -206,6 +210,7 @@ setup <- function (data,
   
   if (!is.null(paths)) syntax <- c(syntax, paths)
   
+  # TODO: Update so that exogenous variables can only be candidates in one direction
   ## create list of paths that make sense to gimme to open
   candidate_paths   <- apply(expand.grid(lvarnames[(rois+1):vars], 
                                          lvarnames[1:vars]), 1, paste, collapse = "~")
