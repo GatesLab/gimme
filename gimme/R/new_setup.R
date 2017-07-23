@@ -1,6 +1,7 @@
 
 ## this setup function creates many values that later code refers back to
 # TODO: Add exogenous argument
+# TODO: Potentially add warnings if exogenous argument is incorrectly specified
 setup <- function (data,
                    sep,
                    header,
@@ -211,6 +212,11 @@ setup <- function (data,
   if (!is.null(paths)) syntax <- c(syntax, paths)
   
   # TODO: Update so that exogenous variables can only be candidates in one direction
+  # TODO: Var names that are exogenous cannot have paths drawn to them just like lagged variable
+  # TODO: Cannot have paths drawn to them.  Here, a path that makes sense to open is one that goes
+  # TODO: from an exogenous variable to a endogenous variable.  Because this automatically opens
+  # all paths need to say "except these".  Exogenous variables will feed in from 'exogenous' argument.
+  # Can subset by those.
   ## create list of paths that make sense to gimme to open
   candidate_paths   <- apply(expand.grid(lvarnames[(rois+1):vars], 
                                          lvarnames[1:vars]), 1, paste, collapse = "~")
