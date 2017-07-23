@@ -1,6 +1,6 @@
 
 ## this setup function creates many values that later code refers back to
-# TODO: Add exogenous argument
+
 # TODO: Potentially add warnings if exogenous argument is incorrectly specified
 setup <- function (data,
                    sep,
@@ -9,6 +9,7 @@ setup <- function (data,
                    plot,
                    ar,
                    paths,
+                   exogenous,
                    subgroup,
                    agg,
                    ind,

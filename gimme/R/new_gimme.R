@@ -13,6 +13,7 @@
 #'          subgroup    = FALSE,
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
+#'          exogenous   = NULL,
 #'          groupcutoff = .75,
 #'          subcutoff   = .5,
 #'          diagnos     = FALSE)
@@ -40,6 +41,12 @@
 #' header is used, variables should be referred to using variable names. 
 #' To reference lag variables, "lag" should be added to the end of the variable 
 #' name with no separation. Defaults to NULL.
+#' @param exogenous Vector of variable names containing variables
+#' to be treated as exogenous.  That is, exogenous variable X can predict Y 
+#' but cannot be predicted by Y.  If no header is used, then variables should 
+#' be referred to with V followed (with no separation) by the column number. 
+#' If a header is used, variables should be referred to using variable names.
+#' Defaults to NULL.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables 
 #' of interest will automatically be
 #' created. For individual-level plots, red paths represent positive weights 
@@ -132,9 +139,6 @@
 #' @keywords gimmeSEM
 #' @export gimme gimmeSEM
 
-# TODO: Add exogenous paths argument and description of exogenous paths to documentation text
-
-# TODO: Add exogenous paths argument
 gimmeSEM <- gimme <- function(data           = NULL,
                               out            = NULL,
                               sep            = NULL,
@@ -144,13 +148,13 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               subgroup       = FALSE,
                               confirm_subgroup = NULL,
                               paths          = NULL,
+                              exogenous      = NULL,
                               groupcutoff    = .75,
                               subcutoff      = .5,
                               diagnos        = FALSE){
   
   membership = NULL
   
-  # TODO: Add exogenous paths argument
   dat         <- setup(data                 = data,
                        sep                  = sep,
                        header               = header,
@@ -158,6 +162,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        plot                 = plot,
                        ar                   = ar,
                        paths                = paths,
+                       exogenous            = exogenous,
                        subgroup             = subgroup,
                        ind                  = FALSE,
                        agg                  = FALSE,
