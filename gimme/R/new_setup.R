@@ -162,6 +162,9 @@ setup <- function (data,
       dvsFree      <- recode.vars(tableFree$lhs, varnames, lvarnames)
       ivsFree      <- recode.vars(tableFree$rhs, varnames, lvarnames)
       
+      # check if any exogenous variables have been incorrectly specified
+      # for free paths
+      if(!is.null(exogenous)){
       for (evar in exogenous){
         if (evar %in% dvsFree){
           stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
@@ -169,6 +172,8 @@ setup <- function (data,
                       correct path specification'))
         }
       }
+      }
+      
       if (nrow(tableFree) != 0){
         vsFree       <- paste0(dvsFree, "~", ivsFree)
       } else vsFree <- NULL
@@ -177,13 +182,17 @@ setup <- function (data,
       if (nrow(tableFixed) > 0){
         dvsFixed     <- recode.vars(tableFixed$lhs, varnames, lvarnames)
         
+        # check if any exogenous variables have been incorrectly specified
+        # for fixed paths
+        if (!is.null(exogenous)){
         for (evar in exogenous){
           if (evar %in% dvsFixed){
             stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                         specified paths.  Please remove variable from exogenous list or 
                         correct path specification'))
           }
-          }
+        }
+        }
         ivsFixed     <- recode.vars(tableFixed$rhs, varnames, lvarnames)
         vsFixed      <- paste0(dvsFixed, "~", ivsFixed)
       } else {
@@ -238,6 +247,18 @@ setup <- function (data,
   # if path specified by a user is fixed to a certain value, 
   # remove it from consideration when looking at MIs
   candidate_paths <- candidate_paths[!candidate_paths %in% remove]
+  
+  ## create list of impossible exogenous paths
+  exog_paths<-NULL
+  if(!is.null(exogneous)){
+  exog_paths <- apply(expand.grid(exogenous[1:exogenous],
+                  lvarnames[1:vars]), 1, paste, collapse = "~")
+  }
+  
+  # remove impossible exogenous paths from candidate paths
+  if(!is.null(exog_paths)){
+  candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
+  }
   
   ## creates list of AR paths so that later code doesn't kick them out
   fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
