@@ -1,7 +1,6 @@
 
 ## this setup function creates many values that later code refers back to
 
-# TODO: Potentially add warnings if exogenous argument is incorrectly specified
 setup <- function (data,
                    sep,
                    header,
@@ -151,8 +150,6 @@ setup <- function (data,
   
   #------------------------------------------------------------------------------#
   
-  # TODO: Add warning if directionality of exogenous variable is incorrectly specified
-  
   # prepare paths if semigimme is specified
   if (!is.null(paths))
   {
@@ -164,6 +161,14 @@ setup <- function (data,
       tableFree    <- table[table$op == "~" & table$free != 0, ]
       dvsFree      <- recode.vars(tableFree$lhs, varnames, lvarnames)
       ivsFree      <- recode.vars(tableFree$rhs, varnames, lvarnames)
+      
+      for (evar in exogenous){
+        if (evar %in% dvsFree){
+          stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
+                      specified paths.  Please remove variable from exogenous list or 
+                      correct path specification'))
+        }
+      }
       if (nrow(tableFree) != 0){
         vsFree       <- paste0(dvsFree, "~", ivsFree)
       } else vsFree <- NULL
@@ -171,6 +176,14 @@ setup <- function (data,
       tableFixed   <- table[table$op == "~" & table$free == 0,]
       if (nrow(tableFixed) > 0){
         dvsFixed     <- recode.vars(tableFixed$lhs, varnames, lvarnames)
+        
+        for (evar in exogenous){
+          if (evar %in% dvsFixed){
+            stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
+                        specified paths.  Please remove variable from exogenous list or 
+                        correct path specification'))
+          }
+          }
         ivsFixed     <- recode.vars(tableFixed$rhs, varnames, lvarnames)
         vsFixed      <- paste0(dvsFixed, "~", ivsFixed)
       } else {
