@@ -245,8 +245,8 @@ setup <- function (data,
   
   ## create list of impossible exogenous paths
   exog_paths<-NULL
-  if(!is.null(exogneous)){
-  exog_paths <- apply(expand.grid(exogenous[1:exogenous],
+  if(!is.null(exogenous)){
+  exog_paths <- apply(expand.grid(exogenous[1:length(exogenous)],
                   lvarnames[1:vars]), 1, paste, collapse = "~")
   }
   
