@@ -52,6 +52,7 @@ setup <- function (data,
   # simplify creation of variable names
   varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
   lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
+  lexogenous <- recode.vars(exogenous, varnames, lvarnames)
   
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
@@ -148,6 +149,7 @@ setup <- function (data,
     plot.names <- ""
   }
   
+  # check to make sure variables in exogenous argument exist in data
   if(!is.null(exogenous)){
     for(exog in exogenous)
     if (!exog %in% varnames){
@@ -171,9 +173,9 @@ setup <- function (data,
       
       # check if any exogenous variables have been incorrectly specified
       # for free paths
-      if(!is.null(exogenous)){
-      for (evar in exogenous){
-        if (evar %in% dvsFree){
+      if(!is.null(lexogenous)){
+      for (exog in lexogenous){
+        if (exog %in% dvsFree){
           stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                       specified paths.  Please remove variable from exogenous list or 
                       correct path specification'))
@@ -191,9 +193,9 @@ setup <- function (data,
         
         # check if any exogenous variables have been incorrectly specified
         # for fixed paths
-        if (!is.null(exogenous)){
-        for (evar in exogenous){
-          if (evar %in% dvsFixed){
+        if (!is.null(lexogenous)){
+        for (exog in lexogenous){
+          if (exog %in% dvsFixed){
             stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                         specified paths.  Please remove variable from exogenous list or 
                         correct path specification'))
@@ -252,9 +254,7 @@ setup <- function (data,
   
   ## create list of impossible exogenous paths
   exog_paths<-NULL
-  if(!is.null(exogenous)){
-  #recode exogenous variables
-  lexogenous <- recode.vars(exogenous, varnames, lvarnames)
+  if(!is.null(lexogenous)){
   exog_paths <- apply(expand.grid(lexogenous[1:length(lexogenous)],
                   lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
   }
