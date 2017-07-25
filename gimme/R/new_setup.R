@@ -148,6 +148,13 @@ setup <- function (data,
     plot.names <- ""
   }
   
+  if(!is.null(exogenous)){
+    for(exog in exogenous)
+    if (!exog %in% varnames){
+      stop(paste0('gimme ERROR: Exogenous variable name not in data column names
+                  Please fix.'))
+    }
+  }
   #------------------------------------------------------------------------------#
   
   # prepare paths if semigimme is specified
