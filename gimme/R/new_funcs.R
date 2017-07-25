@@ -477,7 +477,7 @@ determine.subgroups <- function(data_list,
   sim           <- sim - min(sim, na.rm = TRUE)
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
-  if(!is.null(confirm_subgroup)){
+  if(is.null(confirm_subgroup)){
   res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
                                    steps = 4)
   sub_mem    <- data.frame(names      = names(membership(res)), 
