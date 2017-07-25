@@ -38,12 +38,11 @@
 #' variables should be referred to using variable names. To reference lag 
 #' variables, "lag" should be added to the end of the variable name with no 
 #' separation. Defaults to NULL.
-#' @param exogenous Vector of variable names containing variables
-#' to be treated as exogenous.  That is, exogenous variable X can predict Y 
-#' but cannot be predicted by Y.  If no header is used, then variables should 
-#' be referred to with V followed (with no separation) by the column number. 
-#' If a header is used, variables should be referred to using variable names.
-#' Defaults to NULL.
+#' @param exogenous Vector of variable names to be treated as exogenous.  
+#' That is, exogenous variable X can predict Y  but cannot be predicted by Y.  
+#' If no header is used, then variables should be referred to with V followed 
+#' (with no separation) by the column number. If a header is used, variables 
+#' should be referred to using variable names.  Defaults to NULL.
 #' @details
 #'  In main output directory:
 #'  \itemize{
