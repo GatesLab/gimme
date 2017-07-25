@@ -246,8 +246,10 @@ setup <- function (data,
   ## create list of impossible exogenous paths
   exog_paths<-NULL
   if(!is.null(exogenous)){
-  exog_paths <- apply(expand.grid(exogenous[1:length(exogenous)],
-                  lvarnames[1:vars]), 1, paste, collapse = "~")
+  #recode exogenous variables
+  lexogenous <- recode.vars(exogenous, varnames, lvarnames)
+  exog_paths <- apply(expand.grid(lexogenous[1:length(lexogenous)],
+                  lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
   }
   
   # remove impossible exogenous paths from candidate paths
