@@ -52,8 +52,10 @@ setup <- function (data,
   # simplify creation of variable names
   varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
   lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
-  lexogenous <- recode.vars(exogenous, varnames, lvarnames)
   
+  if (!is.null(exogenous)){
+    lexogenous <- recode.vars(exogenous, varnames, lvarnames)
+  }
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
     all          <- ts_list[[p]]
