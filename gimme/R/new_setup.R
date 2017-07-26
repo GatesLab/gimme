@@ -53,9 +53,11 @@ setup <- function (data,
   varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
   lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
   
+  lexogenous<- NULL
   if (!is.null(exogenous)){
     lexogenous <- recode.vars(exogenous, varnames, lvarnames)
   }
+  
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
     all          <- ts_list[[p]]
@@ -175,7 +177,7 @@ setup <- function (data,
       
       # check if any exogenous variables have been incorrectly specified
       # for free paths
-      if(!is.null(lexogenous)){
+      if(!is.null(exogenous)){
       for (exog in lexogenous){
         if (exog %in% dvsFree){
           stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
