@@ -109,7 +109,6 @@ While *gimme* is running you will see information iterate in the command window.
 
     -   ***id*Plot**: Contains individual-level plots. Red paths represent positive weights and blue paths represent negative weights.
 
-\newpage
 **FAQ**
 =======
 
