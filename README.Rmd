@@ -70,8 +70,9 @@ __3. Installing gimme with R__
   + Open an R script and enter into the console: `install.packages("gimme")`
   
   + Once gimme has been installed, you will need to load the package by entering: `library(gimme)`
-  
+
 __4. Running gimme__
+
    The *gimme* (or equivelantly, *gimmeSEM*) function requires that you input:
    1. Source directory
    2. How data are separated (e..g, comma-separated values)
@@ -142,7 +143,7 @@ Do some initial trouble-shooting.
 2. Ensure that all variables have variability (i.e., are not constant). *gimme* will let you know if this is the case. 
 3. Ensure your path directories are correct. 
 4. Ensure that the columns are variables and the rows contain the observations across time. 
-5. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: echo gimme@unc.edu. 
+5. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: gimme@unc.edu. 
 
 
 

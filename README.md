@@ -57,7 +57,9 @@ Program developers are invited to submit changes here at the GitHub repository.
 
 -   Once gimme has been installed, you will need to load the package by entering: `library(gimme)`
 
-**4. Running gimme** The *gimme* (or equivelantly, *gimmeSEM*) function requires that you input: 1. Source directory 2. How data are separated (e..g, comma-separated values) 3. If there is a header
+**4. Running gimme**
+
+The *gimme* (or equivelantly, *gimmeSEM*) function requires that you input: 1. Source directory 2. How data are separated (e..g, comma-separated values) 3. If there is a header
 
 All other fields are optional and will go to defaults if no user input is provided. If no output directory is indicated, all information is stored as R objects (see tutorial linked above for details).
 
@@ -118,4 +120,4 @@ While *gimme* is running you will see information iterate in the command window.
 
 **How many people do I need in my sample?** For regular *gimmme*, reliable results are obtained with as few as 10 participants. Remember that in this context, power to detect effects is determined by the number of time points rather than the number of individuals. Still, having at least 10 individuals helps *gimme* to detect signal from noise by looking for effects that consistently occur.
 
-**What do I do if I obtain an error?** Do some initial trouble-shooting. 1. Ensure that all of your individuals have the same number of variables (columns) in their data sets. 2. Ensure that all variables have variability (i.e., are not constant). *gimme* will let you know if this is the case. 3. Ensure your path directories are correct. 4. Ensure that the columns are variables and the rows contain the observations across time. 5. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: echo <gimme@unc.edu>.
+**What do I do if I obtain an error?** Do some initial trouble-shooting. 1. Ensure that all of your individuals have the same number of variables (columns) in their data sets. 2. Ensure that all variables have variability (i.e., are not constant). *gimme* will let you know if this is the case. 3. Ensure your path directories are correct. 4. Ensure that the columns are variables and the rows contain the observations across time. 5. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: <gimme@unc.edu>.
