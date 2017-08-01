@@ -93,7 +93,7 @@ gimme(                  # can use "gimme" or "gimmeSEM"
     )        
 ```
 While *gimme* is running you will see information iterate in the command window. The algorithm will tell you when it is finished.
-\newpage
+
 
 # **Output**
 
