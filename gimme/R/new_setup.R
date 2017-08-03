@@ -1,5 +1,6 @@
 
 ## this setup function creates many values that later code refers back to
+
 setup <- function (data,
                    sep,
                    header,
@@ -7,6 +8,7 @@ setup <- function (data,
                    plot,
                    ar,
                    paths,
+                   exogenous,
                    subgroup,
                    agg,
                    ind,
@@ -50,6 +52,11 @@ setup <- function (data,
   # simplify creation of variable names
   varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
   lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
+  
+  lexogenous<- NULL
+  if (!is.null(exogenous)){
+    lexogenous <- recode.vars(exogenous, varnames, lvarnames)
+  }
   
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
@@ -146,7 +153,16 @@ setup <- function (data,
     plot.names <- ""
   }
   
+  # check to make sure variables in exogenous argument exist in data
+  if(!is.null(exogenous)){
+    for(exog in exogenous)
+    if (!exog %in% varnames){
+      stop(paste0('gimme ERROR: Exogenous variable name not in data column names
+                  Please fix.'))
+    }
+  }
   #------------------------------------------------------------------------------#
+  
   # prepare paths if semigimme is specified
   if (!is.null(paths))
   {
@@ -158,6 +174,19 @@ setup <- function (data,
       tableFree    <- table[table$op == "~" & table$free != 0, ]
       dvsFree      <- recode.vars(tableFree$lhs, varnames, lvarnames)
       ivsFree      <- recode.vars(tableFree$rhs, varnames, lvarnames)
+      
+      # check if any exogenous variables have been incorrectly specified
+      # for free paths
+      if(!is.null(exogenous)){
+      for (exog in lexogenous){
+        if (exog %in% dvsFree){
+          stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
+                      specified paths.  Please remove variable from exogenous list or 
+                      correct path specification'))
+        }
+      }
+      }
+      
       if (nrow(tableFree) != 0){
         vsFree       <- paste0(dvsFree, "~", ivsFree)
       } else vsFree <- NULL
@@ -165,6 +194,19 @@ setup <- function (data,
       tableFixed   <- table[table$op == "~" & table$free == 0,]
       if (nrow(tableFixed) > 0){
         dvsFixed     <- recode.vars(tableFixed$lhs, varnames, lvarnames)
+        
+        # check if any exogenous variables have been incorrectly specified
+        # for fixed paths
+        if (!is.null(lexogenous)){
+        for (exog in lexogenous){
+          if (exog %in% dvsFixed){
+            stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
+                        specified paths.  Please remove variable from exogenous list or 
+                        correct path specification'))
+          }
+        }
+        }
+        
         ivsFixed     <- recode.vars(tableFixed$rhs, varnames, lvarnames)
         vsFixed      <- paste0(dvsFixed, "~", ivsFixed)
       } else {
@@ -213,6 +255,18 @@ setup <- function (data,
   # if path specified by a user is fixed to a certain value, 
   # remove it from consideration when looking at MIs
   candidate_paths <- candidate_paths[!candidate_paths %in% remove]
+  
+  ## create list of impossible exogenous paths
+  exog_paths<-NULL
+  if(!is.null(lexogenous)){
+  exog_paths <- apply(expand.grid(lexogenous[1:length(lexogenous)],
+                  lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
+  }
+  
+  # remove impossible exogenous paths from candidate paths
+  if(!is.null(exog_paths)){
+  candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
+  }
   
   ## creates list of AR paths so that later code doesn't kick them out
   fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 

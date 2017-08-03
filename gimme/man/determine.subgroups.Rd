@@ -5,7 +5,7 @@
 \title{Determines subgroups.}
 \usage{
 determine.subgroups(data_list, base_syntax, n_subj, chisq_cutoff, file_order,
-  elig_paths)
+  elig_paths, confirm_subgroup)
 }
 \arguments{
 \item{data_list}{A list of all datasets.}
@@ -23,6 +23,9 @@ order.}
 \item{elig_paths}{A character vector containing eligible paths that
 gimme is allowed to add to the model. Ensures only EPCs from allowable paths
 are considered in the creation of the similarity matrix.}
+
+\item{confirm_subgroup}{A dataframe with the first column a string vector of data file names
+without extensions and the second vector a integer vector of subgroup labels.}
 }
 \value{
 Returns sub object containing similarity matrix, the number of

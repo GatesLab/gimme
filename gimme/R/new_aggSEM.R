@@ -10,7 +10,8 @@
 #'        header = ,
 #'        ar     = TRUE,
 #'        plot   = TRUE,
-#'        paths  = NULL)
+#'        paths  = NULL
+#'        exogenous = NULL)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. 
 #' Each file or matrix must contain one matrix 
@@ -39,6 +40,11 @@
 #' header is used, variables should be referred to using variable names. 
 #' To reference lag variables, "lag" should be added to the end of the variable 
 #' name with no separation. Defaults to NULL.
+#'  @param exogenous Vector of variable names to be treated as exogenous.  
+#' That is, exogenous variable X can predict Y  but cannot be predicted by Y.  
+#' If no header is used, then variables should be referred to with V followed 
+#' (with no separation) by the column number. If a header is used, variables 
+#' should be referred to using variable names.  Defaults to NULL.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -65,18 +71,21 @@
 #' }
 #' plot(exFit)
 #' @export
+
 aggSEM <- function(data,
                    out    = NULL,
                    sep    = NULL,
                    header = NULL,
                    ar     = TRUE,
                    plot   = TRUE,
-                   paths  = NULL){
+                   paths  = NULL,
+                   exogenous = NULL){
   
   ind      = NULL # appease CRAN check
   grp      = NULL # appease CRAN check
   sub_spec = NULL # appease CRAN check
 
+  
   dat  <- setup(data        = data,
                 sep         = sep,
                 header      = header,
@@ -84,6 +93,7 @@ aggSEM <- function(data,
                 plot        = plot,
                 ar          = ar,
                 paths       = paths,
+                exogenous   = exogenous,
                 groupcutoff = NULL,
                 subcutoff   = NULL,
                 subgroup    = FALSE,

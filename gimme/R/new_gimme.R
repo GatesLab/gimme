@@ -11,7 +11,9 @@
 #'          ar          = TRUE,
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
+#'          confirm_subgroup = NULL,
 #'          paths       = NULL,
+#'          exogenous   = NULL,
 #'          groupcutoff = .75,
 #'          subcutoff   = .5,
 #'          diagnos     = FALSE)
@@ -39,6 +41,11 @@
 #' header is used, variables should be referred to using variable names. 
 #' To reference lag variables, "lag" should be added to the end of the variable 
 #' name with no separation. Defaults to NULL.
+#' @param exogenous Vector of variable names to be treated as exogenous.  
+#' That is, exogenous variable X can predict Y  but cannot be predicted by Y.  
+#' If no header is used, then variables should be referred to with V followed 
+#' (with no separation) by the column number. If a header is used, variables 
+#' should be referred to using variable names.  Defaults to NULL.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables 
 #' of interest will automatically be
 #' created. For individual-level plots, red paths represent positive weights 
@@ -50,6 +57,9 @@
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community} 
 #' function from the \code{igraph} package.
+#' @param confirm_subgroup Dataframe. If subgroup is also TRUE , subgroups are generated
+#' based on the given subgroup labels contained in the dataframe. Dataframe has 2 columns,
+#' the first referring to file labels, and the second an integer variable referring to subgroup label.
 #' @param groupcutoff Cutoff value for group- level paths. Defaults to .75, 
 #' indicating that a path must be significant across 75\% of individuals to be 
 #' included as a group-level path.
@@ -127,6 +137,7 @@
 #'  }
 #' @keywords gimmeSEM
 #' @export gimme gimmeSEM
+
 gimmeSEM <- gimme <- function(data           = NULL,
                               out            = NULL,
                               sep            = NULL,
@@ -134,7 +145,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               ar             = TRUE,
                               plot           = TRUE,
                               subgroup       = FALSE,
+                              confirm_subgroup = NULL,
                               paths          = NULL,
+                              exogenous      = NULL,
                               groupcutoff    = .75,
                               subcutoff      = .5,
                               diagnos        = FALSE){
@@ -148,6 +161,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        plot                 = plot,
                        ar                   = ar,
                        paths                = paths,
+                       exogenous            = exogenous,
                        subgroup             = subgroup,
                        ind                  = FALSE,
                        agg                  = FALSE,
@@ -194,7 +208,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
                                n_subj       = dat$n_subj,
                                chisq_cutoff = dat$chisq_cutoff_mi_epc,
                                file_order   = dat$file_order,
-                               elig_paths   = dat$candidate_paths)
+                               elig_paths   = dat$candidate_paths,
+                               confirm_subgroup = confirm_subgroup)
     
   # begin subgroup-level search for paths ------------------------------------ #
   

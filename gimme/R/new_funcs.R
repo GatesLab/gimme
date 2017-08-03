@@ -413,6 +413,8 @@ search.paths <- function(base_syntax,
 #' @param elig_paths A character vector containing eligible paths that
 #' gimme is allowed to add to the model. Ensures only EPCs from allowable paths
 #' are considered in the creation of the similarity matrix.
+#' @param confirm_subgroup A dataframe with the first column a string vector of data file names
+#' without extensions and the second vector a integer vector of subgroup labels.
 #' @return Returns sub object containing similarity matrix, the number of
 #' subgroups, the modularity associated with the subgroup memberships, 
 #' and a data frame containing the file names and subgroup memberships.
@@ -422,7 +424,8 @@ determine.subgroups <- function(data_list,
                                 n_subj,
                                 chisq_cutoff,
                                 file_order,
-                                elig_paths){
+                                elig_paths,
+                                confirm_subgroup){
   
   membership  = NULL # appease CRAN check
   
@@ -474,6 +477,7 @@ determine.subgroups <- function(data_list,
   sim           <- sim - min(sim, na.rm = TRUE)
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
+  if(is.null(confirm_subgroup)){
   res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
                                    steps = 4)
   sub_mem    <- data.frame(names      = names(membership(res)), 
@@ -482,7 +486,16 @@ determine.subgroups <- function(data_list,
   sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
   sub$modularity  <- modularity(res)
   sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
-  
+  }else{
+    sub_mem    <- confirm_subgroup
+    names(sub_mem) <- c("names", "membership")
+    sub$sim         <- sim
+    sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
+    sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
+    sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$membership)
+    
+    
+  }
   return(sub)
 }
 
