@@ -350,19 +350,26 @@ gimmeSEM <- gimme <- function(data           = NULL,
                      store)
   
   # return object with info user can access
-  res <- list(a = store$betas, 
-              b = dat$varnames, 
-              c = dat$n_rois,
-              d = final$fit, 
-              e = final$param_est, 
-              f = store$plots, 
-              g = final$samp_plot, 
-              h = final$sub_plots,
-              i = subgroup,
-              j = final$sample_counts,
-              k = final$sub_counts,
-              l = store$vcov,
-              m = sub$sim)
+  # need to add subgroup membership!
+  res <- list(path_est_mats = store$betas, 
+              varnames = dat$varnames, 
+              nvars = dat$n_rois,
+              fit = final$fit, 
+              path_se_est = final$param_est, 
+              plots = store$plots, 
+              group_plot = final$samp_plot, 
+              sub_plots = final$sub_plots,
+              subTF = subgroup,
+              path_counts = final$sample_counts,
+              path_counts_sub = final$sub_counts,
+              vcov = store$vcov,
+              sim_matrix = sub$sim,
+              VI = sub$VI,
+              ARI = sub$ARI,
+              Mod = sub$Modularity,
+              plotARI = sub$plotARI,
+              plotVI = sub$plotVI
+              )
   class(res) <- "gimmep"
   
   invisible(res)

@@ -478,14 +478,14 @@ determine.subgroups <- function(data_list,
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
   if(is.null(confirm_subgroup)){
-  res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
-                                   steps = 4)
-  sub_mem    <- data.frame(names      = names(membership(res)), 
-                           membership = as.numeric(membership(res)))
-  sub$sim         <- sim
-  sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
-  sub$modularity  <- modularity(res)
-  sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
+    res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
+                                     steps = 4)
+    sub_mem    <- data.frame(names      = names(membership(res)), 
+                             membership = as.numeric(membership(res)))
+    sub$sim         <- sim
+    sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
+    sub$modularity  <- modularity(res)
+    sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
   }else{
     sub_mem    <- confirm_subgroup
     names(sub_mem) <- c("names", "membership")
@@ -493,9 +493,77 @@ determine.subgroups <- function(data_list,
     sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
     sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$membership)
-    
-    
   }
+  
+  eval.subs <- perturb(sim)
+  sub$VI <- eval.subs$VI
+  sub$ARI <- eval.subs$ARI
+  sub$Modularity <- eval.subs$modularity_value
+  
+  ## generate random
+  
+  dump <- matrix(1, n_subj, n_subj)
+  diag(dump) <- 0
+  eligable <- which(lower.tri(dump)!=0,arr.ind = T)#ensure that diagonal isn't considered, and all potential edges are
+  toalter <- sample(1:length(eligable[,1]))
+  randomized <- sample(toalter)
+  random_m <- sub$sim
+  for (l in 1:length(randomized))
+  random_m[eligable[toalter[l],1],eligable[toalter[l],2]]<- random_m[[eligable[randomized[l],1],eligable[randomized[l],2]]] 
+  # maintain symmetry:
+  random_m[eligable[toalter[l],2],eligable[toalter[l],1]]<- random_m[[eligable[randomized[l],2],eligable[randomized[l],1]]] 
+  eval.rando <- perturb(random_m)
+  
+  # generate random graphs with similar average strength per nocode 
+  #rando <- erdos.renyi.game(length(sub$sim[,1]), sum(colSums(sub$sim != 0))/2, directed = FALSE, type = "gnm")
+  #g  <- graph.adjacency(sub$sim, mode = "undirected", weighted = TRUE)
+  #matrixrando <- as.matrix( get.adjacency(rando))
+  #E(rando)$weight <- runif(length(E(rando)), min(E(g)), max(E(g))) # don't want evenly distributed, degree gets too high
+  #E(rando)$weight <- abs(ceiling(rnorm(length(E(rando)), mean(output$sim_matrix), sd(output$sim_matrix))))
+  #the above returns weights with similar distribution to sub$sim in terms of shape, sd, and mean, but the degree is more skewed in the real data
+  #E(rando)$weight <- abs(ceiling(rpois(length(E(rando)), sd(output$sim_matrix))))
+  #average degree low, normally distributed 
+  #for (p in 2:length(sub$sim[,1]))
+  #  {
+  #     for (q in 1:(p-1)) {
+  #     if  (matrixrando[p,q] == 1)
+  #    matrixrando[q, p] <- abs(ceiling(rnorm(1, mean(sub$sim[,p]), sd(sub$sim[,p]))))
+  #     if (matrixrando[p,q]>matrixrando[q,p])
+  #     matrixrando[q,p] <- matrixrando[p,q]
+  #     else
+  #       matrixrando[p,q] <- matrixrando[q,p]
+  #     }}
+
+  # Create lines for 10 and 20 percent change in community assignment
+  truemembership          <- as.numeric(membership(res))
+  comms <- unique(truemembership)
+  lengths <- NULL
+  for (p in 1:length(comms))
+    lengths[p] <- length(which(truemembership == comms[p]))
+  max <- which(lengths == max(lengths))
+  perc10 <- round(.10*length(truemembership))
+  perc20 <- round(.20*length(truemembership))
+  tochange <- which(truemembership == comms[max])
+  changed10 <- truemembership
+  for (p in 1:perc10)
+    changed10[tochange[p]] <- comms[sample(which(lengths == min(lengths)[1]), 1)]
+  rep10ari <- matrix(arandi(changed10, truemembership), 1, length(eval.subs$percent))
+  rep10vi <- matrix(vi.dist(changed10, truemembership), 1, length(eval.subs$percent))
+  changed20 <- truemembership
+  for (p in 1:perc20)
+    changed20[tochange[p]] <- comms[sample(which(lengths == min(lengths)[1]), 1)]
+  rep20ari <- matrix(arandi(changed20, truemembership), 1, length(eval.subs$percent))
+  rep20vi <- matrix(vi.dist(changed20, truemembership), 1, length(eval.subs$percent))
+
+  plotVI <- plot(eval.rando$percent, colMeans(eval.rando$VI), col = "red", main = "Comparison of original result against perturbed graphs: VI", xlab = "Proportion Perturbed", ylab = "Mean VI")
+  plotVI <- plotVI + points(eval.subs$percent, colMeans(sub$VI), col = "black", bg = "black") + lines(eval.subs$percent, rep10vi) + lines(eval.subs$percent, rep20vi)
+ 
+  plotARI <- plot(eval.rando$percent, colMeans(eval.rando$ARI), col = "red", main = "Comparison of original result against perturbed graphs: ARI", xlab = "Proportion Perturbed", ylab = "Mean ARI")
+  plotARI <- plotARI + points(eval.subs$percent, colMeans(sub$ARI), col = "black") + lines(eval.subs$percent, rep10ari) + lines(eval.subs$percent, rep20ari)
+  
+  sub$plotVI <- plotVI
+  sub$plotARI <- plotARI
+  
   return(sub)
 }
 
@@ -641,7 +709,7 @@ get.params <- function(dat, grp, ind, k){
   converge <- lavInspect(fit, "converged")
   zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
   
-# if no convergence, roll back one path at individual level, try again 
+  # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
     status <- "nonconvergence"
     if (length(ind$ind_paths[[k]]!= 0)){
@@ -877,8 +945,8 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           if (sub_spec[[s]]$n_sub_subj != 1 & !is.null(dat$out)){
             write.csv(sub_s_mat_counts, 
                       file = file.path(dat$subgroup_dir, 
-                             paste0("subgroup", s, 
-                             "PathCountsMatrix.csv")), 
+                                       paste0("subgroup", s, 
+                                              "PathCountsMatrix.csv")), 
                       row.names = TRUE)
           }
           sub_coefs[[s]] <- sub_s_coefs
@@ -1047,4 +1115,3 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
   return(res)
   
 }
-
