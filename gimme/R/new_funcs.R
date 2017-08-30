@@ -1,4 +1,4 @@
-#' Recode variable names.
+t#' Recode variable names.
 #' @param data The vector of variable names to be recoded
 #' @param oldvalue A vector containing the latent variable names used internally.
 #' @param newvalue A vector containing the observed variable names, either
@@ -564,6 +564,12 @@ determine.subgroups <- function(data_list,
   sub$plotVI <- plotVI
   sub$plotARI <- plotARI
   
+    if (!is.null(dat$out)){
+    pdf(file.path(dat$out, 
+                  paste0("ARI_Plot.pdf")))
+    plot(plotARI)
+    dev.off()
+  }
   return(sub)
 }
 
