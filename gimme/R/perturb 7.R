@@ -4,10 +4,10 @@
 #' 
 
 perturb <- function(matrix, method){
-  library(mcclust) 
-  library(dils)
-  library(igraph)
-  library(ggplot2)
+  #library(mcclust) 
+  #library(dils)
+  #library(igraph)
+  #library(ggplot2)
   
   if (is.igraph(matrix)) 
     { g <- matrix
