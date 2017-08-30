@@ -1,31 +1,33 @@
 #' Perturb networks and evaluate subgroup structures.
-#' @param matrix A symmetric, weighted matrix or weighted graph
+#' @param mat A symmetric, weighted matrix or weighted graph
 #' 
 #' 
 
-perturb <- function(matrix, method){
+perturb <- function(mat, method){
   #library(mcclust) 
   #library(dils)
   #library(igraph)
   #library(ggplot2)
   
-  if (is.igraph(matrix)) 
-    { g <- matrix
-    matrix <- as.matrix( get.adjacency(g, attr = "weight"))
+  if (is.igraph(mat)) 
+    { g <- mat
+    
+    mat <- as.matrix( get.adjacency(g, attr = "weight"))
+    
     } else
-    g                   <- graph.adjacency(matrix, mode = "undirected", weighted = TRUE)
+    g                   <- graph.adjacency(mat, mode = "undirected", weighted = TRUE)
   
-  diag(matrix)        <- 0
+  diag(mat)        <- 0
   
   truemembership          <- walktrap.community(g, steps = 4)$membership
  
   # now randomly perturb 
-  n.elements <- length(matrix[,1])*(length(matrix[,1])-1)/2
+  n.elements <- length(mat[,1])*(length(mat[,1])-1)/2
   percent <-seq(from=0, to = n.elements, by=round(0.01*(n.elements))) #disrupt 1% at a time
   VI<-matrix(,nrow = 100, ncol = length(percent))
   ARI<-matrix(,nrow = 100,ncol = length(percent))
-  modularity_value <-matrix(,nrow = 100, ncol = length(percent))
-  dump <- matrix(1, length(matrix[,1]), length(matrix[,1]))
+  modularity_value <- matrix(,nrow = 100, ncol = length(percent))
+  dump <- matrix(1, length(mat[,1]), length(mat[,1]))
   diag(dump) <- 0
   eligable <- which(lower.tri(dump)!=0,arr.ind = T)#ensure that diagonal isn't considered, and all potential edges are
 
@@ -41,7 +43,7 @@ perturb <- function(matrix, method){
       } else {
         randomized <- toalter
         }
-      new.v <- matrix
+      new.v <- mat
       for (l in 1:length(randomized))
       new.v[eligable[toalter[l],1],eligable[toalter[l],2]]<- new.v[[eligable[randomized[l],1],eligable[randomized[l],2]]] 
       # maintain symmetry:
