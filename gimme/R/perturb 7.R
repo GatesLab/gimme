@@ -23,7 +23,7 @@ perturb <- function(mat, method){
  
   # now randomly perturb 
   n.elements <- length(mat[,1])*(length(mat[,1])-1)/2
-  percent <-seq(from=0, to = n.elements, by=round(0.01*(n.elements))) #disrupt 1% at a time
+  percent <-seq(from=0, to = n.elements, by=ceiling(0.01*n.elements) ) #disrupt 1% at a time
   VI<-matrix(,nrow = 100, ncol = length(percent))
   ARI<-matrix(,nrow = 100,ncol = length(percent))
   modularity_value <- matrix(,nrow = 100, ncol = length(percent))

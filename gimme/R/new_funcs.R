@@ -564,12 +564,12 @@ determine.subgroups <- function(data_list,
   sub$plotVI <- plotVI
   sub$plotARI <- plotARI
   
-    if (!is.null(dat$out)){
-    pdf(file.path(dat$out, 
-                  paste0("ARI_Plot.pdf")))
-    plot(plotARI)
-    dev.off()
-  }
+  #   if (!is.null(dat$out)){
+  #   pdf(file.path(dat$out, 
+  #                 paste0("ARI_Plot.pdf")))
+  #   plot(plotARI)
+  #   dev.off()
+  # }
   return(sub)
 }
 
