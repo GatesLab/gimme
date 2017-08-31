@@ -209,7 +209,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
                                chisq_cutoff = dat$chisq_cutoff_mi_epc,
                                file_order   = dat$file_order,
                                elig_paths   = dat$candidate_paths,
-                               confirm_subgroup = confirm_subgroup)
+                               confirm_subgroup = confirm_subgroup,
+                               out_path     = dat$out)
     
   # begin subgroup-level search for paths ------------------------------------ #
   

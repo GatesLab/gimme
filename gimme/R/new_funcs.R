@@ -425,7 +425,8 @@ determine.subgroups <- function(data_list,
                                 chisq_cutoff,
                                 file_order,
                                 elig_paths,
-                                confirm_subgroup){
+                                confirm_subgroup,
+                                out_path = NULL){
   
   membership  = NULL # appease CRAN check
   
@@ -504,14 +505,17 @@ determine.subgroups <- function(data_list,
   
   dump <- matrix(1, n_subj, n_subj)
   diag(dump) <- 0
-  eligable <- which(lower.tri(dump)!=0,arr.ind = T)#ensure that diagonal isn't considered, and all potential edges are
-  toalter <- sample(1:length(eligable[,1]))
+  eligable <-
+    which(lower.tri(dump) != 0, arr.ind = T)#ensure that diagonal isn't considered, and all potential edges are
+  toalter <- sample(1:length(eligable[, 1]))
   randomized <- sample(toalter)
   random_m <- sub$sim
   for (l in 1:length(randomized))
-  random_m[eligable[toalter[l],1],eligable[toalter[l],2]]<- random_m[[eligable[randomized[l],1],eligable[randomized[l],2]]] 
+    random_m[eligable[toalter[l], 1], eligable[toalter[l], 2]] <-
+    random_m[[eligable[randomized[l], 1], eligable[randomized[l], 2]]]
   # maintain symmetry:
-  random_m[eligable[toalter[l],2],eligable[toalter[l],1]]<- random_m[[eligable[randomized[l],2],eligable[randomized[l],1]]] 
+  random_m[eligable[toalter[l], 2], eligable[toalter[l], 1]] <-
+    random_m[[eligable[randomized[l], 2], eligable[randomized[l], 1]]]
   eval.rando <- perturb(random_m)
   
   # generate random graphs with similar average strength per nocode 
@@ -558,18 +562,18 @@ determine.subgroups <- function(data_list,
   plotVI <- plot(eval.rando$percent, colMeans(eval.rando$VI), col = "red", main = "Comparison of original result against perturbed graphs: VI", xlab = "Proportion Perturbed", ylab = "Mean VI")
   plotVI <- plotVI + points(eval.subs$percent, colMeans(sub$VI), col = "black", bg = "black") + lines(eval.subs$percent, rep10vi) + lines(eval.subs$percent, rep20vi)
  
-  plotARI <- plot(eval.rando$percent, colMeans(eval.rando$ARI), col = "red", main = "Comparison of original result against perturbed graphs: ARI", xlab = "Proportion Perturbed", ylab = "Mean ARI")
-  plotARI <- plotARI + points(eval.subs$percent, colMeans(sub$ARI), col = "black") + lines(eval.subs$percent, rep10ari) + lines(eval.subs$percent, rep20ari)
-  
   sub$plotVI <- plotVI
-  sub$plotARI <- plotARI
+  #sub$plotARI <- plotARI
   
-  #   if (!is.null(dat$out)){
-  #   pdf(file.path(dat$out, 
-  #                 paste0("ARI_Plot.pdf")))
-  #   plot(plotARI)
-  #   dev.off()
-  # }
+  if (!is.null(out_path)){
+    pdf(file.path(out_path, paste0("ARI_Plot.pdf")))
+    plot(eval.rando$percent, colMeans(eval.rando$ARI), col = "red", main = "Comparison of original result against perturbed graphs: ARI", xlab = "Proportion Perturbed", ylab = "Mean ARI")
+    points(eval.subs$percent, colMeans(sub$ARI), col = "black") 
+    lines(eval.subs$percent, rep10ari) 
+    lines(eval.subs$percent, rep20ari)
+    dev.off()
+  }
+  
   return(sub)
 }
 
