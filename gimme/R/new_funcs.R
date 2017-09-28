@@ -673,7 +673,7 @@ get.params <- function(dat, grp, ind, k){
     status   <- "converged normally"
     
     ind_fit    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
-                                     "srmr", "nnfi", "cfi", "bic"))
+                                     "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
     ind_fit    <- round(ind_fit, digits = 4)
     ind_fit[2] <- round(ind_fit[2], digits = 0)
     
