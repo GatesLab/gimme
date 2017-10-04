@@ -672,7 +672,7 @@ get.params <- function(dat, grp, ind, k){
   if (converge & !zero_se){
     status   <- "converged normally"
     
-    ind_fit    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
+    ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
                                      "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
     ind_fit    <- round(ind_fit, digits = 4)
     ind_fit[2] <- round(ind_fit[2], digits = 0)
@@ -992,7 +992,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     fits        <- as.data.frame(do.call(rbind, store$fits))
     fits$file   <- rownames(fits)
     fits$status <- do.call(rbind, store$status)
-    fits        <- as.matrix(fits[ ,c(9, 1:8, 10)], byrow = TRUE)
+    fits        <- as.matrix(fits[ ,c(9, 1:8, 10, 11)], byrow = TRUE)
     
     if (dat$subgroup){
       fits <- merge(fits, sub$sub_mem[ ,c(1,3)], by.x = "file", by.y = "names")  
