@@ -44,9 +44,17 @@ setup <- function (data,
     names(ts_list) <- tools::file_path_sans_ext(basename(files))
     rois           <- ncol(ts_ind)
   } else if (is.list(data)){
+    ts_list  <- list()
     ts_list  <- data
-    varnames <- colnames(ts_list[[1]])
     rois     <- ncol(ts_list[[1]])
+    varnames <- colnames(ts_list[[1]])
+    if (is.null(varnames)){
+      varnames <- c(paste0("x", seq(1,rois)))
+      ts_list <- lapply(ts_list, function(x) { 
+        colnames(x)<-varnames
+        x 
+      })
+      }
   }
   
   # simplify creation of variable names
@@ -240,11 +248,11 @@ setup <- function (data,
   # if ar = FALSE, set up nonsense paths fixed to zero 
   if (ar == TRUE) {
     line4 <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois])
+    syntax <- c(line1, line2, line3, line4)
   } else {
-    line4 <- paste0(lvarnames[1:rois], "~0*", lvarnames[(rois+1):vars])
+    syntax <- c(line1, line2, line3)
   }
   
-  syntax <- c(line1, line2, line3, line4)
   
   if (!is.null(paths)) syntax <- c(syntax, paths)
   

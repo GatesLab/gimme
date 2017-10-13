@@ -705,7 +705,7 @@ get.params <- function(dat, grp, ind, k){
                                    paste0(dat$file_order[k,2], 
                                           "StdErrors.csv")), row.names = TRUE)
     }
-    
+    ind_plot  <- NA
     if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_rois, ]
