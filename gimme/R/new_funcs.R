@@ -634,7 +634,8 @@ get.params <- function(dat, grp, ind, k){
                                    ind$sub_paths[[k]], 
                                    ind$ind_paths[[k]]), 
                      data_file = dat$ts_list[[k]])
-  } else {
+  } else 
+    {
     data_file <- do.call("rbind", dat$ts_list)
     fit        <- fit.model(syntax    = c(dat$syntax, 
                                           grp$group_paths,
@@ -781,6 +782,9 @@ get.params <- function(dat, grp, ind, k){
     ind_vcov  <- NA
     ind_plot  <- NA
   }
+  
+  if (!plots)
+    ind_plot  <- NA
   
   res <- list("status"    = status, 
               "ind_fit"   = ind_fit, 
