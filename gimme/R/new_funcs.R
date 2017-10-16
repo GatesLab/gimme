@@ -597,9 +597,12 @@ indiv.search <- function(dat, grp, ind){
   if (dat$agg){
     names(status) <- names(fits) <- names(coefs) <- 
       names(betas) <- names(vcov) <- names(plots) <- "all"
-  } else {
+  } else if (ind$n_ind_paths[k] > 0 & !dat$agg){
     names(status) <- names(fits) <- names(coefs) <- 
       names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
+  } else {
+    names(status) <- names(fits) <- names(coefs) <- 
+      names(vcov) <- names(plots) <- names(dat$ts_list)
   }
   
   res <- list("status" = status,
@@ -640,7 +643,9 @@ get.params <- function(dat, grp, ind, k){
                             data_file = data_file)
   }
   converge <- lavInspect(fit, "converged")
-  zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  if ( ind$n_ind_paths[k] > 0){
+    zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+    } else{ zero_se <- FALSE}
   
   # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
@@ -663,13 +668,17 @@ get.params <- function(dat, grp, ind, k){
       }
     }
     converge <- lavInspect(fit, "converged")
-    zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+    ind_coefs <- subset(standardizedSolution(fit), op == "~") # if betas = 0, no SEs
+    if (length(ind_coefs[,1]) > 0){
+    zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0}
+    else
+    {zero_se <- FALSE}
     if (converge){
       status <- "last known convergence"
     }
   }
   
-  if (converge & !zero_se){
+  if (converge & !zero_se & (ind$n_ind_paths[k] >0) ){
     status   <- "converged normally"
     
     ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
@@ -683,6 +692,7 @@ get.params <- function(dat, grp, ind, k){
     
     ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
+    if (length(ind_coefs[,1]) > 0){
     ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
     ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
     
@@ -691,13 +701,15 @@ get.params <- function(dat, grp, ind, k){
     
     rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
     colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames[1:(dat$n_rois*2)]
+    }
     
     if (dat$agg & !is.null(dat$out)){
       write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
                 row.names = TRUE)
       write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
                 row.names = TRUE)
-    } else if (!dat$agg & !is.null(dat$out)){
+    } else if (!dat$agg & !is.null(dat$out) & ind$n_ind_paths[k]>0)
+      {
       write.csv(ind_betas, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
                                             "Betas.csv")), row.names = TRUE)
@@ -705,6 +717,7 @@ get.params <- function(dat, grp, ind, k){
                                    paste0(dat$file_order[k,2], 
                                           "StdErrors.csv")), row.names = TRUE)
     }
+    
     ind_plot  <- NA
     if (dat$plot){
       ind_betas_t <- t(ind_betas)
@@ -740,7 +753,25 @@ get.params <- function(dat, grp, ind, k){
         dev.off()
       }
     }
-  } else {
+  } 
+  
+  if (ind$n_ind_paths[k] ==0) {
+    status <- "no paths added"
+    ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
+                                     "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
+    ind_fit    <- round(ind_fit, digits = 4)
+    ind_fit[2] <- round(ind_fit[2], digits = 0)
+    
+    ind_vcov  <- lavInspect(fit, "vcov.std.all")
+    keep      <- rownames(ind_vcov) %in% dat$candidate_paths
+    ind_vcov  <- ind_vcov[keep, keep]
+    
+    ind_betas <- NULL
+    ind_coefs <- subset(standardizedSolution(fit), op == "~")
+    
+  } 
+  
+  if (!converge | zero_se  ){
     if (!converge) status <- "nonconvergence"
     if (zero_se)   status <- "computationally singular"
     ind_fit   <- rep(NA, 8)
@@ -785,15 +816,20 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
   if (!dat$agg){
     
     coefs       <- do.call("rbind", store$coefs)
+    
+    if(length(coefs[,1])>0){
     coefs$id    <- rep(names(store$coefs), sapply(store$coefs, nrow))
     coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
-    
     
     coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
     coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
     coefs$color[coefs$level == "group"] <- "black"
-    coefs$color[coefs$level == "ind"]   <- "gray50"
+    coefs$color[coefs$level == "ind"]   <- "gray50"}
     
+    indiv_paths <- NULL
+    samp_plot <- NULL
+    sample_counts <- NULL
+    if (length(coefs[,1])>0){
     if (dat$subgroup) {
       if (sub$n_subgroups != dat$n_subj){
         
@@ -906,7 +942,6 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     summ$label <- ifelse(summ$level == "sub", 
                          paste0("subgroup", summ$mem),
                          summ$level)
-    
     a <- aggregate(count ~ lhs + rhs + label, data = summ, sum)
     
     a <- a[order(-a$count, a$label),]
@@ -921,6 +956,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
       write.csv(a, file.path(dat$out, "summaryPathCounts.csv"), 
                 row.names = FALSE)
     }
+  
     # end creating wide summaryPathCounts ------------------------------------ #
     
     b <- aggregate(count ~ lhs + rhs + color + label + param, data = summ, sum)
@@ -986,7 +1022,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     indiv_paths     <- indiv_paths[order(indiv_paths$id, indiv_paths$level), ]
     colnames(indiv_paths) <- c("file", "dv", "iv", "beta", "se", 
                                "z", "pval", "level")
-    
+    } # end "if no coefficients"
     # combine fit information for summaryFit.csv
     
     fits        <- as.data.frame(do.call(rbind, store$fits))
@@ -1002,13 +1038,17 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                            by.x = "file", by.y = "names")
     }
     
-    if (!is.null(dat$out)){
+    if (!is.null(dat$out) & length(coefs[,1])>0){
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
       write.csv(sample_counts, file.path(dat$out,
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
+    }
+    
+    if (!is.null(dat$out) & length(coefs[,1])==0){
+       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
     }
     
   } else {

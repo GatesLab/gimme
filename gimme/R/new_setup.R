@@ -249,8 +249,11 @@ setup <- function (data,
   if (ar == TRUE) {
     line4 <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois])
     syntax <- c(line1, line2, line3, line4)
+    ## creates list of AR paths so that later code doesn't kick them out
+    fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
   } else {
     syntax <- c(line1, line2, line3)
+    fixed_paths <- NULL
   }
   
   
@@ -275,9 +278,6 @@ setup <- function (data,
   if(!is.null(exog_paths)){
   candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
   }
-  
-  ## creates list of AR paths so that later code doesn't kick them out
-  fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
   
   # if user specifies paths, add them to the list of fixed paths
   if (!is.null(paths)) fixed_paths <- c(fixed_paths, paths) 
