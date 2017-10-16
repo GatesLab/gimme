@@ -783,7 +783,7 @@ get.params <- function(dat, grp, ind, k){
     ind_plot  <- NA
   }
   
-  if (!plots)
+  if (!dat$plots)
     ind_plot  <- NA
   
   res <- list("status"    = status, 
