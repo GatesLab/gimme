@@ -256,6 +256,17 @@ setup <- function (data,
     fixed_paths <- NULL
   }
   
+  if (!ar & is.null(paths)) {
+    covzero <- NULL
+    for (i in (rois+2):vars) 
+      {
+      for (j in (rois+1):(i-1))
+      {
+      covzero <- c(covzero, paste0(lvarnames[i],"~~0*", lvarnames[j]))
+      }
+      }
+    syntax <- c(syntax, covzero)
+    }
   
   if (!is.null(paths)) syntax <- c(syntax, paths)
   

@@ -369,7 +369,8 @@ search.paths <- function(base_syntax,
         } else {
           writeLines(paste("subgroup-level search, subject", k))
         }
-      } else {
+      } else 
+        {
         fit        <- fit.model(syntax    = c(base_syntax, 
                                               fixed_syntax, 
                                               add_syntax),
@@ -756,7 +757,7 @@ get.params <- function(dat, grp, ind, k){
     }
   } 
   
-  if (ind$n_ind_paths[k] ==0) {
+  if (ind$n_ind_paths[k] ==0 & converge) {
     status <- "no paths added"
     ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
                                      "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
@@ -783,7 +784,7 @@ get.params <- function(dat, grp, ind, k){
     ind_plot  <- NA
   }
   
-  if (!dat$plots)
+  if (!dat$plot)
     ind_plot  <- NA
   
   res <- list("status"    = status, 
