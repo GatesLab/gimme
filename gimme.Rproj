@@ -16,3 +16,5 @@ BuildType: Package
 PackageUseDevtools: Yes
 PackagePath: gimme
 PackageInstallArgs: --no-multiarch --with-keep.source
+PackageCheckArgs: --as-cran
+PackageRoxygenize: rd,collate,namespace

@@ -10,7 +10,7 @@
 #'        header = ,
 #'        ar     = TRUE,
 #'        plot   = TRUE,
-#'        paths  = NULL
+#'        paths  = NULL,
 #'        exogenous = NULL)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 

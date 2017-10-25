@@ -14,115 +14,125 @@ gimmeSEM(data        = "",
          subgroup    = FALSE,
          confirm_subgroup = NULL,
          paths       = NULL,
+         exogenous   = NULL,
          groupcutoff = .75,
          subcutoff   = .5,
          diagnos     = FALSE)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
-or the name of the list containing each individual's time series. Each file 
-or matrix must contain one matrix for each individual containing a T (time) 
+or the name of the list containing each individual's time series. Each file
+or matrix must contain one matrix for each individual containing a T (time)
 by p (number of variables) matrix where the columns represent variables and
-the rows represent time.}
+the rows represent time. Individuals must have the same variables (p)
+but can have different lengths of observations (T).}
 
-\item{out}{The path to the directory where the results will be stored 
+\item{out}{The path to the directory where the results will be stored
 (optional). If specified,
-a copy of output files will be replaced in directory. If directory at 
+a copy of output files will be replaced in directory. If directory at
 specified path does not exist, it will be created.}
 
-\item{sep}{The spacing of the data files. "" indicates space-delimited, 
+\item{sep}{The spacing of the data files. 
+"" indicates space-delimited,
 "/t" indicates tab-delimited, "," indicates comma delimited. Only necessary
 to specify if reading data in from physical directory.}
 
-\item{header}{Logical. Indicate TRUE for data files with a header. Only 
+\item{header}{Logical. Indicate TRUE for data files with a header. Only
 necessary to specify if reading data in from physical directory.}
 
-\item{ar}{Logical. If TRUE, begins search for group model with 
-autoregressive (AR) paths open. Defaults to TRUE.}
+\item{ar}{Logical. If TRUE, begins search for group model with
+autoregressive (AR) paths freed for estimation. Defaults to TRUE.}
 
-\item{plot}{Logical. If TRUE, graphs depicting relations among variables 
+\item{plot}{Logical. If TRUE, graphs depicting relations among variables
 of interest will automatically be
-created. For individual-level plots, red paths represent positive weights 
-and blue paths represent negative weights. 
-For the group-level plot, black represents group-level paths, grey represents 
-individual-level paths, and (if subgroup = TRUE) 
-green represents subgroup-level paths. For the group-level plot, 
+created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
+lagged relations (lag 1). For individual-level plots, red paths represent positive weights
+and blue paths represent negative weights. Width of paths corresponds to estimated path weight.
+For the group-level plot, black represents group-level paths, grey represents
+individual-level paths, and (if subgroup = TRUE)
+green represents subgroup-level paths. For the group-level plot,
 the width of the edge corresponds to the count. Defaults to TRUE.}
 
 \item{subgroup}{Logical. If TRUE, subgroups are generated based on
-similarities in model features using the \code{walktrap.community} 
-function from the \code{igraph} package.}
+similarities in model features using the \code{walktrap.community}
+function from the \code{igraph} package. Defaults to TRUE.}
 
-\item{confirm_subgroup}{Dataframe. If subgroup is also TRUE , subgroups are generated
-based on the given subgroup labels contained in the dataframe. Dataframe has 2 columns,
+\item{confirm_subgroup}{Dataframe. If subgroup is also TRUE, option to provide
+subgroup labels contained in the dataframe. Dataframe has 2 columns,
 the first referring to file labels, and the second an integer variable referring to subgroup label.}
 
 \item{paths}{\code{lavaan}-style syntax containing paths with which
-to begin model estimation. That is, Y~X indicates that Y 
+to begin model estimation (optional). That is, Y~X indicates that Y
 is regressed on X, or X predicts Y. If no header is used,
-then variables should be referred to with V followed (with no separation) 
+then variables should be referred to with V followed (with no separation)
 by the column number. If a
-header is used, variables should be referred to using variable names. 
-To reference lag variables, "lag" should be added to the end of the variable 
+header is used, variables should be referred to using variable names.
+To reference lag variables, "lag" should be added to the end of the variable
 name with no separation. Defaults to NULL.}
 
-\item{groupcutoff}{Cutoff value for group- level paths. Defaults to .75, 
-indicating that a path must be significant across 75\% of individuals to be 
+\item{exogenous}{Vector of variable names to be treated as exogenous (optional).
+That is, exogenous variable X can predict Y  but cannot be predicted by Y.
+If no header is used, then variables should be referred to with V followed
+(with no separation) by the column number. If a header is used, variables
+should be referred to using variable names.  Defaults to NULL.}
+
+\item{groupcutoff}{Cutoff value for group- level paths. Defaults to .75,
+indicating that a path must be significant across 75\% of individuals to be
 included as a group-level path.}
 
-\item{subcutoff}{Cutoff value for subgroup- level paths. Defaults to .5, 
+\item{subcutoff}{Cutoff value for subgroup- level paths. Defaults to .5,
 indicating that a path must be significant across at least 50\% of the
 individuals in a subgroup to be considered a subgroup-level path.}
 
 \item{diagnos}{In development. Defaults to FALSE.}
 }
 \description{
-This function identifies structural equation models for each 
+This function identifies structural equation models for each
 individual that consist of both group-level and individual-level paths.
 }
 \details{
 In main output directory:
  \itemize{
- \item{\strong{indivPathEstimates}} {Contains estimate, standard error, 
- p-value, and z-value for each path for each individual. 
- If subgroup = TRUE and subgroups are found, then a column is present 
+ \item{\strong{indivPathEstimates}} {Contains estimate, standard error,
+ p-value, and z-value for each path for each individual.
+ If subgroup = TRUE and subgroups are found, then a column is present
  containing the subgroup membership for each individual. Also contains the
  level at which each path was estimated: group, subgroup, or individual.}
  \item{\strong{summaryFit}} {Contains model fit information for individual-
- level models. If subgroups are requested, this file also contains the 
+ level models. If subgroups are requested, this file also contains the
  subgroup membership for each individual.}
- \item{\strong{summaryPathCountMatrix}} Contains counts of total number of 
+ \item{\strong{summaryPathCountMatrix}} Contains counts of total number of
  paths, both contemporaneous and lagged, estimated for the sample. The row
  variable is the outcome and the column variable is the predictor variable.
- \item{\strong{summaryPathCounts}} {Contains summary count information for 
- paths identified at the group-, subgroup (if subgroup = TRUE), and 
+ \item{\strong{summaryPathCounts}} {Contains summary count information for
+ paths identified at the group-, subgroup (if subgroup = TRUE), and
  individual-level.}
- \item{\strong{summaryPathsPlot}} {Produced if plot = TRUE. Contains figure 
- with group, subgroup (if subgroup = TRUE), and individual-level paths 
- for the sample. Black paths are group-level, green paths are subgroup-level, 
+ \item{\strong{summaryPathsPlot}} {Produced if plot = TRUE. Contains figure
+ with group, subgroup (if subgroup = TRUE), and individual-level paths
+ for the sample. Black paths are group-level, green paths are subgroup-level,
  and grey paths are individual-level, where the thickness of the line
  represents the count.}
  }
  In subgroup output directory (if subgroup = TRUE):
  \itemize{
- \item{\strong{subgroup\emph{k}PathCounts}} Contains counts of relations 
- among lagged and contemporaneous variables for the \strong{\emph{k}}th 
+ \item{\strong{subgroup\emph{k}PathCounts}} Contains counts of relations
+ among lagged and contemporaneous variables for the \strong{\emph{k}}th
  subgroup.
- \item{\strong{subgroup\emph{k}Plot}} Contains plot of group, subgroup, 
- and individual level paths for the \strong{\emph{k}}th subgroup. 
- Black represents group-level paths, grey represents individual-level paths, 
+ \item{\strong{subgroup\emph{k}Plot}} Contains plot of group, subgroup,
+ and individual level paths for the \strong{\emph{k}}th subgroup.
+ Black represents group-level paths, grey represents individual-level paths,
  and green represents subgroup-level paths.
  }
  Note: if a subgroup of size n = 1 is discovered, subgroup-level output is
  not produced. \cr
- In individual output directory (where \strong{\emph{id}} represents the 
+ In individual output directory (where \strong{\emph{id}} represents the
  original file name for each individual):
  \itemize{
  \item{\strong{\emph{id}Betas}} Contains individual-level estimates
   of each path for each individual.
- \item{\strong{\emph{id}StdErrors}} Contains individual-level standard errors 
+ \item{\strong{\emph{id}StdErrors}} Contains individual-level standard errors
  for each path for each individual.
- \item{\strong{\emph{id}Plot}} Contains individual-level plots. Red paths 
+ \item{\strong{\emph{id}Plot}} Contains individual-level plots. Red paths
  represent positive weights and blue paths represent negative weights.
 }
 }
@@ -134,7 +144,7 @@ paths <- 'V2 ~ V1
 fit <- gimmeSEM(data     = simData,
                 out      = "C:/simData_out",
                 subgroup = TRUE)
-                
+
 print(fit, mean = TRUE)
 print(fit, subgroup = 1, mean = TRUE)
 print(fit, file = "group_1_1", estimates = TRUE)
@@ -143,12 +153,12 @@ plot(fit, file = "group_1_1")
  }
 }
 \references{
-Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm 
-recovers effective connectivity maps for individuals 
+Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm
+recovers effective connectivity maps for individuals
 in homogeneous and heterogeneous samples. NeuroImage, 63, 310-319.
 
-Lane, S.T. & Gates, K.M. (2017). Automated selection of robust 
-individual-level structural equation models for time series data. 
+Lane, S.T. & Gates, K.M. (2017). Automated selection of robust
+individual-level structural equation models for time series data.
 Structural Equation Modeling.
 }
 \author{

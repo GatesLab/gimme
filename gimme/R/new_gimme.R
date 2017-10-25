@@ -21,44 +21,47 @@
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
 #' by p (number of variables) matrix where the columns represent variables and
-#' the rows represent time.
+#' the rows represent time. Individuals must have the same variables (p)
+#' but can have different lengths of observations (T).
 #' @param out The path to the directory where the results will be stored
 #' (optional). If specified,
 #' a copy of output files will be replaced in directory. If directory at
 #' specified path does not exist, it will be created.
-#' @param sep The spacing of the data files. "" indicates space-delimited,
+#' @param sep The spacing of the data files. 
+#' "" indicates space-delimited,
 #' "/t" indicates tab-delimited, "," indicates comma delimited. Only necessary
 #' to specify if reading data in from physical directory.
 #' @param header Logical. Indicate TRUE for data files with a header. Only
 #' necessary to specify if reading data in from physical directory.
 #' @param ar Logical. If TRUE, begins search for group model with
-#' autoregressive (AR) paths open. Defaults to TRUE.
+#' autoregressive (AR) paths freed for estimation. Defaults to TRUE.
 #' @param paths \code{lavaan}-style syntax containing paths with which
-#' to begin model estimation. That is, Y~X indicates that Y
+#' to begin model estimation (optional). That is, Y~X indicates that Y
 #' is regressed on X, or X predicts Y. If no header is used,
 #' then variables should be referred to with V followed (with no separation)
 #' by the column number. If a
 #' header is used, variables should be referred to using variable names.
 #' To reference lag variables, "lag" should be added to the end of the variable
 #' name with no separation. Defaults to NULL.
-#' @param exogenous Vector of variable names to be treated as exogenous.
+#' @param exogenous Vector of variable names to be treated as exogenous (optional).
 #' That is, exogenous variable X can predict Y  but cannot be predicted by Y.
 #' If no header is used, then variables should be referred to with V followed
 #' (with no separation) by the column number. If a header is used, variables
 #' should be referred to using variable names.  Defaults to NULL.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables
 #' of interest will automatically be
-#' created. For individual-level plots, red paths represent positive weights
-#' and blue paths represent negative weights.
+#' created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
+#' lagged relations (lag 1). For individual-level plots, red paths represent positive weights
+#' and blue paths represent negative weights. Width of paths corresponds to estimated path weight.
 #' For the group-level plot, black represents group-level paths, grey represents
 #' individual-level paths, and (if subgroup = TRUE)
 #' green represents subgroup-level paths. For the group-level plot,
 #' the width of the edge corresponds to the count. Defaults to TRUE.
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community}
-#' function from the \code{igraph} package.
-#' @param confirm_subgroup Dataframe. If subgroup is also TRUE , subgroups are generated
-#' based on the given subgroup labels contained in the dataframe. Dataframe has 2 columns,
+#' function from the \code{igraph} package. Defaults to TRUE. 
+#' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
+#' subgroup labels contained in the dataframe. Dataframe has 2 columns,
 #' the first referring to file labels, and the second an integer variable referring to subgroup label.
 #' @param groupcutoff Cutoff value for group- level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
