@@ -26,12 +26,9 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
    Kathleen Gates [aut], \cr
    Peter Molenaar [aut], \cr
    Michael Hallquist [ctb], \cr
-   Teague Henry [ctb], \cr
    Hallie Pike [ctb],  \cr
    Zachary Fisher [ctb],  \cr
-   Cara Arizmendi [ctb], \cr
-   Teague Henry [ctb], \cr
-   Sandra Williams [ctb]
+   Cara Arizmendi [ctb]
 }
 Maintainer: Stephanie Lane \email{slane@unc.edu}
 }

@@ -21,3 +21,4 @@ Lists associated with coefficients, fit indices, etc.
 \description{
 Individual-level search. Used in gimmeSEM, aggSEM, indSEM.
 }
+\keyword{internal}

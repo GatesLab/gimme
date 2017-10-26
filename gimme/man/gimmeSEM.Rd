@@ -143,7 +143,8 @@ paths <- 'V2 ~ V1
 
 fit <- gimmeSEM(data     = simData,
                 out      = "C:/simData_out",
-                subgroup = TRUE)
+                subgroup = TRUE, 
+                paths    = paths)
 
 print(fit, mean = TRUE)
 print(fit, subgroup = 1, mean = TRUE)

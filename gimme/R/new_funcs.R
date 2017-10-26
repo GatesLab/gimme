@@ -453,7 +453,7 @@ determine.subgroups <- function(data_list,
   
   mi_list_temp <- lapply(mi_list, 
                          function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
-                         x$sig   <- ifelse(x$mi> chisq_cutoff, 1, 0)
+                         x$sig   <- ifelse(x$mi > chisq_cutoff, 1, 0)
                          return(x)})
   
   mi_list <- lapply(mi_list_temp, 
@@ -488,9 +488,9 @@ determine.subgroups <- function(data_list,
     sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
     sub$modularity  <- modularity(res)
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
-  }else{
-    sub_mem    <- confirm_subgroup
-    names(sub_mem) <- c("names", "membership")
+  } else {
+    sub_mem         <- confirm_subgroup
+    names(sub_mem)  <- c("names", "membership")
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
@@ -508,6 +508,7 @@ determine.subgroups <- function(data_list,
 #' @param ind A list containing individual- and (potentially) subgroup-level
 #' information.
 #' @return Lists associated with coefficients, fit indices, etc.
+#' @keywords internal 
 indiv.search <- function(dat, grp, ind){
   
   if (!dat$agg){
@@ -625,6 +626,7 @@ indiv.search <- function(dat, grp, ind){
 #' information.
 #' @param k The counter indicating the individual.
 #' @return Individual-level information on fit, coefficients, and plots.
+#' @keywords internal
 get.params <- function(dat, grp, ind, k){
   
   op  = NULL # appease CRAN check
@@ -758,7 +760,7 @@ get.params <- function(dat, grp, ind, k){
   } 
   
   if (ind$n_ind_paths[k] ==0 & converge) {
-    status <- "no paths added"
+    status     <- "no paths added"
     ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
                                      "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
     ind_fit    <- round(ind_fit, digits = 4)
@@ -773,7 +775,7 @@ get.params <- function(dat, grp, ind, k){
     
   } 
   
-  if (!converge | zero_se  ){
+  if (!converge | zero_se){
     if (!converge) status <- "nonconvergence"
     if (zero_se)   status <- "computationally singular"
     ind_fit   <- rep(NA, 8)
@@ -807,6 +809,7 @@ get.params <- function(dat, grp, ind, k){
 #' @param sub_spec A list containing information specific to each subgroup.
 #' @param store A list containing output from indiv.search().
 #' @return Aggregated information, such as counts, levels, and plots.
+#' @keywords internal
 final.org <- function(dat, grp, ind, sub, sub_spec, store){
   
   sub_coefs  <- list()
@@ -1043,7 +1046,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                            by.x = "file", by.y = "names")
     }
     
-    if (!is.null(dat$out) & length(coefs[,1])>0){
+    if (!is.null(dat$out) & length(coefs[,1]) > 0){
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
       write.csv(sample_counts, file.path(dat$out,
@@ -1053,7 +1056,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
       write.csv(fits, file.path(sub$sim, "similarityMatrix.csv"), row.names = FALSE)
     }
     
-    if (!is.null(dat$out) & length(coefs[,1])==0){
+    if (!is.null(dat$out) & length(coefs[,1]) == 0){
        write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
     }
     

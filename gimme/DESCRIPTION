@@ -8,9 +8,7 @@ Author: Stephanie Lane [aut, cre, trl],
     Michael Hallquist [ctb],
     Hallie Pike [ctb], 
     Zachary Fisher [ctb], 
-    Cara Arizmendi [ctb],
-    Teague Henry [ctb],
-    Sandra Williams [ctb]
+    Cara Arizmendi [ctb]
 Maintainer: Stephanie Lane <slane@unc.edu>
 Depends: R (>= 3.0.2)
 Imports: lavaan (>= 0.5-19), igraph, qgraph

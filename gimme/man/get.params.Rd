@@ -23,3 +23,4 @@ Individual-level information on fit, coefficients, and plots.
 \description{
 Grabs final coefficients for each individual.
 }
+\keyword{internal}

@@ -44,10 +44,10 @@
 #' To reference lag variables, "lag" should be added to the end of the variable
 #' name with no separation. Defaults to NULL.
 #' @param exogenous Vector of variable names to be treated as exogenous (optional).
-#' That is, exogenous variable X can predict Y  but cannot be predicted by Y.
+#' That is, exogenous variable X can predict Y but cannot be predicted by Y.
 #' If no header is used, then variables should be referred to with V followed
 #' (with no separation) by the column number. If a header is used, variables
-#' should be referred to using variable names.  Defaults to NULL.
+#' should be referred to using variable names. Defaults to NULL.
 #' @param plot Logical. If TRUE, graphs depicting relations among variables
 #' of interest will automatically be
 #' created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
@@ -63,7 +63,7 @@
 #' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
 #' subgroup labels contained in the dataframe. Dataframe has 2 columns,
 #' the first referring to file labels, and the second an integer variable referring to subgroup label.
-#' @param groupcutoff Cutoff value for group- level paths. Defaults to .75,
+#' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
 #' @param subcutoff Cutoff value for subgroup- level paths. Defaults to .5,
@@ -130,7 +130,8 @@
 #'
 #' fit <- gimmeSEM(data     = simData,
 #'                 out      = "C:/simData_out",
-#'                 subgroup = TRUE)
+#'                 subgroup = TRUE, 
+#'                 paths    = paths)
 #'
 #' print(fit, mean = TRUE)
 #' print(fit, subgroup = 1, mean = TRUE)
@@ -355,19 +356,19 @@ gimmeSEM <- gimme <- function(data           = NULL,
 
   # return object with info user can access
   # need to add subgroup membership!
-  res <- list(path_est_mats = store$betas,
-              varnames = dat$varnames,
-              nvars = dat$n_rois,
-              fit = final$fit,
-              path_se_est = final$param_est,
-              plots = store$plots,
-              group_plot = final$samp_plot,
-              sub_plots = final$sub_plots,
-              subTF = subgroup,
-              path_counts = final$sample_counts,
+  res <- list(path_est_mats   = store$betas,
+              varnames        = dat$varnames,
+              nvars           = dat$n_rois,
+              fit             = final$fit,
+              path_se_est     = final$param_est,
+              plots           = store$plots,
+              group_plot      = final$samp_plot,
+              sub_plots       = final$sub_plots,
+              subTF           = subgroup,
+              path_counts     = final$sample_counts,
               path_counts_sub = final$sub_counts,
-              vcov = store$vcov,
-              sim_matrix = sub$sim
+              vcov            = store$vcov,
+              sim_matrix      = sub$sim
               )
   class(res) <- "gimmep"
 
