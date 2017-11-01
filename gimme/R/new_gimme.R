@@ -156,7 +156,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               subcutoff      = .5,
                               diagnos        = FALSE){
 
-  membership = NULL
+  sub_membership = NULL
 
   dat         <- setup(data                 = data,
                        sep                  = sep,
@@ -225,10 +225,10 @@ gimmeSEM <- gimme <- function(data           = NULL,
     sub_s <- list(sub_paths     = character(),
                   n_sub_paths   = 0,
                   sub_s_subjids = subset(sub$sub_mem,
-                                         membership == s)[ ,"names"],
-                  n_sub_subj    = sum(sub$sub_mem$membership == s,
+                                         sub_membership == s)[ ,"names"],
+                  n_sub_subj    = sum(sub$sub_mem$sub_membership == s,
                                       na.rm = TRUE),
-                  membership    = s)
+                  sub_membership    = s)
 
     if (sub_s$n_sub_subj > 1){
       s4 <- search.paths(base_syntax  = dat$syntax,

@@ -429,7 +429,7 @@ determine.subgroups <- function(data_list,
                                 confirm_subgroup, 
                                 out_path = NULL){
   
-  membership  = NULL # appease CRAN check
+  sub_membership  = NULL # appease CRAN check
   
   sub     <- list()
   z_list  <- list()
@@ -483,18 +483,18 @@ determine.subgroups <- function(data_list,
     res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
                                      steps = 4)
     sub_mem    <- data.frame(names      = names(membership(res)), 
-                             membership = as.numeric(membership(res)))
+                             sub_membership = as.numeric(membership(res)))
     sub$sim         <- sim
-    sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
+    sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
     sub$modularity  <- modularity(res)
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
   } else {
     sub_mem         <- confirm_subgroup
     names(sub_mem)  <- c("names", "membership")
     sub$sim         <- sim
-    sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
+    sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
-    sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$membership)
+    sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$sub_membership)
     
     
   }
@@ -857,7 +857,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
           sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
           sub_s_coefs$level[sub_s_coefs$param %in% unique(
-            unlist(ind[ind$membership == s, ]$ind_paths))] <- "ind"
+            unlist(ind[ind$sub_membership == s, ]$ind_paths))] <- "ind"
           sub_s_coefs$color[sub_s_coefs$level == "group"] <- "black"
           sub_s_coefs$color[sub_s_coefs$level == "sub"]   <- "green3"
           sub_s_coefs$color[sub_s_coefs$level == "ind"]   <- "gray50"

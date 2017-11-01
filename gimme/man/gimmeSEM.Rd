@@ -71,12 +71,12 @@ To reference lag variables, "lag" should be added to the end of the variable
 name with no separation. Defaults to NULL.}
 
 \item{exogenous}{Vector of variable names to be treated as exogenous (optional).
-That is, exogenous variable X can predict Y  but cannot be predicted by Y.
+That is, exogenous variable X can predict Y but cannot be predicted by Y.
 If no header is used, then variables should be referred to with V followed
 (with no separation) by the column number. If a header is used, variables
-should be referred to using variable names.  Defaults to NULL.}
+should be referred to using variable names. Defaults to NULL.}
 
-\item{groupcutoff}{Cutoff value for group- level paths. Defaults to .75,
+\item{groupcutoff}{Cutoff value for group-level paths. Defaults to .75,
 indicating that a path must be significant across 75\% of individuals to be
 included as a group-level path.}
 
