@@ -268,7 +268,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
   prune <- any(lapply(sub_spec, FUN = function(x) x$n_sub_paths != 0) == TRUE)
 
   sub_spec_comb <- do.call(rbind, sub_spec)
-  ind           <- merge(sub$sub_mem, sub_spec_comb, "membership", all.x = TRUE)
+  ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
   ind           <- ind[order(ind$index),]
   ind$sub_paths[is.na(ind$sub_paths)] <- ""
   temp_count    <- grp$n_group_paths
@@ -328,7 +328,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
   }
 
   sub_spec_comb <- do.call(rbind, sub_spec)
-  ind           <- merge(sub$sub_mem, sub_spec_comb, "membership", all.x = TRUE)
+  ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
   ind$sub_paths[is.na(ind$sub_paths)] <- ""
   ind           <- ind[order(ind$index),]
 
