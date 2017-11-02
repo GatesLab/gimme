@@ -1036,7 +1036,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     fits        <- as.data.frame(do.call(rbind, store$fits))
     fits$file   <- rownames(fits)
     fits$status <- do.call(rbind, store$status)
-    fits        <- as.matrix(fits[ ,c(9, 1:8, 10, 11)], byrow = TRUE)
+    fits        <- fits[ ,c(12, 1:11, 13)]
     
     if (dat$subgroup){
       fits <- merge(fits, sub$sub_mem[ ,c(1,3)], by.x = "file", by.y = "names")  
@@ -1046,6 +1046,8 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                            by.x = "file", by.y = "names")
     }
     
+    fits <- as.matrix(fits)
+    
     if (!is.null(dat$out) & length(coefs[,1]) > 0){
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
@@ -1053,7 +1055,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
-      write.csv(fits, file.path(sub$sim, "similarityMatrix.csv"), row.names = FALSE)
+      write.csv(sub$sim, file.path(dat$out, "similarityMatrix.csv"), row.names = FALSE)
     }
     
     if (!is.null(dat$out) & length(coefs[,1]) == 0){
