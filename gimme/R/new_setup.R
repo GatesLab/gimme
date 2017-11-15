@@ -248,25 +248,24 @@ setup <- function (data,
   # if ar = FALSE, set up nonsense paths fixed to zero 
   if (ar == TRUE) {
     line4 <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois])
-    syntax <- c(line1, line2, line3, line4)
     ## creates list of AR paths so that later code doesn't kick them out
     fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
   } else {
-    syntax <- c(line1, line2, line3)
+    line4 <- paste0(lvarnames[1:rois], "~0*", lvarnames[(rois+1):vars])
     fixed_paths <- NULL
   }
   
+  syntax <- c(line1, line2, line3, line4)
+  
   if (!ar & is.null(paths)) {
     covzero <- NULL
-    for (i in (rois+2):vars) 
-      {
-      for (j in (rois+1):(i-1))
-      {
-      covzero <- c(covzero, paste0(lvarnames[i],"~~0*", lvarnames[j]))
+    for (i in (rois+2):vars) {
+      for (j in (rois+1):(i-1)){
+        covzero <- c(covzero, paste0(lvarnames[i],"~~0*", lvarnames[j]))
       }
-      }
-    syntax <- c(syntax, covzero)
     }
+    syntax <- c(syntax, covzero)
+  }
   
   if (!is.null(paths)) syntax <- c(syntax, paths)
   

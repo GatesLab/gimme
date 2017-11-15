@@ -630,6 +630,7 @@ indiv.search <- function(dat, grp, ind){
 get.params <- function(dat, grp, ind, k){
   
   op  = NULL # appease CRAN check
+  ind_plot = NA
   
   if (!dat$agg){
     fit <- fit.model(syntax    = c(dat$syntax, 
@@ -637,8 +638,7 @@ get.params <- function(dat, grp, ind, k){
                                    ind$sub_paths[[k]], 
                                    ind$ind_paths[[k]]), 
                      data_file = dat$ts_list[[k]])
-  } else 
-    {
+  } else {
     data_file <- do.call("rbind", dat$ts_list)
     fit        <- fit.model(syntax    = c(dat$syntax, 
                                           grp$group_paths,
