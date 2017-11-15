@@ -490,7 +490,7 @@ determine.subgroups <- function(data_list,
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
   } else {
     sub_mem         <- confirm_subgroup
-    names(sub_mem)  <- c("names", "membership")
+    names(sub_mem)  <- c("names", "sub_membership")
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
