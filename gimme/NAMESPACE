@@ -11,17 +11,13 @@ export(gimme)
 export(gimmeSEM)
 export(indSEM)
 import(lavaan)
-import(igraph)
 importFrom(grDevices,dev.off)
 importFrom(grDevices,pdf)
 importFrom(graphics,plot)
-<<<<<<< HEAD
 importFrom(igraph,graph.adjacency)
 importFrom(igraph,membership)
 importFrom(igraph,modularity)
 importFrom(igraph,walktrap.community)
-=======
->>>>>>> 23da58d8494236e2687600d86c998d6dcbcbf5dc
 importFrom(qgraph,qgraph)
 importFrom(stats,aggregate)
 importFrom(stats,ave)
