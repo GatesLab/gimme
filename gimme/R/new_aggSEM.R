@@ -112,13 +112,13 @@ aggSEM <- function(data,
                      sub_spec, 
                      store)
   
-  res <- list(betas = store$betas, 
-              varnames = dat$varnames, 
-              n_rois = dat$n_rois,
-              fit = final$fit, 
-              param_est = final$param_est, 
-              plot = store$plots, 
-              vcov = store$vcov)
+  res <- list(path_est_mat = store$betas, 
+              varnames     = dat$varnames, 
+              n_rois       = dat$n_rois,
+              fit          = final$fit, 
+              path_se_est  = final$param_est, 
+              plot         = store$plots, 
+              vcov         = store$vcov)
   
   print.gimme.aggSEM(z = dat)
   

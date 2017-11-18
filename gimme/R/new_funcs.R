@@ -1046,8 +1046,6 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                            by.x = "file", by.y = "names")
     }
     
-    fits <- as.matrix(fits)
-    
     if (!is.null(dat$out) & length(coefs[,1]) > 0){
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)

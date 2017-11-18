@@ -1,8 +1,8 @@
 #'@method plot aggSEMp
 #'@export
 plot.aggSEMp <- function(x, ...){
-    plot(x$g)
-    invisible(x$g)
+    plot(x$plot)
+    invisible(x$plot)
 }
 
 #'@method print aggSEMp
@@ -10,15 +10,15 @@ plot.aggSEMp <- function(x, ...){
 print.aggSEMp <- function(x, estimates = FALSE, fitMeasures = FALSE, ...){
     if (estimates == TRUE){
       cat("Coefficients for final model", "\n")
-      print(x$e, row.names = F)
-      invisible(x$e)
+      print(x$path_se_est, row.names = F)
+      invisible(x$path_se_est)
     } else if (estimates == FALSE){
-      ind <- x$a
-      colnames(ind) <- x$b
-      rownames(ind) <- x$b
+      ind <- x$path_est_mat
+      colnames(ind) <- x$path_est_mat
+      rownames(ind) <- x$path_est_mat
       ind <- round(ind, digits = 2)
-      ind_lag <- ind[(x$c+1):(x$c*2), 1:x$c]
-      ind_con <- ind[(x$c+1):(x$c*2), (x$c+1):(x$c*2)]
+      ind_lag <- ind[(x$n_rois+1):(x$n_rois*2), 1:x$n_rois]
+      ind_con <- ind[(x$n_rois+1):(x$n_rois*2), (x$n_rois+1):(x$n_rois*2)]
       cat("\n")
       cat("Lagged Matrix for all", "\n")
       print(ind_lag)
@@ -29,7 +29,7 @@ print.aggSEMp <- function(x, estimates = FALSE, fitMeasures = FALSE, ...){
     }
     if (fitMeasures == TRUE){
       cat("Fit for all", "\n")
-      print.data.frame(x$d, row.names = F)
+      print.data.frame(x$fit, row.names = F)
     }
   }
   

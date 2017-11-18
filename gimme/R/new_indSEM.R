@@ -121,7 +121,7 @@ indSEM <- function(data,
   
   res <- list(path_est_mats = store$betas,
               varnames = dat$varnames,
-              nvars = dat$n_rois,
+              n_rois = dat$n_rois,
               fit = final$fit,
               path_se_est = final$param_est,
               plots = store$plots,
