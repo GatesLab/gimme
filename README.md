@@ -3,9 +3,9 @@
 **Group Iterative Multiple Model Estimation (GIMME)**
 =====================================================
 
-The GIMME algorithm is a continually maintained R package, .
+The GIMME algorithm is a continually maintained R package, gimme.
 
-In addition to the [official documentation](https://cran.r-project.org/web/packages/gimme/index.html), a comprehensive tutorial can be found here:[GIMME tutorial](http://gimme.web.unc.edu/files/2014/12/Lane-Gates-2017-SEM-gimme.pdf).
+In addition to the [official documentation](https://cran.r-project.org/web/packages/gimme/index.html), a comprehensive tutorial can be found here: [GIMME tutorial](http://gimme.web.unc.edu/files/2014/12/Lane-Gates-2017-SEM-gimme.pdf).
 
 Program developers are invited to submit changes here at the GitHub repository.
 
@@ -59,23 +59,29 @@ Program developers are invited to submit changes here at the GitHub repository.
 
 **4. Running gimme**
 
-The *gimme* (or equivelantly, *gimmeSEM*) function requires that you input: 1. Source directory 2. How data are separated (e..g, comma-separated values) 3. If there is a header
+The *gimme* (or equivalently, *gimmeSEM*) function requires that you input:
+
+-   The path to the directory containing your data
+
+-   How data are separated (e.g., comma-separated values)
+
+-   Whether the data files contain a header row
 
 All other fields are optional and will go to defaults if no user input is provided. If no output directory is indicated, all information is stored as R objects (see tutorial linked above for details).
 
 ``` r
-gimme(                  # can use "gimme" or "gimmeSEM"
-    data = '',          # source directory where your data are 
-    out = '',           # output directory where you'd like your output to go
-    sep = "",           # how data are separated. "" for space; "," for comma, "/t" for tab-delimited
-    header = ,          # TRUE or FALSE, is there a header
-    ar = TRUE,          # TRUE (default) or FALSE, start with autoregressive paths open
-    plot = TRUE,        # TRUE (default) or FALSE, generate plots
-    subgroup = FALSE,   # TRUE or FALSE (default), cluster individuals based on similarities in effects
-    paths = NULL,       # option to list paths that will be group-level (semi-confirmatory)
-    groupcutoff = .75,  # the proportion that is considered the majority at the group level
-    subcutoff = .5      # the proportion that is considered the majority at the subgroup level
-    )        
+fit <- gimme(         # can use "gimme" or "gimmeSEM"
+  data = '',          # source directory where your data are 
+  out = '',           # output directory where you'd like your output to go
+  sep = "",           # how data are separated. "" for space; "," for comma, "/t" for tab-delimited
+  header = ,          # TRUE or FALSE, is there a header
+  ar = TRUE,          # TRUE (default) or FALSE, start with autoregressive paths open
+  plot = TRUE,        # TRUE (default) or FALSE, generate plots
+  subgroup = FALSE,   # TRUE or FALSE (default), cluster individuals based on similarities in effects
+  paths = NULL,       # option to list paths that will be group-level (semi-confirmatory)
+  groupcutoff = .75,  # the proportion that is considered the majority at the group level
+  subcutoff = .5      # the proportion that is considered the majority at the subgroup level
+)        
 ```
 
 While *gimme* is running you will see information iterate in the command window. The algorithm will tell you when it is finished.
@@ -114,10 +120,10 @@ While *gimme* is running you will see information iterate in the command window.
 **FAQ**
 =======
 
-**How many time points do I need?** This is a difficult question since it will be related to the number of variables you are using. Rules of thumb for any analysis can generally be used: the more the better! Having at lest 100 time points is recommended, but adequate results have been obtained in simulation studies with only T = 60.
+**How many time points do I need?** This is a difficult question since it will be related to the number of variables you are using. Rules of thumb for any analysis can generally be used: the more the better! Having at least 100 time points is recommended, but adequate results have been obtained in simulation studies with only T = 60.
 
 **Do all individuals have to have the same number of observations (T)?** No.
 
-**How many people do I need in my sample?** For regular *gimmme*, reliable results are obtained with as few as 10 participants. Remember that in this context, power to detect effects is determined by the number of time points rather than the number of individuals. Still, having at least 10 individuals helps *gimme* to detect signal from noise by looking for effects that consistently occur.
+**How many people do I need in my sample?** For regular *gimme*, reliable results are obtained with as few as 10 participants. Remember that in this context, power to detect effects is determined by the number of time points rather than the number of individuals. Still, having at least 10 individuals helps *gimme* to detect signal from noise by looking for effects that consistently occur.
 
-**What do I do if I obtain an error?** Do some initial trouble-shooting. 1. Ensure that all of your individuals have the same number of variables (columns) in their data sets. 2. Ensure that all variables have variability (i.e., are not constant). *gimme* will let you know if this is the case. 3. Ensure your path directories are correct. 4. Ensure that the columns are variables and the rows contain the observations across time. 5. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: <gimme@unc.edu>.
+**What do I do if I obtain an error?** Do some initial trouble-shooting. 1. Ensure that all of your individuals have the same number of variables (columns) in their data sets. 2. Ensure that all variables have variability (i.e., are not constant). *gimme* will let you know if this is the case. 3. Ensure your path directories are correct. 4. Ensure that the columns are variables and the rows contain the observations across time. 5. If all of this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: <gimme@unc.edu>.
