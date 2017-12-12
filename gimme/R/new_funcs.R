@@ -599,12 +599,12 @@ indiv.search <- function(dat, grp, ind){
   if (dat$agg){
     names(status) <- names(fits) <- names(coefs) <- 
       names(betas) <- names(vcov) <- names(plots) <- "all"
-  } else if (ind$n_ind_paths[k] > 0 & !dat$agg){
-    names(status) <- names(fits) <- names(coefs) <- 
-      names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
+  # } else if (ind$n_ind_paths[k] > 0 & !dat$agg){
+  #   names(status) <- names(fits) <- names(coefs) <- 
+  #     names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
   } else {
     names(status) <- names(fits) <- names(coefs) <- 
-      names(vcov) <- names(plots) <- names(dat$ts_list)
+      names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
   }
   
   res <- list("status" = status,
@@ -647,9 +647,10 @@ get.params <- function(dat, grp, ind, k){
                             data_file = data_file)
   }
   converge <- lavInspect(fit, "converged")
-  if ( ind$n_ind_paths[k] > 0){
+  # if (ind$n_ind_paths[k] > 0){ commented out on 11.20.17 by stl
+  # potentially insert some other check for an empty model
     zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
-    } else{ zero_se <- FALSE}
+    # } else{ zero_se <- FALSE} commented out on 11.20.17 by stl
   
   # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
@@ -682,7 +683,7 @@ get.params <- function(dat, grp, ind, k){
     }
   }
   
-  if (converge & !zero_se & (ind$n_ind_paths[k] >0) ){
+  if (converge & !zero_se){#& (ind$n_ind_paths[k] >0) ){
     status   <- "converged normally"
     
     ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
@@ -696,7 +697,7 @@ get.params <- function(dat, grp, ind, k){
     
     ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
-    if (length(ind_coefs[,1]) > 0){
+ #   if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
     ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
     ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
     
@@ -705,15 +706,14 @@ get.params <- function(dat, grp, ind, k){
     
     rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
     colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames[1:(dat$n_rois*2)]
-    }
+ #   } # stl comment out 11.20.17
     
     if (dat$agg & !is.null(dat$out)){
       write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
                 row.names = TRUE)
       write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
                 row.names = TRUE)
-    } else if (!dat$agg & !is.null(dat$out) & ind$n_ind_paths[k]>0)
-      {
+    } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
       write.csv(ind_betas, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
                                             "Betas.csv")), row.names = TRUE)
@@ -759,22 +759,23 @@ get.params <- function(dat, grp, ind, k){
     }
   } 
   
-  if (ind$n_ind_paths[k] ==0 & converge) {
-    status     <- "no paths added"
-    ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
-                                     "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
-    ind_fit    <- round(ind_fit, digits = 4)
-    ind_fit[2] <- round(ind_fit[2], digits = 0)
-    
-    ind_vcov  <- lavInspect(fit, "vcov.std.all")
-    keep      <- rownames(ind_vcov) %in% dat$candidate_paths
-    ind_vcov  <- ind_vcov[keep, keep]
-    
-    ind_betas <- NULL
-    ind_coefs <- subset(standardizedSolution(fit), op == "~")
-    
-  } 
-  
+  # commented out on 11.20.17 by stl 
+  # if (ind$n_ind_paths[k] ==0 & converge) {
+  #   status     <- "no paths added"
+  #   ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
+  #                                    "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
+  #   ind_fit    <- round(ind_fit, digits = 4)
+  #   ind_fit[2] <- round(ind_fit[2], digits = 0)
+  #   
+  #   ind_vcov  <- lavInspect(fit, "vcov.std.all")
+  #   keep      <- rownames(ind_vcov) %in% dat$candidate_paths
+  #   ind_vcov  <- ind_vcov[keep, keep]
+  #   
+  #   ind_betas <- NULL
+  #   ind_coefs <- subset(standardizedSolution(fit), op == "~")
+  #   
+  # } 
+
   if (!converge | zero_se){
     if (!converge) status <- "nonconvergence"
     if (zero_se)   status <- "computationally singular"
@@ -837,7 +838,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     indiv_paths <- NULL
     samp_plot <- NULL
     sample_counts <- NULL
-    if (length(coefs[,1])>0){
+   # if (length(coefs[,1])>0){ # commented out stl 11.20.17
     if (dat$subgroup) {
       if (sub$n_subgroups != dat$n_subj){
         
@@ -1030,7 +1031,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     indiv_paths     <- indiv_paths[order(indiv_paths$id, indiv_paths$level), ]
     colnames(indiv_paths) <- c("file", "dv", "iv", "beta", "se", 
                                "z", "pval", "level")
-    } # end "if no coefficients"
+   # } # end "if no coefficients" commented out stl 11.20.17
     # combine fit information for summaryFit.csv
     
     fits        <- as.data.frame(do.call(rbind, store$fits))
@@ -1046,7 +1047,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                            by.x = "file", by.y = "names")
     }
     
-    if (!is.null(dat$out) & length(coefs[,1]) > 0){
+    if (!is.null(dat$out)){ #& length(coefs[,1]) > 0){ # commented out stl 11.20.17
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
       write.csv(sample_counts, file.path(dat$out,
@@ -1054,10 +1055,6 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                 row.names = FALSE)
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
       write.csv(sub$sim, file.path(dat$out, "similarityMatrix.csv"), row.names = FALSE)
-    }
-    
-    if (!is.null(dat$out) & length(coefs[,1]) == 0){
-       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
     }
     
   } else {

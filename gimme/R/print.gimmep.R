@@ -36,10 +36,10 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
     } else if (estimates == FALSE){
       ind <- x$path_est_mats[[file]]
       colnames(ind) <- x$varnames
-      rownames(ind) <- x$varnames
+      rownames(ind) <- x$varnames[(x$n_rois+1):(x$n_rois*2)]
       ind <- round(ind, digits = 2)
-      ind_lag <- ind[(x$n_rois+1):(x$n_rois*2), 1:x$n_rois]
-      ind_con <- ind[(x$n_rois+1):(x$n_rois*2), (x$n_rois+1):(x$n_rois*2)]
+      ind_lag <- ind[ , 1:x$n_rois]
+      ind_con <- ind[ , (x$n_rois+1):(x$n_rois*2)]
       cat("\n")
       cat("Lagged Matrix for", file, "\n")
       print(ind_lag)
@@ -65,9 +65,9 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
       } else {
       s        <- apply(simplify2array(subfiles), 1:2, mean, na.rm = TRUE)
       colnames(s) <- x$varnames
-      rownames(s) <- x$varnames
+      rownames(s) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
       s     <- round(s, digits = 2)
-      s     <- s[(x$n_rois+1):(x$n_rois*2), ]
+      #s     <- s[(x$n_rois+1):(x$n_rois*2), ]
       s_lag <- s[ , 1:x$n_rois]
       s_con <- s[ , (x$n_rois+1):(x$n_rois*2)]
       cat("\n")
@@ -133,10 +133,10 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
           "Otherwise, a summary average matrix is presented below.", "\n")
       all2 <- apply(simplify2array(x$path_est_mats), 1:2, mean, na.rm = TRUE)
       colnames(all2) <- x$varnames
-      rownames(all2) <- x$varnames
+      rownames(all2) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
       all2 <- round(all2, digits = 2)
-      all2_lag <- all2[(x$n_rois+1):(x$n_rois*2), 1:x$n_rois]
-      all2_con <- all2[(x$n_rois+1):(x$n_rois*2), (x$n_rois+1):(x$n_rois*2)]
+      all2_lag <- all2[ , 1:x$n_rois]
+      all2_con <- all2[ , (x$n_rois+1):(x$n_rois*2)]
       cat("\n")
       cat("Lagged Average Matrix for Sample", "\n")
       print(all2_lag)

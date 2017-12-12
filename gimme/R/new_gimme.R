@@ -354,8 +354,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
                      sub_spec,
                      store)
 
-  # return object with info user can access
-  # need to add subgroup membership!
+  # these objects are used in print.gimmep
+  # if you change an object name here, 
+  # you need to change it in the print.gimmep.R
   res <- list(path_est_mats   = store$betas,
               varnames        = dat$varnames,
               n_rois          = dat$n_rois,

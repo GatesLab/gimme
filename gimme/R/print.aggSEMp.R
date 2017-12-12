@@ -1,8 +1,8 @@
 #'@method plot aggSEMp
 #'@export
 plot.aggSEMp <- function(x, ...){
-    plot(x$plot)
-    invisible(x$plot)
+    plot(x$plot[[1L]])
+    invisible(x$plot[[1L]])
 }
 
 #'@method print aggSEMp
@@ -13,12 +13,12 @@ print.aggSEMp <- function(x, estimates = FALSE, fitMeasures = FALSE, ...){
       print(x$path_se_est, row.names = F)
       invisible(x$path_se_est)
     } else if (estimates == FALSE){
-      ind <- x$path_est_mat
-      colnames(ind) <- x$path_est_mat
-      rownames(ind) <- x$path_est_mat
+      ind <- x$path_est_mat[[1]]
+      colnames(ind) <- x$varnames
+      rownames(ind) <- x$varnames[(x$n_rois + 1):(x$n_rois*2)]
       ind <- round(ind, digits = 2)
-      ind_lag <- ind[(x$n_rois+1):(x$n_rois*2), 1:x$n_rois]
-      ind_con <- ind[(x$n_rois+1):(x$n_rois*2), (x$n_rois+1):(x$n_rois*2)]
+      ind_lag <- ind[ , 1:x$n_rois]
+      ind_con <- ind[ , (x$n_rois+1):(x$n_rois*2)]
       cat("\n")
       cat("Lagged Matrix for all", "\n")
       print(ind_lag)
