@@ -936,7 +936,14 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
         summ <- do.call("rbind", sub_summ)
         coefs <- do.call("rbind", sub_coefs)
         
-      } 
+      } else {
+        sub_coefs <- NULL
+        sub_plots <- NULL
+        sub_paths <- NULL
+        summ <- transform(coefs, count = as.numeric(
+          ave(param, param, FUN = length)))
+        summ <- subset(summ, !duplicated(param)) 
+      }
     }
     else {
       sub_coefs <- NULL
