@@ -62,7 +62,7 @@
 #' function from the \code{igraph} package. Defaults to TRUE. 
 #' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
 #' subgroup labels contained in the dataframe. Dataframe has 2 columns,
-#' the first referring to file labels, and the second an integer variable referring to subgroup label.
+#' the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
@@ -171,7 +171,24 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        agg                  = FALSE,
                        groupcutoff          = groupcutoff,
                        subcutoff            = subcutoff)
-
+  
+  #Error Check for Confirm Subgroup Labels
+  if(subgroup & !is.null(confirm_subgroup)){
+    if(dim(confirm_subgroup)[[2]] != 2){
+      stop(paste0("gimme ERROR: confirmatory subgroup dataframe is not a two column dataframe.",
+                  " Please ensure that the confirmatory subgroup dataframe consists of a column of filenames and a column of community assignments."))
+    }
+    if(length(match(confirm_subgroup[,1], (dat$file_order)$names)) != dim(confirm_subgroup)[[1]]){
+      stop(paste0("gimme ERROR: confirmatory subgroup dataframe contains mismatched filenames.",
+                  " Please ensure that the confirmatory subgroup filenames match the data filenames, sans extensions (Example: sub_1000, not sub_1000.csv)"))
+    }
+    if(is.numeric(confirm_subgroup[,2])){
+      stop(paste0("gimme ERROR: confirmatory subgroup assignments are non-numeric.",
+                  " Please ensure that the confirmatory subgroup assignments are integer valued, beginning from 1. (Example: 1, 2, 3, 4)"))
+    }
+  }
+  
+  
   grp <- list("n_group_paths" = 0,
               "n_fixed_paths" = length(dat$fixed_paths),
               "group_paths"   = c())
