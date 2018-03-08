@@ -1,5 +1,21 @@
+#Variables I am  inputting just to test/step through
 
-## this setup function creates many values that later code refers back to
+exog_input <- c("V1","V2")
+exog_mult_input <- c("V1*V2","V1lag*V3")
+
+data = 'C:/Users/kaduffy/Documents/gimme/Example Data/t_120_n_25_v_5/'
+sep = ","
+header = FALSE 
+out = ""
+plot = TRUE
+ar = TRUE
+paths = NULL
+exogenous = exog_input
+exog_mult = exog_mult_input
+mean_center_mult = TRUE
+groupcutoff = .75
+subcutoff = .5
+diagnos = FALSE
 
 setup <- function (data,
                    sep,
@@ -9,12 +25,14 @@ setup <- function (data,
                    ar,
                    paths,
                    exogenous,
+                   exog_mult,
+                   mean_center_mult,
                    subgroup,
                    agg,
                    ind,
                    groupcutoff,
                    subcutoff) {
-  
+
   ## check that data argument is specified
   if (is.null(data)){
     stop(paste0("gimme ERROR: neither a data directory nor a data list is specified. ",
@@ -24,7 +42,7 @@ setup <- function (data,
   ## code to create list of individual data files if used from directory
   ## or create lagged version if list already provided by user
   if (!is.list(data)){
-    files <- list.files(data, full.names = TRUE)
+    files <- list.files(data, full.names = TRUE) #Creates a list of all files in the dir pointed at
     ## add error messages if a data directory is specified but sep or header is missing
     if (is.null(sep)){
       stop(paste0("gimme ERROR: a data directory is specified but a sep argument is not. ",
@@ -34,15 +52,16 @@ setup <- function (data,
       stop(paste0("gimme ERROR: a data directory is specified but a header argument is not. ",
                   "Please specify a logical value for header before continuing."))
     }
+    
     ## if above checks are passed, read in files and create list
     ts_list <- list()
     for (i in 1:length(files)){
       ts_ind       <- read.table(files[i], sep = sep, header = header)
-      ts_list[[i]] <- ts_ind 
+      ts_list[[i]] <- ts_ind #creates a list of the TS of all files, with each sub as a slice
     }
-    varnames       <- colnames(ts_ind)
-    names(ts_list) <- tools::file_path_sans_ext(basename(files))
-    rois           <- ncol(ts_ind)
+    varnames       <- colnames(ts_ind) #Since ts_list keeps the heading of each slice as the header read in, it now sets the var names to these column headers. If no header, it will keep the automatic R headers, aka V1, V2, etc.
+    names(ts_list) <- tools::file_path_sans_ext(basename(files)) #Names each slice of the list after their filenames (w/o extension)
+    rois           <- ncol(ts_ind) #THIS WILL NEED TO CHANGE POSSIBLY - SETS ROIS TO NUMBER OF VARIABLES READ IN BY BEACH SUBJECT
   } else if (is.list(data)){
     ts_list  <- list()
     ts_list  <- data
@@ -51,7 +70,7 @@ setup <- function (data,
     if (is.null(varnames)){
       varnames <- c(paste0("x", seq(1,rois)))
       ts_list <- lapply(ts_list, function(x) { 
-        colnames(x)<-varnames
+        colnames(x)<-varnames #if var names are empty, this fills them in with 1:num of variables
         x 
       })
       }
@@ -60,11 +79,8 @@ setup <- function (data,
   # simplify creation of variable names
   varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
   lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
-  
-  lexogenous<- NULL
-  if (!is.null(exogenous)){
-    lexogenous <- recode.vars(exogenous, varnames, lvarnames)
-  }
+  #LVAR is LATENT vars and vars are just regular vars
+  # So LVARNAMES is where they are changed to being a standardized "var1, var2" etc. varnames KEEPS the original names and adds lags
   
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
@@ -75,6 +91,74 @@ setup <- function (data,
     colnames(ts_lc) <- varnames
     ts_list[[p]] <- ts_lc
   }
+  
+  ### So what this does is reads in each subject's data from the list (p is each subject), then creates a data frame where the reg variables are the whole list minus the last row
+  ### and the lag begins at the second row of data through the last row. So overall it becomes 120 rows rather than 121
+  # Note that this keeps the original names as well
+  if (!is.null(exog_mult)){
+    for(i in 1:length(exog_mult)){ 
+      mult_pairs <- exog_mult[[i]]
+      vars_to_mult <- strsplit(mult_pairs, "*", fixed = TRUE)
+      vars_to_mult_mat <- unlist(vars_to_mult)
+      factor_1 <- vars_to_mult_mat[1]
+      factor_2 <- vars_to_mult_mat[2]
+      for(p in 1:length(ts_list)){
+        all <- ts_list[[p]]
+        if (!is.null(mean_center_mult)){
+          var_1 <- all[[factor_1]]
+          var_1_center <- scale(var_1, scale = FALSE)
+          var_2 <- all[[factor_2]]
+          var_2_center <- scale(var_2, scale = FALSE)
+          multiplied_center <- var_1_center*var_2_center
+          df_tobind <- data.frame(multiplied_center)
+          colnames(df_tobind) <- mult_pairs
+          all_appended <- cbind(all,df_tobind)
+          ts_list[[p]] <- all_appended
+        } else{
+          var_1 <- all[[factor_1]]
+          var_2 <- all[[factor_2]]
+          multiplied <- var_1*var_2
+          df_tobind <- data.frame(multiplied)
+          colnames(df_tobind) <- mult_pairs
+          all_appended <- cbind(all,df_tobind)
+          ts_list[[p]] <- all_appended
+        }
+      }
+    }
+  }
+ 
+  ### I think this loop is redundant, and might be better to do it in the above loop and return it, but it
+  ### would still require many extra lines, and accomplished something different, so I don't know! And the 
+  ### other loop is so long now with the centering
+  lmult_pairs <- NULL
+  if (!is.null(exog_mult)){
+    for(i in 1:length(exog_mult)){ 
+    mult_pairs <- exog_mult[[i]]
+    vars_to_mult <- strsplit(mult_pairs, "*", fixed = TRUE)
+    vars_to_mult_mat <- unlist(vars_to_mult)
+    lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
+    lfactor_1 <- lvars_to_mult[1]
+    lfactor_2 <- lvars_to_mult[2]
+    lmult_name <- paste0(lfactor_1,"*",lfactor_2)
+    lmult_pairs[[i]] <- lmult_name
+    }
+  }   
+  
+  lexog<- NULL
+  if (!is.null(exogenous)){
+    lexog <- recode.vars(exogenous, varnames, lvarnames) #recode.vars= function(data,oldvalue,newvalue)
+  }
+  #So what this does is takes what you inputted as the exogenous, and renames them based on the LATENT names, and then sets this as lexogenous
+  ###apparently it turns all variables into latent variables...I've got some questions about this
+  
+  ### Is it bad to name this the same thing? I wanted to do it to avoid changing the name later on throughout
+  ### the code....maybe it's better to rename what lexogenous is above? I did this and changed it to lexog. Is this okay????
+  lexogenous <- c(lexog,lmult_pairs)
+  
+  all <- ts_list[[1]] ###I only named it this because it's used below (at L162) for a reason that's unclear to me so decided to keep it. Not sure if I can just move that up here?
+  varnames <- colnames(all)
+  lvarnames <- c(lvarnames,lmult_pairs)
+  ###Again, is it bad to recycle these names?
   
   if (is.null(out)){
     cat("gimme MESSAGE: No output directory specified. All output should be directed to an object.", "\n")
@@ -88,12 +172,12 @@ setup <- function (data,
     }
   }
   
-  subjects         <- length(ts_list)
+  subjects         <- length(ts_list) #Num of subs is just the num of subs in ts_list
   file_order       <- data.frame(index = c(seq(1:subjects)), 
                                  names = c(names(ts_list)), 
-                                 stringsAsFactors = FALSE)
+                                 stringsAsFactors = FALSE) #indexes the subjects from 1:num sub based on order in ts_list
   
-  all              <- ts_list[[1]]
+  all              <- ts_list[[1]] #Not sure yet why it's doing this, this is not called again. Have no idea what it's doing here. 
 
   if (rois == 1) {
     stop(paste0("gimme ERROR: only one column of data read in. ",
@@ -140,12 +224,14 @@ setup <- function (data,
                 'Please use indSEM function instead.'))
   }
   
-  vars              <- rois*2
+  #vars              <- rois*2 #THIS MAY ALSO BE PROBLEMATIC FOR US (has vars = 2*number of inputted vars (b/c of lag))
+  vars              <- length(varnames)
   cutoffind         <- qchisq(.99, 1)
   n_group_paths     <- 0
   
-  x                 <- seq(1:vars)
-  y                 <- substring(lvarnames, 4)
+  x                 <- seq(1:vars) #makes the x variables the var NUMBERS only (eg 1, 2, 3,...,10)
+  y                 <- substring(lvarnames, 4) #this makes the y variables the lvarname SUFFIXES only, by taking the lvarnames begining at char. 4 (so 1lag, 2lag,...,4,5)
+  #But why are we doing this????
   individual        <- file.path(out, "individual")
   subgroup_dir      <- file.path(out, "subgroup")
   
@@ -156,7 +242,8 @@ setup <- function (data,
     dir.create(individual, showWarnings = FALSE)
   }
   if (plot) {
-    plot.names <- varnames[(rois+1):(rois*2)]
+    plot.names <- varnames[(rois+1):(rois*2)] 
+    #I'M NOT SURE HOW THIS WORKS, BECAUSE THE OUTPUTTED PLOT NAMES I GET ARE V1,V2,V3,V4,V5
   } else {
     plot.names <- ""
   }
@@ -191,6 +278,7 @@ setup <- function (data,
           stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                       specified paths.  Please remove variable from exogenous list or 
                       correct path specification'))
+          #This is because exog can't be treated as DV. We will have to add this/make sure other things we're adding (e.g. multiplied paths) are also considered in this
         }
       }
       }
@@ -248,12 +336,18 @@ setup <- function (data,
   # if ar = FALSE, set up nonsense paths fixed to zero 
   if (ar == TRUE) {
     line4 <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois])
+    #So basically it seems like lvarnames[(rois+1):vars] is used to list all non-lagged vars, and lvarnames[1:rois] is used to list all lagged
     ## creates list of AR paths so that later code doesn't kick them out
     fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
   } else {
     line4 <- paste0(lvarnames[1:rois], "~0*", lvarnames[(rois+1):vars])
     fixed_paths <- NULL
   }
+  
+  #line 1 is the non-latents regressed on the latents????
+  #line2 is the lags regressed on themselves???
+  #line3 is the non-lagged latents regessed on themselves???
+  #line4 line 4 is the lagged regressed on the non-lagged?
   
   syntax <- c(line1, line2, line3, line4)
   
@@ -266,14 +360,19 @@ setup <- function (data,
     }
     syntax <- c(syntax, covzero)
   }
+  #Really not sure what's going on here
   
   if (!is.null(paths)) syntax <- c(syntax, paths)
   
   ## create list of paths that make sense to gimme to open
   candidate_paths   <- apply(expand.grid(lvarnames[(rois+1):vars], 
                                          lvarnames[1:vars]), 1, paste, collapse = "~")
-  
-  # if path specified by a user is fixed to a certain value, 
+  ###So what this does now is uses lvarnames[(rois+1):vars] to list VAR1..VAR5 (no lags) PLUS the two multiplied,
+  ###Then uses lvarnames[1:vars] to list ALL the variables and regresses them each on each from the first list.
+  ###Is this okay? It's not problematic that the mult vars are listed twice, because the next part takes care
+  ###of removing where they're DVs, right?
+ 
+   # if path specified by a user is fixed to a certain value, 
   # remove it from consideration when looking at MIs
   candidate_paths <- candidate_paths[!candidate_paths %in% remove]
   
@@ -283,8 +382,10 @@ setup <- function (data,
   exog_paths <- apply(expand.grid(lexogenous[1:length(lexogenous)],
                   lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
   }
-  
-  # remove impossible exogenous paths from candidate paths
+  #We'll have to do the same thing with the ones we don't want, or ensure that they are considered exog
+  #So when I set exog as V1 and V2, it removed the paths where EVERYTHING is regressed onto VAR1 and VAR2 (because they can only be IVs)
+ 
+   # remove impossible exogenous paths from candidate paths
   if(!is.null(exog_paths)){
   candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
   }
