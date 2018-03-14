@@ -1,22 +1,4 @@
-#Variables I am  inputting just to test/step through
-
-exog_input <- c("V1","V2")
-exog_mult_input <- c("V1*V2","V1lag*V3")
-
-data = 'C:/Users/kaduffy/Documents/gimme/Example Data/t_120_n_25_v_5/'
-sep = ","
-header = FALSE 
-out = ""
-plot = TRUE
-ar = TRUE
-paths = NULL
-exogenous = exog_input
-mult_vars = exog_mult_input
-mean_center_mult = TRUE
-groupcutoff = .75
-subcutoff = .5
-diagnos = FALSE
-
+## this setup function creates many values that later code refers back to
 setup <- function (data,
                    sep,
                    header,
@@ -105,7 +87,7 @@ setup <- function (data,
       factor_2 <- vars_to_mult_mat[2]
       for(p in 1:length(ts_list)){
         all <- ts_list[[p]]
-        if (!is.null(mean_center_mult)){
+        if (mean_center_mult == TRUE){
           var_1 <- all[[factor_1]]
           var_1_center <- scale(var_1, scale = FALSE)
           var_2 <- all[[factor_2]]
