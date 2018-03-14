@@ -80,7 +80,7 @@ setup <- function (data,
   ### It will do the same for next multiplied variable, if there are any. 
   if (!is.null(mult_vars)){
     for(i in 1:length(mult_vars)){ 
-      mult_pairs <- exog_mult[[i]]
+      mult_pairs <- mult_vars[[i]]
       vars_to_mult <- strsplit(mult_pairs, "*", fixed = TRUE)
       vars_to_mult_mat <- unlist(vars_to_mult)
       factor_1 <- vars_to_mult_mat[1]
