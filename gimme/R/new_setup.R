@@ -124,7 +124,7 @@ setup <- function (data,
     lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
     lfactor_1 <- lvars_to_mult[1]
     lfactor_2 <- lvars_to_mult[2]
-    lmult_name <- paste0(lfactor_1,"*",lfactor_2)
+    lmult_name <- paste0(lfactor_1,"by",lfactor_2)
     lmult_pairs[[i]] <- lmult_name
     }
   }   
