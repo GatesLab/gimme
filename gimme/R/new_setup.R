@@ -52,7 +52,7 @@ setup <- function (data,
     n_endog  <- ncol(ts_list[[1]])
     varnames <- colnames(ts_list[[1]])
     if (is.null(varnames)){
-      varnames <- c(paste0("x", seq(1,rois)))
+      varnames <- c(paste0("V", seq(1,rois))) ###HERE THE VARS IN A LIST ARE NAMED X1 INSTEAD OF V1-- THIS IS MY PROBLEM; CHANGED TO V TO TRY A BANDAID FIX FOR RIGHT NOW
       ts_list <- lapply(ts_list, function(x) { 
         colnames(x)<-varnames 
         x 
@@ -78,6 +78,7 @@ setup <- function (data,
   ### For each subject it finds these variables in their data, mean centers it if desired, and then multiplies the two together,
   ### Renames it based on the original inputted name, and then binds it to the subject's data. Once this is done for each sub,
   ### It will do the same for next multiplied variable, if there are any. 
+  ### TO ACCOUNT FOR LIST PROBLEM, WILL SOMEONE HAVE TO ADD IN A LOOP/RECODE/CHECK HERE THAT CHANGES THEM TO V INSTEAD OF X
   if (!is.null(mult_vars)){
     for(i in 1:length(mult_vars)){ 
       mult_pairs <- mult_vars[[i]]
@@ -88,9 +89,9 @@ setup <- function (data,
       for(p in 1:length(ts_list)){
         all <- ts_list[[p]]
         if (mean_center_mult == TRUE){
-          var_1 <- all[[factor_1]]
+          var_1 <- all[,factor_1]
           var_1_center <- scale(var_1, scale = FALSE)
-          var_2 <- all[[factor_2]]
+          var_2 <- all[,factor_2]
           var_2_center <- scale(var_2, scale = FALSE)
           multiplied_center <- var_1_center*var_2_center
           df_tobind <- data.frame(multiplied_center)
@@ -98,8 +99,8 @@ setup <- function (data,
           all_appended <- cbind(all,df_tobind)
           ts_list[[p]] <- all_appended
         } else{
-          var_1 <- all[[factor_1]]
-          var_2 <- all[[factor_2]]
+          var_1 <- all[,factor_1]
+          var_2 <- all[,factor_2]
           multiplied <- var_1*var_2
           df_tobind <- data.frame(multiplied)
           colnames(df_tobind) <- mult_pairs
@@ -109,7 +110,10 @@ setup <- function (data,
       }
     }
   }
- 
+ ###Problem line is now currently that it is unable to index the column values based on names when I run 
+  ##from gimmesem(). I get this error:  Error in `[.data.frame`(all, , factor_1) : undefined columns selected .
+  ##However it works perfectly when I just run this code....not sure what to do! 
+  
   ### Added this loop to rename the multiplied variables to their latent lvarnames, since this is what is used for candidate paths
   lmult_pairs <- NULL
   if (!is.null(mult_vars)){
@@ -124,7 +128,7 @@ setup <- function (data,
     lmult_pairs[[i]] <- lmult_name
     }
   }   
-  n_bilinear <- length(l_multpairs) ###Added to count the number of bilinear/multiplied variables
+  n_bilinear <- length(lmult_pairs) ###Added to count the number of bilinear/multiplied variables
   
   lexog<- NULL
   if (!is.null(exogenous)){
