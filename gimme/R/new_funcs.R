@@ -701,10 +701,10 @@ get.params <- function(dat, grp, ind, k){
     ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
     ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
     
-    ind_betas <- ind_betas[(dat$n_rois+1):(dat$n_rois*2), ]
-    ind_ses   <- ind_ses[(dat$n_rois+1):(dat$n_rois*2), ]
+    ind_betas <- ind_betas[(dat$n_rois+1):(dat$n_vars_total), ]
+    ind_ses   <- ind_ses[(dat$n_rois+1):(dat$n_vars_total), ]
     
-    rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
+    rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_rois+1):(dat$n_vars_total)]
     colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames[1:(dat$n_vars_total)]
  #   } # stl comment out 11.20.17
     
@@ -726,7 +726,7 @@ get.params <- function(dat, grp, ind, k){
     if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_rois, ]
-      contemp     <- ind_betas_t[(dat$n_rois+1):(dat$n_rois*2), ]
+      contemp     <- ind_betas_t[(dat$n_rois+1):(dat$n_vars_total), ]
       plot_vals   <- rbind(w2e(lagged), w2e(contemp))
       is_lagged   <- c(rep(TRUE, sum(lagged != 0)), 
                        rep(FALSE, sum(contemp != 0)))
@@ -746,7 +746,7 @@ get.params <- function(dat, grp, ind, k){
                                   posCol       = "red",
                                   negCol       = "blue",
                                   labels       = 
-                                    dat$varnames[(dat$n_rois+1):(dat$n_rois*2)],
+                                    dat$varnames[(dat$n_rois+1):(dat$n_vars_total)],
                                   label.cex    = 2,
                                   DoNotPlot    = TRUE), 
                            error = function(e) e)
@@ -874,25 +874,25 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           
           sub_s_mat_counts[cbind(sub_s_summ$row, sub_s_summ$col)] <- 
             as.numeric(as.character(sub_s_summ$count))
-          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_rois+1):(dat$n_rois*2), ]
+          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_rois+1):(dat$n_vars_total), ]
           colnames(sub_s_mat_counts) <- dat$varnames
-          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
+          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_rois+1):(dat$n_vars_total)]
           
           sub_s_mat_means[cbind(sub_s_summ$row, sub_s_summ$col)]  <- sub_s_summ$mean
           sub_s_mat_colors[cbind(sub_s_summ$row, sub_s_summ$col)] <- sub_s_summ$color
-          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_rois+1):(dat$n_rois*2), ]
+          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_rois+1):(dat$n_vars_total), ]
           
           if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){
             
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
             lagged     <- sub_s_counts[1:(dat$n_rois), ]
-            contemp    <- sub_s_counts[(dat$n_rois+1):(dat$n_rois*2), ]
+            contemp    <- sub_s_counts[(dat$n_rois+1):(dat$n_vars_total), ]
             plot_vals  <- rbind(w2e(lagged), w2e(contemp))
             is_lagged  <- c(rep(TRUE, sum(lagged != 0)), rep(FALSE, sum(contemp != 0)))
             
             sub_colors <- t(sub_s_mat_colors)
-            colors     <- c(sub_colors[1:(dat$n_rois), ],
-                            sub_colors[(dat$n_rois+1):(dat$n_rois*2), ])
+            colors     <- c(sub_colors[1:(dat$n_contemporaneous), ],
+                            sub_colors[(dat$n_rois+1):(dat$n_vars_total), ])
             colors     <- colors[!is.na(colors)]
             
             sub_plot <- tryCatch(qgraph(plot_vals,
@@ -903,7 +903,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                         parallelEdge = TRUE,
                                         fade         = FALSE,
                                         labels       = 
-                                          dat$varnames[(dat$n_rois+1):(dat$n_rois*2)],
+                                          dat$varnames[(dat$n_rois+1):(dat$n_vars_total)],
                                         label.cex    = 2,
                                         DoNotPlot    = TRUE), 
                                  error = function(e) e)
