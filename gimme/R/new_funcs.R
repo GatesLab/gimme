@@ -705,7 +705,7 @@ get.params <- function(dat, grp, ind, k){
     ind_ses   <- ind_ses[(dat$n_rois+1):(dat$n_rois*2), ]
     
     rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
-    colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames[1:(dat$n_rois*2)]
+    colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames[1:(dat$n_vars_total)]
  #   } # stl comment out 11.20.17
     
     if (dat$agg & !is.null(dat$out)){
@@ -848,11 +848,11 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           sub_paths_count[sub_paths_count == sub$n_subgroups])
         
         for (s in 1:sub$n_subgroups){
-          sub_s_mat_counts <- matrix(0, nrow = (dat$n_rois*2), 
-                                     ncol = (dat$n_rois*2))
+          sub_s_mat_counts <- matrix(0, nrow = (dat$n_vars_total), 
+                                     ncol = (dat$n_vars_total))
           sub_s_mat_means  <- sub_s_mat_counts
-          sub_s_mat_colors <- matrix(NA, nrow = (dat$n_rois*2), 
-                                     ncol = (dat$n_rois*2))
+          sub_s_mat_colors <- matrix(NA, nrow = (dat$n_vars_total), 
+                                     ncol = (dat$n_vars_total))
           
           sub_s_coefs <- coefs[coefs$id %in% sub_spec[[s]]$sub_s_subjids, ]
           sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
@@ -980,14 +980,14 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     c$row <- match(c$lhs, dat$lvarnames) - dat$n_rois 
     c$col <- match(c$rhs, dat$lvarnames)
     
-    sample_counts <- matrix(0, ncol = (dat$n_rois*2), nrow = dat$n_rois)
+    sample_counts <- matrix(0, ncol = (dat$n_vars_total), nrow = (dat$n_contemporaneous))
     sample_counts[cbind(c$row, c$col)] <- c$xcount
     colnames(sample_counts) <- dat$varnames
-    rownames(sample_counts) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
+    rownames(sample_counts) <- dat$varnames[(dat$n_rois+1):(dat$n_vars_total)]
     
     if (dat$plot){
       
-      sample_colors <- matrix(NA, ncol = (dat$n_rois*2), nrow = dat$n_rois)
+      sample_colors <- matrix(NA, ncol = (dat$n_vars_total), nrow = dat$n_contemporaneous)
       sample_colors[cbind(c$row, c$col)] <- c$color
       
       sample_paths  <- t(sample_counts)/dat$n_subj
@@ -999,8 +999,8 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                       rep(FALSE, sum(contemp != 0)))
       
       samp_colors <- t(sample_colors)
-      colors      <- c(samp_colors[1:(dat$n_rois), ],
-                       samp_colors[(dat$n_rois+1):(dat$n_rois*2), ])
+      colors      <- c(samp_colors[1:(dat$n_contemporaneous), ],
+                       samp_colors[(dat$n_rois+1):(dat$n_vars_total), ])
       colors      <- colors[!is.na(colors)]
       
       samp_plot <- tryCatch(qgraph(plot_vals,
@@ -1011,7 +1011,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                    parallelEdge = TRUE,
                                    fade         = FALSE,
                                    labels       = 
-                                     dat$varnames[(dat$n_rois+1):(dat$n_rois*2)],
+                                     dat$varnames[(dat$n_rois+1):(dat$n_vars_total)],
                                    label.cex    = 2,
                                    DoNotPlot    = TRUE), 
                             error = function(e) e)

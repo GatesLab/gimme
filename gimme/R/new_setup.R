@@ -95,7 +95,7 @@ setup <- function (data,
           var_2_center <- scale(var_2, scale = FALSE)
           multiplied_center <- var_1_center*var_2_center
           df_tobind <- data.frame(multiplied_center)
-          colnames(df_tobind) <- mult_pairs
+          colnames(df_tobind) <- paste0(factor_1,"by",factor_2)
           all_appended <- cbind(all,df_tobind)
           ts_list[[p]] <- all_appended
         } else{
@@ -103,7 +103,7 @@ setup <- function (data,
           var_2 <- all[,factor_2]
           multiplied <- var_1*var_2
           df_tobind <- data.frame(multiplied)
-          colnames(df_tobind) <- mult_pairs
+          colnames(df_tobind) <- paste0(factor_1,"by",factor_2)
           all_appended <- cbind(all,df_tobind)
           ts_list[[p]] <- all_appended
         }
@@ -142,6 +142,8 @@ setup <- function (data,
   all <- ts_list[[1]] ###I only named it this because it's used below (at L162) for a reason that's unclear to me so decided to keep it. Not sure if I can just move that up here?
   varnames <- colnames(all) ###renamed to account for any new mult vars
   lvarnames <- c(lvarnames,lmult_pairs) ###renamed to account for any new mult vars. Combines original latent names plus latent names for multiplied vars
+  n_vars_total <- length(varnames)
+  n_contemporaneous <- n_endog + n_bilinear
   
   if (is.null(out)){
     cat("gimme MESSAGE: No output directory specified. All output should be directed to an object.", "\n")
@@ -378,6 +380,8 @@ setup <- function (data,
               "n_exog" = n_exog,
               "n_bilinear" = n_bilinear,
               "n_exog_total" = n_exog_total,
+              "n_vars_total" = n_vars_total,
+              "n_contemporaneous" = n_contemporaneous,
               "varnames" = varnames,
               "lvarnames" = lvarnames,
               "cutoffind" = cutoffind,
