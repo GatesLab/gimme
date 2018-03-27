@@ -10,7 +10,8 @@
 #'        header = ,
 #'        ar     = TRUE,
 #'        plot   = TRUE,
-#'        paths  = NULL)
+#'        paths  = NULL,
+#'        exogenous = NULL)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 
 #' or matrix must contain one matrix for each individual containing a 
@@ -37,6 +38,11 @@
 #' variables should be referred to using variable names. To reference lag 
 #' variables, "lag" should be added to the end of the variable name with no 
 #' separation. Defaults to NULL.
+#' @param exogenous Vector of variable names to be treated as exogenous.  
+#' That is, exogenous variable X can predict Y  but cannot be predicted by Y.  
+#' If no header is used, then variables should be referred to with V followed 
+#' (with no separation) by the column number. If a header is used, variables 
+#' should be referred to using variable names.  Defaults to NULL.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -75,14 +81,17 @@
 #'  }
 #'@keywords indSEM
 #'@export
+
 indSEM <- function(data,
                    out    = NULL,
                    sep    = NULL,
                    header = NULL,
                    ar     = TRUE,
                    plot   = TRUE,
-                   paths  = NULL){
+                   paths  = NULL,
+                   exogenous = NULL){
   
+
   dat  <- setup(data        = data,
                 sep         = sep,
                 header      = header,
@@ -90,6 +99,7 @@ indSEM <- function(data,
                 plot        = plot,
                 ar          = ar,
                 paths       = paths,
+                exogenous   = exogenous,
                 groupcutoff = NULL,
                 subcutoff   = NULL,
                 subgroup    = FALSE,
@@ -109,15 +119,15 @@ indSEM <- function(data,
   
   print.gimme.indSEM(z = dat)
   
-  res <- list(a = store$betas, 
-              b = dat$varnames, 
-              c = dat$n_rois,
-              d = final$fit, 
-              e = final$param_est, 
-              f = store$plots, 
-              g = store$vcov,
-              h = final$samp_plot,
-              i = final$sample_counts)
+  res <- list(path_est_mats = store$betas,
+              varnames = dat$varnames,
+              n_rois = dat$n_rois,
+              fit = final$fit,
+              path_se_est = final$param_est,
+              plots = store$plots,
+              group_plot = final$samp_plot,
+              path_counts = final$sample_counts,
+              vcov = store$vcov)
   
   class(res) <-  "indSEMp"
   

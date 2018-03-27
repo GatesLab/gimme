@@ -27,3 +27,4 @@ Aggregated information, such as counts, levels, and plots.
 \description{
 Wrapup, create output files.
 }
+\keyword{internal}

@@ -4,7 +4,7 @@
 \alias{gimme-package}
 \title{Group iterative multiple model estimation}
 \description{
-This package contains functions to identify group- and individual-level structural equation models.
+This package contains functions to identify group- and individual-level unified structural equation models.
 }
 \details{
 Researchers across varied domains gather multivariate data for each individual unit of study
@@ -26,7 +26,9 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
    Kathleen Gates [aut], \cr
    Peter Molenaar [aut], \cr
    Michael Hallquist [ctb], \cr
-   Hallie Pike [ctb]  
+   Hallie Pike [ctb],  \cr
+   Zachary Fisher [ctb],  \cr
+   Cara Arizmendi [ctb]
 }
 Maintainer: Stephanie Lane \email{slane@unc.edu}
 }

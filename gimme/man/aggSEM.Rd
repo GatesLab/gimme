@@ -10,7 +10,8 @@ aggSEM(data   = "",
        header = ,
        ar     = TRUE,
        plot   = TRUE,
-       paths  = NULL)
+       paths  = NULL,
+       exogenous = NULL)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located, 
@@ -18,14 +19,14 @@ or the name of the list containing each individual's time series.
 Each file or matrix must contain one matrix 
 for each individual containing a T (time) by 
 p (number of variables) matrix where the columns represent variables and
-the rows represent time.}
+the rows represent time. If in list form, each item in the list (i.e., matrix) must be named.}
 
 \item{out}{The path to the directory where the results will 
 be stored (optional). If specified, a copy of output files will be replaced
 in directory. If directory at specified path does not
 exist, it will be created.}
 
-\item{sep}{The spacing of the data files. "" indicates space-delimited, 
+\item{sep}{The spacing of the data files when data are in a directory. "" indicates space-delimited, 
 "/t" indicates tab-delimited, "," indicates comma delimited. 
 Only necessary to specify if reading data in from physical directory.}
 
@@ -35,18 +36,25 @@ Only necessary to specify if reading data in from physical directory.}
 \item{ar}{Logical. If TRUE, begins search for group model with 
 autoregressive (AR) paths open. Defaults to TRUE.}
 
-\item{plot}{Logical. If TRUE, graphs depicting relations among variables 
-of interest will automatically be created. For aggregate-level plot, 
-red paths represent positive weights and blue paths represent negative 
-weights. Defaults to TRUE.}
+\item{plot}{Logical. If TRUE, figures depicting relations among variables 
+of interest will automatically be created. For aggregate-level plot, red 
+paths represent positive weights and blue paths represent negative weights. 
+Dashed lines denote lagged relations (lag 1) and solid lines are contemporaneous 
+(lag 0). Defaults to TRUE.}
 
 \item{paths}{\code{lavaan}-style syntax containing paths with which to begin
-model estimation. That is, Y~X indicates that Y is regressed on X, or X
+model estimation (optional). That is, Y~X indicates that Y is regressed on X, or X
 predicts Y. If no header is used, then variables should be referred to
 with V followed (with no separation) by the column number. If a
 header is used, variables should be referred to using variable names. 
 To reference lag variables, "lag" should be added to the end of the variable 
 name with no separation. Defaults to NULL.}
+
+\item{exogenous}{Vector of variable names to be treated as exogenous (optional).
+That is, exogenous variable X can predict Y  but cannot be predicted by Y.  
+If no header is used, then variables should be referred to with V followed 
+(with no separation) by the column number. If a header is used, variables 
+should be referred to using variable names.  Defaults to NULL.}
 }
 \description{
 Concatenates all individual-level data files and 
