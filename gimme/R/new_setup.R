@@ -362,9 +362,17 @@ setup <- function (data,
                   lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
   }
   
-   # remove impossible exogenous paths from candidate paths
+   # remove impossible exogenous paths from candidate paths, fixed paths, and syntax
   if(!is.null(exog_paths)){
   candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
+  }
+  
+  if(!is.null(exog_paths)){
+    fixed_paths <- fixed_paths[!fixed_paths %in% exog_paths]
+  }
+  
+  if(!is.null(exog_paths)){
+    syntax <- syntax[!syntax %in% exog_paths]
   }
   
   # if user specifies paths, add them to the list of fixed paths
