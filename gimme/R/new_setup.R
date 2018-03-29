@@ -375,6 +375,9 @@ setup <- function (data,
     syntax <- syntax[!syntax %in% exog_paths]
   }
   
+  if(!is.null(exog_paths)){
+    syntax <- c(syntax,paste0(lexogenous[1:n_exog_total], "~0*", lvarnames[1]))
+  }
   # if user specifies paths, add them to the list of fixed paths
   if (!is.null(paths)) fixed_paths <- c(fixed_paths, paths) 
   
