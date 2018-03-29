@@ -14,6 +14,7 @@
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
 #'          exogenous   = NULL,
+#'          ex_lag      = FALSE,
 #'          mult_vars   = NULL,
 #'          mean_center_mult = FALSE,
 #'          groupcutoff = .75,
@@ -50,6 +51,8 @@
 #' If no header is used, then variables should be referred to with V followed
 #' (with no separation) by the column number. If a header is used, variables
 #' should be referred to using variable names. Defaults to NULL.
+#' @param ex_lag Logical.  If true, lagged variables are created for exogenous variables.  
+#' Defaults to FALSE.
 #' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
 #' effects (optional). All multiplied variables will be treated as exogenous (X can predict
 #' Y but cannot be predicted by Y). Within the vector, multiplication of two variables should be
@@ -163,6 +166,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               confirm_subgroup = NULL,
                               paths          = NULL,
                               exogenous      = NULL,
+                              ex_lag         = FALSE,
                               mult_vars      = NULL,
                               mean_center_mult = FALSE,
                               groupcutoff    = .75,
@@ -179,6 +183,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        ar                   = ar,
                        paths                = paths,
                        exogenous            = exogenous,
+                       ex_lag               = ex_lag,
                        mult_vars            = mult_vars,
                        mean_center_mult     = mean_center_mult,
                        subgroup             = subgroup,
