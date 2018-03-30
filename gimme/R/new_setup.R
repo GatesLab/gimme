@@ -268,7 +268,7 @@ setup <- function (data,
   }
   
   if (!is.null(paths)) syntax <- c(syntax, paths)
-  
+
   ## create list of paths that make sense to gimme to open
   candidate_paths   <- apply(expand.grid(lvarnames[(rois+1):vars], 
                                          lvarnames[1:vars]), 1, paste, collapse = "~")

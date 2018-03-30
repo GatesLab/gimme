@@ -427,7 +427,8 @@ determine.subgroups <- function(data_list,
                                 file_order,
                                 elig_paths,
                                 confirm_subgroup, 
-                                out_path = NULL){
+                                out_path = NULL,
+                                sub_feature = sub_feature){
   
   sub_membership  = NULL # appease CRAN check
   
@@ -445,11 +446,31 @@ determine.subgroups <- function(data_list,
   
   names(z_list) <- names(mi_list) <- names(data_list)
   
+  # drop individuals who did not converge
   drop    <- unique(c(which(is.na(z_list)), which(is.na(mi_list))))
+              
   if (length(drop) != 0){
     mi_list <- mi_list[-drop]
     z_list  <- z_list[-drop]
   }
+  
+  
+  #subgroup based only on contemporaneous paths kmg
+  if(sub_feature == "contemp"){
+    mi_list <- lapply(mi_list, 
+                      function(x){x[-grep('lag',mi_list[[1]]$rhs),]})
+    z_list <- lapply(z_list, 
+                     function(x){x[-grep('lag',z_list[[1]]$rhs),]})
+  }
+  
+  #subgroup based only on lagged paths kmg
+  if(sub_feature == "lagged"){
+    mi_list <- lapply(mi_list, 
+                      function(x){x[grep('lag',mi_list[[1]]$rhs),]})
+    z_list <- lapply(mi_list, 
+                     function(x){x[grep('lag',z_list[[1]]$rhs),]})
+  }
+  
   
   mi_list_temp <- lapply(mi_list, 
                          function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
@@ -463,9 +484,12 @@ determine.subgroups <- function(data_list,
                    function(x){x$sig <- ifelse(x$p < .05/n_subj, 1, 0)
                    return(x)})
   
+  #next: subgroup based on lambdas ## 
+  
+
   sim_mi <- matrix(0, ncol = length(mi_list), nrow = length(mi_list))
   sim_z  <- sim_mi
-  
+
   for (i in 1:length(mi_list)){
     for (j in 1:length(mi_list)){
       sim_mi[i,j] <- sum(mi_list[[i]]$sig == 1 & mi_list[[j]]$sig == 1 & 
@@ -882,7 +906,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           sub_s_mat_colors[cbind(sub_s_summ$row, sub_s_summ$col)] <- sub_s_summ$color
           sub_s_mat_colors <- sub_s_mat_colors[(dat$n_rois+1):(dat$n_rois*2), ]
           
-          if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){
+          if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ #plot subgroup plot if >1 nodes in subgroup
             
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
             lagged     <- sub_s_counts[1:(dat$n_rois), ]
