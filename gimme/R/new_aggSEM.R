@@ -10,37 +10,38 @@
 #'        header = ,
 #'        ar     = TRUE,
 #'        plot   = TRUE,
-#'        paths  = NULL
+#'        paths  = NULL,
 #'        exogenous = NULL)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. 
 #' Each file or matrix must contain one matrix 
 #' for each individual containing a T (time) by 
 #' p (number of variables) matrix where the columns represent variables and
-#' the rows represent time. 
+#' the rows represent time. If in list form, each item in the list (i.e., matrix) must be named.
 #' @param out The path to the directory where the results will 
 #' be stored (optional). If specified, a copy of output files will be replaced
 #' in directory. If directory at specified path does not
 #' exist, it will be created.
-#' @param sep The spacing of the data files. "" indicates space-delimited, 
+#' @param sep The spacing of the data files when data are in a directory. "" indicates space-delimited, 
 #' "/t" indicates tab-delimited, "," indicates comma delimited. 
 #' Only necessary to specify if reading data in from physical directory.
 #' @param header Logical. Indicate TRUE for data files with a header. 
 #' Only necessary to specify if reading data in from physical directory.
 #' @param ar Logical. If TRUE, begins search for group model with 
 #' autoregressive (AR) paths open. Defaults to TRUE.
-#' @param plot Logical. If TRUE, graphs depicting relations among variables 
-#' of interest will automatically be created. For aggregate-level plot, 
-#' red paths represent positive weights and blue paths represent negative 
-#' weights. Defaults to TRUE.
+#' @param plot Logical. If TRUE, figures depicting relations among variables 
+#' of interest will automatically be created. For aggregate-level plot, red 
+#' paths represent positive weights and blue paths represent negative weights. 
+#' Dashed lines denote lagged relations (lag 1) and solid lines are contemporaneous 
+#' (lag 0). Defaults to TRUE.
 #' @param paths \code{lavaan}-style syntax containing paths with which to begin
-#' model estimation. That is, Y~X indicates that Y is regressed on X, or X
+#' model estimation (optional). That is, Y~X indicates that Y is regressed on X, or X
 #' predicts Y. If no header is used, then variables should be referred to
 #' with V followed (with no separation) by the column number. If a
 #' header is used, variables should be referred to using variable names. 
 #' To reference lag variables, "lag" should be added to the end of the variable 
 #' name with no separation. Defaults to NULL.
-#'  @param exogenous Vector of variable names to be treated as exogenous.  
+#' @param exogenous Vector of variable names to be treated as exogenous (optional).  
 #' That is, exogenous variable X can predict Y  but cannot be predicted by Y.  
 #' If no header is used, then variables should be referred to with V followed 
 #' (with no separation) by the column number. If a header is used, variables 
@@ -111,13 +112,13 @@ aggSEM <- function(data,
                      sub_spec, 
                      store)
   
-  res <- list(a = store$betas, 
-              b = dat$varnames, 
-              c = dat$n_rois,
-              d = final$fit, 
-              e = final$param_est, 
-              f = store$plots, 
-              g = store$vcov)
+  res <- list(path_est_mat = store$betas, 
+              varnames     = dat$varnames, 
+              n_rois       = dat$n_rois,
+              fit          = final$fit, 
+              path_se_est  = final$param_est, 
+              plot         = store$plots, 
+              vcov         = store$vcov)
   
   print.gimme.aggSEM(z = dat)
   

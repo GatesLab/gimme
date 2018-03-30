@@ -1,20 +1,22 @@
 #' @name gimme-package
 #' @aliases gimme-package
 #' @title Group iterative multiple model estimation
-#' @description This package contains functions to identify group- and individual-level structural equation models.
+#' @description This package contains functions to identify group- and individual-level unified structural equation models.
 #' @author {Stephanie Lane [aut, cre, trl],\cr 
 #'    Kathleen Gates [aut], \cr
 #'    Peter Molenaar [aut], \cr
 #'    Michael Hallquist [ctb], \cr
-#'    Hallie Pike [ctb]  
+#'    Hallie Pike [ctb],  \cr
+#'    Zachary Fisher [ctb],  \cr
+#'    Cara Arizmendi [ctb]
 #' }
 #' Maintainer: Stephanie Lane \email{slane@@unc.edu}
-#' @import lavaan gWidgets
+#' @import lavaan 
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit
 #' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv
 #' @importFrom qgraph qgraph
-#' @importFrom igraph graph.adjacency walktrap.community modularity
+#' @importFrom igraph graph.adjacency walktrap.community modularity membership
 #' @importFrom graphics plot
 #' @keywords gimme
 #' @details Researchers across varied domains gather multivariate data for each individual unit of study

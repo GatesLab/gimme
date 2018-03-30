@@ -37,8 +37,8 @@ fit.model <- function (syntax,
                                  model.type      = "sem",
                                  missing         = "fiml",
                                  estimator       = "ml",
-                                 int.ov.free     = TRUE,
-                                 int.lv.free     = FALSE,
+                                 int.ov.free     = FALSE,
+                                 int.lv.free     = TRUE,
                                  auto.fix.first  = TRUE,
                                  auto.var        = TRUE,
                                  auto.cov.lv.x   = TRUE,
@@ -369,7 +369,8 @@ search.paths <- function(base_syntax,
         } else {
           writeLines(paste("subgroup-level search, subject", k))
         }
-      } else {
+      } else 
+        {
         fit        <- fit.model(syntax    = c(base_syntax, 
                                               fixed_syntax, 
                                               add_syntax),
@@ -425,9 +426,10 @@ determine.subgroups <- function(data_list,
                                 chisq_cutoff,
                                 file_order,
                                 elig_paths,
-                                confirm_subgroup){
+                                confirm_subgroup, 
+                                out_path = NULL){
   
-  membership  = NULL # appease CRAN check
+  sub_membership  = NULL # appease CRAN check
   
   sub     <- list()
   z_list  <- list()
@@ -451,7 +453,7 @@ determine.subgroups <- function(data_list,
   
   mi_list_temp <- lapply(mi_list, 
                          function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
-                         x$sig   <- ifelse(x$mi> chisq_cutoff, 1, 0)
+                         x$sig   <- ifelse(x$mi > chisq_cutoff, 1, 0)
                          return(x)})
   
   mi_list <- lapply(mi_list_temp, 
@@ -478,21 +480,21 @@ determine.subgroups <- function(data_list,
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
   if(is.null(confirm_subgroup)){
-  res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
-                                   steps = 4)
-  sub_mem    <- data.frame(names      = names(membership(res)), 
-                           membership = as.numeric(membership(res)))
-  sub$sim         <- sim
-  sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
-  sub$modularity  <- modularity(res)
-  sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
-  }else{
-    sub_mem    <- confirm_subgroup
-    names(sub_mem) <- c("names", "membership")
+    res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
+                                     steps = 4)
+    sub_mem    <- data.frame(names      = names(membership(res)), 
+                             sub_membership = as.numeric(membership(res)))
     sub$sim         <- sim
-    sub$n_subgroups <- length(unique(na.omit(sub_mem$membership))) 
+    sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
+    sub$modularity  <- modularity(res)
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
-    sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$membership)
+  } else {
+    sub_mem         <- confirm_subgroup
+    names(sub_mem)  <- c("names", "sub_membership")
+    sub$sim         <- sim
+    sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
+    sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
+    sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$sub_membership)
     
     
   }
@@ -506,6 +508,7 @@ determine.subgroups <- function(data_list,
 #' @param ind A list containing individual- and (potentially) subgroup-level
 #' information.
 #' @return Lists associated with coefficients, fit indices, etc.
+#' @keywords internal 
 indiv.search <- function(dat, grp, ind){
   
   if (!dat$agg){
@@ -596,6 +599,9 @@ indiv.search <- function(dat, grp, ind){
   if (dat$agg){
     names(status) <- names(fits) <- names(coefs) <- 
       names(betas) <- names(vcov) <- names(plots) <- "all"
+  # } else if (ind$n_ind_paths[k] > 0 & !dat$agg){
+  #   names(status) <- names(fits) <- names(coefs) <- 
+  #     names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
   } else {
     names(status) <- names(fits) <- names(coefs) <- 
       names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
@@ -620,9 +626,11 @@ indiv.search <- function(dat, grp, ind){
 #' information.
 #' @param k The counter indicating the individual.
 #' @return Individual-level information on fit, coefficients, and plots.
+#' @keywords internal
 get.params <- function(dat, grp, ind, k){
   
   op  = NULL # appease CRAN check
+  ind_plot = NA
   
   if (!dat$agg){
     fit <- fit.model(syntax    = c(dat$syntax, 
@@ -639,9 +647,12 @@ get.params <- function(dat, grp, ind, k){
                             data_file = data_file)
   }
   converge <- lavInspect(fit, "converged")
+  # if (ind$n_ind_paths[k] > 0){ commented out on 11.20.17 by stl
+  # potentially insert some other check for an empty model
   zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  # } else{ zero_se <- FALSE} commented out on 11.20.17 by stl
   
-# if no convergence, roll back one path at individual level, try again 
+  # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
     status <- "nonconvergence"
     if (length(ind$ind_paths[[k]]!= 0)){
@@ -662,17 +673,21 @@ get.params <- function(dat, grp, ind, k){
       }
     }
     converge <- lavInspect(fit, "converged")
-    zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+    ind_coefs <- subset(standardizedSolution(fit), op == "~") # if betas = 0, no SEs
+    if (length(ind_coefs[,1]) > 0){
+      zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0}
+    else
+    {zero_se <- FALSE}
     if (converge){
       status <- "last known convergence"
     }
   }
   
-  if (converge & !zero_se){
+  if (converge & !zero_se){#& (ind$n_ind_paths[k] >0) ){
     status   <- "converged normally"
     
-    ind_fit    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
-                                     "srmr", "nnfi", "cfi", "bic"))
+    ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
+                                     "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
     ind_fit    <- round(ind_fit, digits = 4)
     ind_fit[2] <- round(ind_fit[2], digits = 0)
     
@@ -682,21 +697,23 @@ get.params <- function(dat, grp, ind, k){
     
     ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
-    ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
-    ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
-    
-    ind_betas <- ind_betas[(dat$n_rois+1):(dat$n_rois*2), ]
-    ind_ses   <- ind_ses[(dat$n_rois+1):(dat$n_rois*2), ]
-    
-    rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
-    colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames[1:(dat$n_rois*2)]
+    if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
+      ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
+      ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
+      
+      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged), ]
+      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged), ]
+      
+      rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged)]
+      colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
+    } # stl comment out 11.20.17 # added back 3.29.2018 due to errors when no paths exist
     
     if (dat$agg & !is.null(dat$out)){
       write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
                 row.names = TRUE)
       write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
                 row.names = TRUE)
-    } else if (!dat$agg & !is.null(dat$out)){
+    } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
       write.csv(ind_betas, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
                                             "Betas.csv")), row.names = TRUE)
@@ -705,10 +722,11 @@ get.params <- function(dat, grp, ind, k){
                                           "StdErrors.csv")), row.names = TRUE)
     }
     
+    ind_plot  <- NA
     if (dat$plot){
       ind_betas_t <- t(ind_betas)
-      lagged      <- ind_betas_t[1:dat$n_rois, ]
-      contemp     <- ind_betas_t[(dat$n_rois+1):(dat$n_rois*2), ]
+      lagged      <- ind_betas_t[1:dat$n_lagged, ]
+      contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_vars_total), ]
       plot_vals   <- rbind(w2e(lagged), w2e(contemp))
       is_lagged   <- c(rep(TRUE, sum(lagged != 0)), 
                        rep(FALSE, sum(contemp != 0)))
@@ -728,7 +746,7 @@ get.params <- function(dat, grp, ind, k){
                                   posCol       = "red",
                                   negCol       = "blue",
                                   labels       = 
-                                    dat$varnames[(dat$n_rois+1):(dat$n_rois*2)],
+                                    dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
                                   label.cex    = 2,
                                   DoNotPlot    = TRUE), 
                            error = function(e) e)
@@ -739,7 +757,26 @@ get.params <- function(dat, grp, ind, k){
         dev.off()
       }
     }
-  } else {
+  } 
+  
+  # commented out on 11.20.17 by stl 
+  # if (ind$n_ind_paths[k] ==0 & converge) {
+  #   status     <- "no paths added"
+  #   ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
+  #                                    "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
+  #   ind_fit    <- round(ind_fit, digits = 4)
+  #   ind_fit[2] <- round(ind_fit[2], digits = 0)
+  #   
+  #   ind_vcov  <- lavInspect(fit, "vcov.std.all")
+  #   keep      <- rownames(ind_vcov) %in% dat$candidate_paths
+  #   ind_vcov  <- ind_vcov[keep, keep]
+  #   
+  #   ind_betas <- NULL
+  #   ind_coefs <- subset(standardizedSolution(fit), op == "~")
+  #   
+  # } 
+  
+  if (!converge | zero_se){
     if (!converge) status <- "nonconvergence"
     if (zero_se)   status <- "computationally singular"
     ind_fit   <- rep(NA, 8)
@@ -749,6 +786,9 @@ get.params <- function(dat, grp, ind, k){
     ind_vcov  <- NA
     ind_plot  <- NA
   }
+  
+  if (!dat$plot)
+    ind_plot  <- NA
   
   res <- list("status"    = status, 
               "ind_fit"   = ind_fit, 
@@ -770,6 +810,7 @@ get.params <- function(dat, grp, ind, k){
 #' @param sub_spec A list containing information specific to each subgroup.
 #' @param store A list containing output from indiv.search().
 #' @return Aggregated information, such as counts, levels, and plots.
+#' @keywords internal
 final.org <- function(dat, grp, ind, sub, sub_spec, store){
   
   sub_coefs  <- list()
@@ -784,17 +825,22 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
   if (!dat$agg){
     
     coefs       <- do.call("rbind", store$coefs)
-    coefs$id    <- rep(names(store$coefs), sapply(store$coefs, nrow))
-    coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
     
+    if(length(coefs[,1])>0){
+      coefs$id    <- rep(names(store$coefs), sapply(store$coefs, nrow))
+      coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
+      
+      coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
+      coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
+      coefs$color[coefs$level == "group"] <- "black"
+      coefs$color[coefs$level == "ind"]   <- "gray50"}
     
-    coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
-    coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
-    coefs$color[coefs$level == "group"] <- "black"
-    coefs$color[coefs$level == "ind"]   <- "gray50"
-    
+    indiv_paths <- NULL
+    samp_plot <- NULL
+    sample_counts <- NULL
+    # if (length(coefs[,1])>0){ # commented out stl 11.20.17
     if (dat$subgroup) {
-      if (sub$n_subgroups != dat$n_subj){
+      if (sub$n_subgroups != dat$n_subj){ # ensure everyone isn't in their own subgroup
         
         sub_paths_count <- table(unlist(
           lapply(sub_spec, FUN = function(x) c(x$sub_paths))))
@@ -802,17 +848,17 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           sub_paths_count[sub_paths_count == sub$n_subgroups])
         
         for (s in 1:sub$n_subgroups){
-          sub_s_mat_counts <- matrix(0, nrow = (dat$n_rois*2), 
-                                     ncol = (dat$n_rois*2))
+          sub_s_mat_counts <- matrix(0, nrow = (dat$n_vars_total), 
+                                     ncol = (dat$n_vars_total))
           sub_s_mat_means  <- sub_s_mat_counts
-          sub_s_mat_colors <- matrix(NA, nrow = (dat$n_rois*2), 
-                                     ncol = (dat$n_rois*2))
+          sub_s_mat_colors <- matrix(NA, nrow = (dat$n_vars_total), 
+                                     ncol = (dat$n_vars_total))
           
           sub_s_coefs <- coefs[coefs$id %in% sub_spec[[s]]$sub_s_subjids, ]
           sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
           sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
           sub_s_coefs$level[sub_s_coefs$param %in% unique(
-            unlist(ind[ind$membership == s, ]$ind_paths))] <- "ind"
+            unlist(ind[ind$sub_membership == s, ]$ind_paths))] <- "ind"
           sub_s_coefs$color[sub_s_coefs$level == "group"] <- "black"
           sub_s_coefs$color[sub_s_coefs$level == "sub"]   <- "green3"
           sub_s_coefs$color[sub_s_coefs$level == "ind"]   <- "gray50"
@@ -828,25 +874,25 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           
           sub_s_mat_counts[cbind(sub_s_summ$row, sub_s_summ$col)] <- 
             as.numeric(as.character(sub_s_summ$count))
-          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_rois+1):(dat$n_rois*2), ]
+          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
           colnames(sub_s_mat_counts) <- dat$varnames
-          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
+          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
           
           sub_s_mat_means[cbind(sub_s_summ$row, sub_s_summ$col)]  <- sub_s_summ$mean
           sub_s_mat_colors[cbind(sub_s_summ$row, sub_s_summ$col)] <- sub_s_summ$color
-          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_rois+1):(dat$n_rois*2), ]
+          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_lagged+1):(dat$n_vars_total), ]
           
-          if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){
+          if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ #plot subgroup plot if >1 nodes in subgroup
             
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
-            lagged     <- sub_s_counts[1:(dat$n_rois), ]
-            contemp    <- sub_s_counts[(dat$n_rois+1):(dat$n_rois*2), ]
+            lagged     <- sub_s_counts[1:(dat$n_lagged), ]
+            contemp    <- sub_s_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
             plot_vals  <- rbind(w2e(lagged), w2e(contemp))
             is_lagged  <- c(rep(TRUE, sum(lagged != 0)), rep(FALSE, sum(contemp != 0)))
             
             sub_colors <- t(sub_s_mat_colors)
-            colors     <- c(sub_colors[1:(dat$n_rois), ],
-                            sub_colors[(dat$n_rois+1):(dat$n_rois*2), ])
+            colors     <- c(sub_colors[1:(dat$n_lagged), ],
+                            sub_colors[(dat$n_lagged+1):(dat$n_vars_total), ])
             colors     <- colors[!is.na(colors)]
             
             sub_plot <- tryCatch(qgraph(plot_vals,
@@ -857,7 +903,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                         parallelEdge = TRUE,
                                         fade         = FALSE,
                                         labels       = 
-                                          dat$varnames[(dat$n_rois+1):(dat$n_rois*2)],
+                                          dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
                                         label.cex    = 2,
                                         DoNotPlot    = TRUE), 
                                  error = function(e) e)
@@ -877,8 +923,8 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           if (sub_spec[[s]]$n_sub_subj != 1 & !is.null(dat$out)){
             write.csv(sub_s_mat_counts, 
                       file = file.path(dat$subgroup_dir, 
-                             paste0("subgroup", s, 
-                             "PathCountsMatrix.csv")), 
+                                       paste0("subgroup", s, 
+                                              "PathCountsMatrix.csv")), 
                       row.names = TRUE)
           }
           sub_coefs[[s]] <- sub_s_coefs
@@ -890,7 +936,14 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
         summ <- do.call("rbind", sub_summ)
         coefs <- do.call("rbind", sub_coefs)
         
-      } 
+      } else {
+        sub_coefs <- NULL
+        sub_plots <- NULL
+        sub_paths <- NULL
+        summ <- transform(coefs, count = as.numeric(
+          ave(param, param, FUN = length)))
+        summ <- subset(summ, !duplicated(param)) 
+      }
     }
     else {
       sub_coefs <- NULL
@@ -905,7 +958,6 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     summ$label <- ifelse(summ$level == "sub", 
                          paste0("subgroup", summ$mem),
                          summ$level)
-    
     a <- aggregate(count ~ lhs + rhs + label, data = summ, sum)
     
     a <- a[order(-a$count, a$label),]
@@ -920,6 +972,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
       write.csv(a, file.path(dat$out, "summaryPathCounts.csv"), 
                 row.names = FALSE)
     }
+    
     # end creating wide summaryPathCounts ------------------------------------ #
     
     b <- aggregate(count ~ lhs + rhs + color + label + param, data = summ, sum)
@@ -931,30 +984,30 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     b <- b[order(-b$count), ]
     c <- b[!duplicated(b$param), c("lhs", "rhs", "color", "xcount")] 
     
-    c$row <- match(c$lhs, dat$lvarnames) - dat$n_rois 
+    c$row <- match(c$lhs, dat$lvarnames) - dat$n_lagged
     c$col <- match(c$rhs, dat$lvarnames)
     
-    sample_counts <- matrix(0, ncol = (dat$n_rois*2), nrow = dat$n_rois)
+    sample_counts <- matrix(0, ncol = (dat$n_vars_total), nrow = dat$n_lagged)
     sample_counts[cbind(c$row, c$col)] <- c$xcount
     colnames(sample_counts) <- dat$varnames
-    rownames(sample_counts) <- dat$varnames[(dat$n_rois+1):(dat$n_rois*2)]
+    rownames(sample_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged+dat$n_lagged)]
     
     if (dat$plot){
       
-      sample_colors <- matrix(NA, ncol = (dat$n_rois*2), nrow = dat$n_rois)
+      sample_colors <- matrix(NA, ncol = (dat$n_vars_total), nrow = dat$n_lagged)
       sample_colors[cbind(c$row, c$col)] <- c$color
       
       sample_paths  <- t(sample_counts)/dat$n_subj
       
-      lagged     <- sample_paths[1:(dat$n_rois), ]
-      contemp    <- sample_paths[(dat$n_rois+1):(dat$n_rois*2), ]
+      lagged     <- sample_paths[1:(dat$n_lagged), ]
+      contemp    <- sample_paths[(dat$n_lagged+1):(dat$n_vars_total), ]
       plot_vals  <- rbind(w2e(lagged), w2e(contemp))
       is_lagged  <- c(rep(TRUE, sum(lagged != 0)),
                       rep(FALSE, sum(contemp != 0)))
       
       samp_colors <- t(sample_colors)
-      colors      <- c(samp_colors[1:(dat$n_rois), ],
-                       samp_colors[(dat$n_rois+1):(dat$n_rois*2), ])
+      colors      <- c(samp_colors[1:(dat$n_lagged), ],
+                       samp_colors[(dat$n_lagged+1):(dat$n_vars_total), ])
       colors      <- colors[!is.na(colors)]
       
       samp_plot <- tryCatch(qgraph(plot_vals,
@@ -965,7 +1018,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                    parallelEdge = TRUE,
                                    fade         = FALSE,
                                    labels       = 
-                                     dat$varnames[(dat$n_rois+1):(dat$n_rois*2)],
+                                     dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
                                    label.cex    = 2,
                                    DoNotPlot    = TRUE), 
                             error = function(e) e)
@@ -985,13 +1038,13 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     indiv_paths     <- indiv_paths[order(indiv_paths$id, indiv_paths$level), ]
     colnames(indiv_paths) <- c("file", "dv", "iv", "beta", "se", 
                                "z", "pval", "level")
-    
+    # } # end "if no coefficients" commented out stl 11.20.17
     # combine fit information for summaryFit.csv
     
     fits        <- as.data.frame(do.call(rbind, store$fits))
     fits$file   <- rownames(fits)
     fits$status <- do.call(rbind, store$status)
-    fits        <- as.matrix(fits[ ,c(9, 1:8, 10)], byrow = TRUE)
+    fits        <- fits[ ,c(12, 1:11, 13)]
     
     if (dat$subgroup){
       fits <- merge(fits, sub$sub_mem[ ,c(1,3)], by.x = "file", by.y = "names")  
@@ -1001,13 +1054,14 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                            by.x = "file", by.y = "names")
     }
     
-    if (!is.null(dat$out)){
+    if (!is.null(dat$out)){ #& length(coefs[,1]) > 0){ # commented out stl 11.20.17
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
       write.csv(sample_counts, file.path(dat$out,
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
+      write.csv(sub$sim, file.path(dat$out, "similarityMatrix.csv"), row.names = FALSE)
     }
     
   } else {
@@ -1047,4 +1101,3 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
   return(res)
   
 }
-

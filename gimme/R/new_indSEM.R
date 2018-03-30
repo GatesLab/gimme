@@ -10,7 +10,7 @@
 #'        header = ,
 #'        ar     = TRUE,
 #'        plot   = TRUE,
-#'        paths  = NULL
+#'        paths  = NULL,
 #'        exogenous = NULL)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 
@@ -119,15 +119,15 @@ indSEM <- function(data,
   
   print.gimme.indSEM(z = dat)
   
-  res <- list(a = store$betas, 
-              b = dat$varnames, 
-              c = dat$n_rois,
-              d = final$fit, 
-              e = final$param_est, 
-              f = store$plots, 
-              g = store$vcov,
-              h = final$samp_plot,
-              i = final$sample_counts)
+  res <- list(path_est_mats = store$betas,
+              varnames = dat$varnames,
+              n_rois = dat$n_rois,
+              fit = final$fit,
+              path_se_est = final$param_est,
+              plots = store$plots,
+              group_plot = final$samp_plot,
+              path_counts = final$sample_counts,
+              vcov = store$vcov)
   
   class(res) <-  "indSEMp"
   
