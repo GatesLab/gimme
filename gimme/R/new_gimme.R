@@ -172,9 +172,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               groupcutoff    = .75,
                               subcutoff      = .5,
                               diagnos        = FALSE){
-
+  
   sub_membership = NULL
-
+  
   dat         <- setup(data                 = data,
                        sep                  = sep,
                        header               = header,
@@ -212,22 +212,22 @@ gimmeSEM <- gimme <- function(data           = NULL,
   grp <- list("n_group_paths" = 0,
               "n_fixed_paths" = length(dat$fixed_paths),
               "group_paths"   = c())
-
+  
   s1  <- search.paths(base_syntax  = dat$syntax,
-                     fixed_syntax = NULL,
-                     add_syntax   = grp$group_paths,
-                     n_paths      = grp$n_group_paths,
-                     data_list    = dat$ts_list,
-                     elig_paths   = dat$candidate_paths,
-                     prop_cutoff  = dat$group_cutoff,
-                     n_subj       = dat$n_subj,
-                     chisq_cutoff = qchisq(1-.05/dat$n_subj, 1),
-                     subgroup_stage = FALSE)
-
+                      fixed_syntax = NULL,
+                      add_syntax   = grp$group_paths,
+                      n_paths      = grp$n_group_paths,
+                      data_list    = dat$ts_list,
+                      elig_paths   = dat$candidate_paths,
+                      prop_cutoff  = dat$group_cutoff,
+                      n_subj       = dat$n_subj,
+                      chisq_cutoff = qchisq(1-.05/dat$n_subj, 1),
+                      subgroup_stage = FALSE)
+  
   grp[c("n_group_paths", "group_paths")] <- s1
-
+  
   prune <- ifelse(grp$n_group_paths != 0, TRUE, FALSE)
-
+  
   if (prune){
     s2 <- prune.paths(base_syntax  = dat$syntax,
                       fixed_syntax = NULL,
@@ -240,9 +240,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
                       subgroup_stage = FALSE)
     grp[c("n_group_paths", "group_paths")] <- s2
   }
-
+  
   # determine subgroup assignments, if requested
-
+  
   if (subgroup){
     sub <- determine.subgroups(base_syntax  = c(dat$syntax, grp$group_paths),
                                data_list    = dat$ts_list,
@@ -252,137 +252,137 @@ gimmeSEM <- gimme <- function(data           = NULL,
                                elig_paths   = dat$candidate_paths,
                                confirm_subgroup = confirm_subgroup,
                                out_path     = dat$out)
-
-  # begin subgroup-level search for paths ------------------------------------ #
-
-  sub_spec <- vector("list", sub$n_subgroups)
-
-  for (s in 1:sub$n_subgroups){
-
-    sub_s <- list(sub_paths     = character(),
-                  n_sub_paths   = 0,
-                  sub_s_subjids = subset(sub$sub_mem,
-                                         sub_membership == s)[ ,"names"],
-                  n_sub_subj    = sum(sub$sub_mem$sub_membership == s,
-                                      na.rm = TRUE),
-                  sub_membership    = s)
-
-    if (sub_s$n_sub_subj > 1){
-      s4 <- search.paths(base_syntax  = dat$syntax,
-                         fixed_syntax = grp$group_paths,
-                         add_syntax   = character(),
-                         n_paths      = 0,
-                         data_list    = dat$ts_list[sub_s$sub_s_subjids],
-                         elig_paths   = dat$candidate_paths,
-                         prop_cutoff  = dat$sub_cutoff,
-                         n_subj       = sub_s$n_sub_subj,
-                         chisq_cutoff = qchisq(1-.05/sub_s$n_sub_subj, 1),
-                         subgroup_stage = TRUE)
-      sub_s[c("n_sub_paths", "sub_paths")] <- s4
-    }
-    sub_spec[[s]] <- sub_s
-  }
-  # end subgroup-level search for paths -------------------------------------- #
-
-  # begin subgroup-level pruning --------------------------------------------- #
-  for (s in 1:sub$n_subgroups){
-    prune <- sub_spec[[s]]$n_sub_paths != 0 & sub_spec[[s]]$n_sub_subj != 1
-    if(prune){
-      s5 <- prune.paths(base_syntax  = dat$syntax,
-                        fixed_syntax = grp$group_paths,
-                        add_syntax   = sub_spec[[s]]$sub_paths,
-                        data_list    = dat$ts_list[sub_spec[[s]]$sub_s_subjids],
-                        n_paths      = sub_spec[[s]]$n_sub_paths,
-                        n_subj       = sub_spec[[s]]$n_sub_subj,
-                        prop_cutoff  = dat$sub_cutoff,
-                        elig_paths   = sub_spec[[s]]$sub_paths,
-                        subgroup_stage = TRUE)
-      sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s5
-    }
-  }
-
-  # begin second-round group-level pruning ----------------------------------- #
-  prune <- any(lapply(sub_spec, FUN = function(x) x$n_sub_paths != 0) == TRUE)
-
-  sub_spec_comb <- do.call(rbind, sub_spec)
-  ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
-  ind           <- ind[order(ind$index),]
-  ind$sub_paths[is.na(ind$sub_paths)] <- ""
-  temp_count    <- grp$n_group_paths
-
-  if (prune){
-    s6 <- prune.paths(base_syntax  = dat$syntax,
-                      fixed_syntax = ind$sub_paths,
-                      add_syntax   = grp$group_paths,
-                      data_list    = dat$ts_list,
-                      n_paths      = grp$n_group_paths,
-                      n_subj       = dat$n_subj,
-                      prop_cutoff  = dat$group_cutoff,
-                      elig_paths   = grp$group_paths,
-                      subgroup_stage = FALSE)
-
-    grp[c("n_group_paths", "group_paths")] <- s6
-  }
-
-  if (temp_count != grp$n_group_paths){
-    temp_sub_spec <- sub_spec
+    
+    # begin subgroup-level search for paths ------------------------------------ #
+    
+    sub_spec <- vector("list", sub$n_subgroups)
+    
     for (s in 1:sub$n_subgroups){
-      if (sub_spec[[s]]$n_sub_subj > 1){
-        s7 <- search.paths(base_syntax  = dat$syntax,
+      
+      sub_s <- list(sub_paths     = character(),
+                    n_sub_paths   = 0,
+                    sub_s_subjids = subset(sub$sub_mem,
+                                           sub_membership == s)[ ,"names"],
+                    n_sub_subj    = sum(sub$sub_mem$sub_membership == s,
+                                        na.rm = TRUE),
+                    sub_membership    = s)
+      
+      if (sub_s$n_sub_subj > 1){
+        s4 <- search.paths(base_syntax  = dat$syntax,
                            fixed_syntax = grp$group_paths,
-                           add_syntax   = sub_spec[[s]]$sub_paths,
-                           n_paths      = sub_spec[[s]]$n_sub_paths,
-                           data_list    =
-                             dat$ts_list[sub_spec[[s]]$sub_s_subjids],
+                           add_syntax   = character(),
+                           n_paths      = 0,
+                           data_list    = dat$ts_list[sub_s$sub_s_subjids],
                            elig_paths   = dat$candidate_paths,
                            prop_cutoff  = dat$sub_cutoff,
-                           n_subj       = sub_spec[[s]]$n_sub_subj,
-                           chisq_cutoff =
-                             qchisq(1-.05/sub_spec[[s]]$n_sub_subj, 1),
-                           subgroup_stage = FALSE)
-        sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s7
+                           n_subj       = sub_s$n_sub_subj,
+                           chisq_cutoff = qchisq(1-.05/sub_s$n_sub_subj, 1),
+                           subgroup_stage = TRUE)
+        sub_s[c("n_sub_paths", "sub_paths")] <- s4
+      }
+      sub_spec[[s]] <- sub_s
+    }
+    # end subgroup-level search for paths -------------------------------------- #
+    
+    # begin subgroup-level pruning --------------------------------------------- #
+    for (s in 1:sub$n_subgroups){
+      prune <- sub_spec[[s]]$n_sub_paths != 0 & sub_spec[[s]]$n_sub_subj != 1
+      if(prune){
+        s5 <- prune.paths(base_syntax  = dat$syntax,
+                          fixed_syntax = grp$group_paths,
+                          add_syntax   = sub_spec[[s]]$sub_paths,
+                          data_list    = dat$ts_list[sub_spec[[s]]$sub_s_subjids],
+                          n_paths      = sub_spec[[s]]$n_sub_paths,
+                          n_subj       = sub_spec[[s]]$n_sub_subj,
+                          prop_cutoff  = dat$sub_cutoff,
+                          elig_paths   = sub_spec[[s]]$sub_paths,
+                          subgroup_stage = TRUE)
+        sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s5
       }
     }
-
-    if (!identical(temp_sub_spec, sub_spec)){
+    
+    # begin second-round group-level pruning ----------------------------------- #
+    prune <- any(lapply(sub_spec, FUN = function(x) x$n_sub_paths != 0) == TRUE)
+    
+    sub_spec_comb <- do.call(rbind, sub_spec)
+    ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
+    ind           <- ind[order(ind$index),]
+    ind$sub_paths[is.na(ind$sub_paths)] <- ""
+    temp_count    <- grp$n_group_paths
+    
+    if (prune){
+      s6 <- prune.paths(base_syntax  = dat$syntax,
+                        fixed_syntax = ind$sub_paths,
+                        add_syntax   = grp$group_paths,
+                        data_list    = dat$ts_list,
+                        n_paths      = grp$n_group_paths,
+                        n_subj       = dat$n_subj,
+                        prop_cutoff  = dat$group_cutoff,
+                        elig_paths   = grp$group_paths,
+                        subgroup_stage = FALSE)
+      
+      grp[c("n_group_paths", "group_paths")] <- s6
+    }
+    
+    if (temp_count != grp$n_group_paths){
+      temp_sub_spec <- sub_spec
       for (s in 1:sub$n_subgroups){
-        prune <- temp_sub_spec[[s]]$n_sub_paths != sub_spec[[s]]$n_sub_paths
-        if(prune){
-          s8 <- prune.paths(base_syntax  = dat$syntax,
-                            fixed_syntax = grp$group_paths,
-                            add_syntax   = sub_spec[[s]]$sub_paths,
-                            data_list    =
-                              dat$ts_list[sub_spec[[s]]$sub_s_subjids],
-                            n_paths      = sub_spec[[s]]$n_sub_paths,
-                            n_subj       = sub_spec[[s]]$n_sub_subj,
-                            prop_cutoff  = dat$sub_cutoff,
-                            elig_paths   = sub_spec[[s]]$sub_paths,
-                            subgroup_stage = FALSE)
-          sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s8
+        if (sub_spec[[s]]$n_sub_subj > 1){
+          s7 <- search.paths(base_syntax  = dat$syntax,
+                             fixed_syntax = grp$group_paths,
+                             add_syntax   = sub_spec[[s]]$sub_paths,
+                             n_paths      = sub_spec[[s]]$n_sub_paths,
+                             data_list    =
+                               dat$ts_list[sub_spec[[s]]$sub_s_subjids],
+                             elig_paths   = dat$candidate_paths,
+                             prop_cutoff  = dat$sub_cutoff,
+                             n_subj       = sub_spec[[s]]$n_sub_subj,
+                             chisq_cutoff =
+                               qchisq(1-.05/sub_spec[[s]]$n_sub_subj, 1),
+                             subgroup_stage = FALSE)
+          sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s7
+        }
+      }
+      
+      if (!identical(temp_sub_spec, sub_spec)){
+        for (s in 1:sub$n_subgroups){
+          prune <- temp_sub_spec[[s]]$n_sub_paths != sub_spec[[s]]$n_sub_paths
+          if(prune){
+            s8 <- prune.paths(base_syntax  = dat$syntax,
+                              fixed_syntax = grp$group_paths,
+                              add_syntax   = sub_spec[[s]]$sub_paths,
+                              data_list    =
+                                dat$ts_list[sub_spec[[s]]$sub_s_subjids],
+                              n_paths      = sub_spec[[s]]$n_sub_paths,
+                              n_subj       = sub_spec[[s]]$n_sub_subj,
+                              prop_cutoff  = dat$sub_cutoff,
+                              elig_paths   = sub_spec[[s]]$sub_paths,
+                              subgroup_stage = FALSE)
+            sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s8
+          }
         }
       }
     }
-  }
-
-  sub_spec_comb <- do.call(rbind, sub_spec)
-  ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
-  ind$sub_paths[is.na(ind$sub_paths)] <- ""
-  ind           <- ind[order(ind$index),]
-
+    
+    sub_spec_comb <- do.call(rbind, sub_spec)
+    ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
+    ind$sub_paths[is.na(ind$sub_paths)] <- ""
+    ind           <- ind[order(ind$index),]
+    
   } else {
     # create ind object here if no subgrouping takes place
     sub      <- NULL
     sub_spec <- NULL
     ind      <- dat$file_order
   }
-
+  
   # individual-level search
   store <- indiv.search(dat, grp, ind)
-
+  
   print.gimme(x = sub,
               y = subgroup,
               z = dat)
-
+  
   # wrap-up and create output
   final <- final.org(dat,
                      grp,
@@ -390,7 +390,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                      sub,
                      sub_spec,
                      store)
-
+  
   # these objects are used in print.gimmep
   # if you change an object name here, 
   # you need to change it in the print.gimmep.R
@@ -407,9 +407,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
               path_counts_sub = final$sub_counts,
               vcov            = store$vcov,
               sim_matrix      = sub$sim
-              )
+  )
   class(res) <- "gimmep"
-
+  
   invisible(res)
 }
 
