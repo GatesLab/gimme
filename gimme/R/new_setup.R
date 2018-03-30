@@ -7,6 +7,7 @@ setup <- function (data,
                    ar,
                    paths,
                    exogenous,
+                   ex_lag,
                    mult_vars,
                    mean_center_mult,
                    subgroup,
@@ -60,18 +61,52 @@ setup <- function (data,
       }
   }
   
+  
+  
   # simplify creation of variable names
   varnames  <- c(paste0(varnames[1:rois], "lag"), varnames)
   lvarnames <- c(paste0("VAR", seq(1:rois), "lag"), paste0("VAR", seq(1:rois)))
   
+  # create exogenous variable names
+  lexog<- NULL
+   if (!is.null(exogenous)){
+    lexog <- recode.vars(exogenous, varnames, lvarnames) 
+
+  
+  # list of endogenous variable names
+  lendog<-lvarnames[!lvarnames %in% lexog]
+
+  # list of lagged exogenous names
+  lagged.exog.names  <- paste0(exogenous[1:length(exogenous)], "lag")
+  
+  # list of latent lagged exogenous names
+  lat.lagged.exog.names  <- paste0(lexog[1:length(lexog)], "lag")
+  
+  if(ex_lag==FALSE){
+    varnames<-varnames[!varnames %in% lagged.exog.names]
+    lvarnames<-lvarnames[!lvarnames %in% lat.lagged.exog.names]
+    lendog<-lendog[!lendog %in% lat.lagged.exog.names]
+    n_endog = n_endog-length(exogenous)
+  }
+   } 
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
+  if(ex_lag==FALSE){
     all          <- ts_list[[p]]
-    first        <- all[1:(nrow(all)-1), ]
+    first        <- all[1:(nrow(all)-1), 1:n_endog]
     second       <- all[2:nrow(all), ]
     ts_lc        <- data.frame(first, second)
     colnames(ts_lc) <- varnames
     ts_list[[p]] <- ts_lc
+  }
+    else{
+      all          <- ts_list[[p]]
+      first        <- all[1:(nrow(all)-1), ]
+      second       <- all[2:nrow(all), ]
+      ts_lc        <- data.frame(first, second)
+      colnames(ts_lc) <- varnames
+      ts_list[[p]] <- ts_lc
+    }
   }
   
   ### This loop reads in mulitplied variables if there are any, and splits them and determines which variables are being multiplied.
@@ -130,10 +165,7 @@ setup <- function (data,
   }   
   n_bilinear <- length(lmult_pairs) ###Added to count the number of bilinear/multiplied variables
   
-  lexog<- NULL
-  if (!is.null(exogenous)){
-    lexog <- recode.vars(exogenous, varnames, lvarnames) 
-  }
+
   n_exog <- length(lexog) ###Added to count the number of exogenous variables
   
   lexogenous <- c(lexog,lmult_pairs)
@@ -226,7 +258,7 @@ setup <- function (data,
     dir.create(individual, showWarnings = FALSE)
   }
   if (plot) {
-    plot.names <- varnames[(rois+1):(vars)] 
+    plot.names <- varnames[(n_endog+1):(vars)] 
     ###THIS MIGHT HAVE TO BE CHANGED AGAIN
   } else {
     plot.names <- ""
@@ -310,20 +342,20 @@ setup <- function (data,
   line1 <- paste0(lvarnames, "=~1*", varnames) 
   
   # covary all exogenous lagged variables
-  line2 <- apply(expand.grid.unique(lvarnames[1:rois], lvarnames[1:rois], incl.eq = TRUE), 
+  line2 <- apply(expand.grid.unique(lvarnames[1:n_endog], lvarnames[1:n_endog], incl.eq = TRUE), 
                  1, paste, collapse = "~~")
   
   # estimate variance of single-indicator latent variables 
-  line3 <- paste0(lvarnames[(rois+1):vars], "~~", lvarnames[(rois+1):vars]) 
+  line3 <- paste0(lvarnames[(n_endog+1):vars], "~~", lvarnames[(n_endog+1):vars]) 
   
   # freely estimate autoregressive relationships if ar = TRUE
   # if ar = FALSE, set up nonsense paths fixed to zero 
   if (ar == TRUE) {
-    line4 <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois])
+    line4 <- paste0(lendog[(n_endog+1):length(lendog)], "~", lendog[1:n_endog])
     ## creates list of AR paths so that later code doesn't kick them out
-    fixed_paths <- paste0(lvarnames[(rois+1):vars], "~", lvarnames[1:rois]) 
+    fixed_paths <- paste0(lendog[(n_endog+1):length(lendog)], "~", lendog[1:n_endog]) 
   } else {
-    line4 <- paste0(lvarnames[1:rois], "~0*", lvarnames[(rois+1):vars])
+    line4 <- paste0(lendog[1:n_endog], "~0*", lendog[(n_endog+1):vars])
     fixed_paths <- NULL
   }
   
@@ -332,8 +364,8 @@ setup <- function (data,
   
   if (!ar & is.null(paths)) {
     covzero <- NULL
-    for (i in (rois+2):vars) {
-      for (j in (rois+1):(i-1)){
+    for (i in (n_endog+2):vars) {
+      for (j in (n_endog+1):(i-1)){
         covzero <- c(covzero, paste0(lvarnames[i],"~~0*", lvarnames[j]))
       }
     }
@@ -344,7 +376,7 @@ setup <- function (data,
   if (!is.null(paths)) syntax <- c(syntax, paths)
   
   ## create list of paths that make sense to gimme to open
-  candidate_paths   <- apply(expand.grid(lvarnames[(rois+1):vars], 
+  candidate_paths   <- apply(expand.grid(lvarnames[(n_endog+1):vars], 
                                          lvarnames[1:vars]), 1, paste, collapse = "~")
   ###So what this does now is uses lvarnames[(rois+1):vars] to list VAR1..VAR5 (no lags) PLUS the two multiplied,
   ###Then uses lvarnames[1:vars] to list ALL the variables and regresses them each on each from the first list.
@@ -362,22 +394,26 @@ setup <- function (data,
                   lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
   }
   
-   # remove impossible exogenous paths from candidate paths, fixed paths, and syntax
+  # remove impossible exogenous paths from candidate paths, fixed paths, and syntax
   if(!is.null(exog_paths)){
-  candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
-  }
-  
-  if(!is.null(exog_paths)){
+    if(ex_lag!=FALSE){
+    candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
     fixed_paths <- fixed_paths[!fixed_paths %in% exog_paths]
-  }
-  
-  if(!is.null(exog_paths)){
+    mult_paths<- apply(expand.grid(lmult_pairs[1:length(lmult_pairs)],
+                                 lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
+    syntax <- syntax[!syntax %in% mult_paths]
+    syntax <- c(syntax,paste0(lmult_pairs[1:length(lmult_pairs)], "~0*", lvarnames[1:length(lmult_pairs)]))
+    }
+  if(ex_lag==FALSE){
+    candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
+    fixed_paths <- fixed_paths[!fixed_paths %in% exog_paths]
     syntax <- syntax[!syntax %in% exog_paths]
+    syntax <- c(syntax,paste0(lexogenous[1:n_exog_total], "~0*", lvarnames[1:n_exog_total]))
   }
   
-  if(!is.null(exog_paths)){
-    syntax <- c(syntax,paste0(lexogenous[1:n_exog_total], "~0*", lvarnames[1]))
-  }
+}
+  
+  
   # if user specifies paths, add them to the list of fixed paths
   if (!is.null(paths)) fixed_paths <- c(fixed_paths, paths) 
   
@@ -390,6 +426,7 @@ setup <- function (data,
               "n_rois" = n_endog, ### Changed to n_endog because n_rois is used in functions to refer to only endogenous vars!
               "n_exog" = n_exog,
               "n_bilinear" = n_bilinear,
+              "n_endog"  = n_endog,
               "n_exog_total" = n_exog_total,
               "n_vars_total" = n_vars_total,
               "n_contemporaneous" = n_contemporaneous,
