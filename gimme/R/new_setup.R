@@ -42,49 +42,6 @@ setup <- function (data,
       ts_ind       <- read.table(files[i], sep = sep, header = header)
       ts_list[[i]] <- ts_ind #creates a list of the TS of all files, with each sub as a slice
     }
-<<<<<<< HEAD
-  } else if (is.list(data)){
-    ts_list  <- list()
-    ts_list  <- data
-  }
-  
-  # rois     <- ncol(ts_list[[1]])
-  n_orig_vars   <- ncol(ts_list[[1]])
-  varnames <- colnames(ts_list[[1]])
-  if (is.null(varnames)){
-    varnames <- c(paste0("V", seq(1,n_orig_vars))) ###HERE THE VARS IN A LIST ARE NAMED X1 INSTEAD OF V1-- THIS IS MY PROBLEM; CHANGED TO V TO TRY A BANDAID FIX FOR RIGHT NOW
-    ts_list <- lapply(ts_list, function(x) { 
-      colnames(x)<-varnames 
-      x 
-    })
-  }
-  
-  #reorder exogenous variables so they are at end
-  if (!is.null(exogenous)){
-    id_exog <- which(varnames == exogenous)
-    var_numbers <- seq(from = 1, to =n_orig_vars)
-    var_exog_rem <- var_numbers[-id_exog]
-    new_order   <- c(var_exog_rem, id_exog)
-    varnames <- varnames[new_order]
-    for (p in 1:length(ts_list)){
-      all          <- ts_list[[p]][new_order]
-    }
-  } else
-    new_order <- seq(1:n_orig_vars)
-  
-  # simplify creation of variable names
-  varnames  <- c(paste0(varnames[1:n_orig_vars], "lag"), varnames)
-  lvarnames <- c(paste0("VAR", c(new_order), "lag"), paste0("VAR", new_order))
-  
-  # create exogenous variable names and count n_endog
-  lexog<- NULL
-  n_endog = n_orig_vars
-  if(!is.null(exogenous)){
-    lexog <- recode.vars(exogenous, varnames, lvarnames) 
-    n_endog = n_orig_vars - length(exogenous)
-  }
-  
-=======
      } else if (is.list(data)){
     ts_list  <- list()
     ts_list  <- data
@@ -126,7 +83,6 @@ setup <- function (data,
     n_endog = n_orig_vars - length(exogenous)
   }
   
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
   lendog <- NULL
   # remove lag names if not wanted
   if(!is.null(exogenous)){
@@ -138,17 +94,10 @@ setup <- function (data,
     lat.lagged.exog.names  <- paste0(lexog[1:length(lexog)], "lag")
     
     if (ex_lag == FALSE){
-<<<<<<< HEAD
-      varnames<-varnames[!varnames %in% lagged.exog.names]
-      lvarnames<-lvarnames[!lvarnames %in% lat.lagged.exog.names]
-      lendog<-lendog[!lendog %in% lat.lagged.exog.names]
-      n_lagged <- n_orig_vars - length(lagged.exog.names)
-=======
     varnames<-varnames[!varnames %in% lagged.exog.names]
     lvarnames<-lvarnames[!lvarnames %in% lat.lagged.exog.names]
     lendog<-lendog[!lendog %in% lat.lagged.exog.names]
     n_lagged <- n_orig_vars - length(lagged.exog.names)
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
     }
   }
   if (ex_lag == TRUE | is.null(exogenous))  n_lagged <- n_orig_vars 
@@ -208,62 +157,6 @@ setup <- function (data,
   
   n_bilinear <- length(lmult_pairs) ###Added to count the number of bilinear/multiplied variables
 
-  n_exog <- n_orig_vars - n_endog ###Added to count the number of exogenous variables
-  
-  lexogenous <- c(lexog,lmult_pairs)
-  n_exog_total <- n_exog + n_bilinear ###Added to count the combined total number of exogenous variables
-  
-  all <- ts_list[[1]] ###I only named it this because it's used below (at L162) for a reason that's unclear to me so decided to keep it. Not sure if I can just move that up here?
-  # kmg: deleted below use since line was identical to this 
-  varnames <- colnames(all) ###renamed to account for any new mult vars
-  lvarnames <- c(lvarnames,lmult_pairs) ###renamed to account for any new mult vars. Combines original latent names plus latent names for multiplied vars
-  n_vars_total <- length(varnames)
-  n_contemporaneous <- n_endog + n_exog_total ## kmg: added 'n_exog' here 
-  
-  ### This loop reads in mulitplied variables if there are any, and splits them and determines which variables are being multiplied.
-  ### For each subject it finds these variables in their data, mean centers it if desired, and then multiplies the two together,
-  ### Renames it based on the original inputted name, and then binds it to the subject's data. Once this is done for each sub,
-  ### It will do the same for next multiplied variable, if there are any. 
-  ### TO ACCOUNT FOR LIST PROBLEM, WILL SOMEONE HAVE TO ADD IN A LOOP/RECODE/CHECK HERE THAT CHANGES THEM TO V INSTEAD OF X
-  lmult_pairs <- NULL
-  if (!is.null(mult_vars)){
-    for(i in 1:length(mult_vars)){ 
-      mult_pairs <- mult_vars[[i]]
-      vars_to_mult <- strsplit(mult_pairs, "*", fixed = TRUE)
-      vars_to_mult_mat <- unlist(vars_to_mult)
-      factor_1 <- vars_to_mult_mat[1]
-      factor_2 <- vars_to_mult_mat[2]
-      all <- ts_list[[1]]
-      var_1 <- all[,factor_1]
-      var_2 <- all[,factor_2]
-      for(p in 1:length(ts_list)){
-        all <- ts_list[[p]]
-        if (mean_center_mult == TRUE){
-          var_1_center <- scale(var_1, scale = FALSE)
-          var_2_center <- scale(var_2, scale = FALSE)
-          multiplied <- var_1_center*var_2_center
-        } else{
-          multiplied <- var_1*var_2
-        }
-        df_tobind <- data.frame(multiplied)
-        colnames(df_tobind) <- paste0(factor_1,"by",factor_2)
-        all_appended <- cbind(all,df_tobind)
-        ts_list[[p]] <- all_appended
-      }
-      lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
-      lfactor_1 <- lvars_to_mult[1]
-      lfactor_2 <- lvars_to_mult[2]
-      lmult_name <- paste0(lfactor_1,"by",lfactor_2)
-      lmult_pairs[[i]] <- lmult_name
-    }
-  }
-  ###Problem line is now currently that it is unable to index the column values based on names when I run 
-  ##from gimmesem(). I get this error:  Error in `[.data.frame`(all, , factor_1) : undefined columns selected .
-  ##However it works perfectly when I just run this code....not sure what to do! 
-  # kmg: I think it was reading in an old "all" matrix that had the original variables (before lagging). Adding "all <- ts_list[[1]]" seems to fix
-  
-  n_bilinear <- length(lmult_pairs) ###Added to count the number of bilinear/multiplied variables
-  
   n_exog <- n_orig_vars - n_endog ###Added to count the number of exogenous variables
   
   lexogenous <- c(lexog,lmult_pairs)
@@ -360,19 +253,11 @@ setup <- function (data,
   # check to make sure variables in exogenous argument exist in data
   if(!is.null(exogenous)){
     for(exog in exogenous)
-<<<<<<< HEAD
-      if (!exog %in% varnames){
-        stop(paste0('gimme ERROR: Exogenous variable name provided is not in data column names
-                    Please fix.'))
-      }
-      }
-=======
     if (!exog %in% varnames){
       stop(paste0('gimme ERROR: Exogenous variable name provided is not in data column names
                   Please fix.'))
     }
   }
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
   #------------------------------------------------------------------------------#
   
   # prepare paths if semigimme is specified
@@ -390,24 +275,15 @@ setup <- function (data,
       # check if any exogenous variables have been incorrectly specified
       # for free paths
       if(!is.null(exogenous)){
-<<<<<<< HEAD
-        for (exog in lexogenous){
-          if (exog %in% dvsFree){
-            stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
-                        specified paths.  Please remove variable from exogenous list or 
-                        correct path specification'))
-            #This is because exog can't be treated as DV. We will have to add this/make sure other things we're adding (e.g. multiplied paths) are also considered in this
-          }
-        }
-=======
       for (exog in lexogenous){
         if (exog %in% dvsFree){
           stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                       specified paths.  Please remove variable from exogenous list or 
                       correct path specification'))
           #This is because exog can't be treated as DV. We will have to add this/make sure other things we're adding (e.g. multiplied paths) are also considered in this
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
         }
+      }
+      }
       
       if (nrow(tableFree) != 0){
         vsFree       <- paste0(dvsFree, "~", ivsFree)
@@ -420,29 +296,29 @@ setup <- function (data,
         # check if any exogenous variables have been incorrectly specified
         # for fixed paths
         if (!is.null(lexogenous)){
-          for (exog in lexogenous){
-            if (exog %in% dvsFixed){
-              stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
-                          specified paths.  Please remove variable from exogenous list or 
-                          correct path specification'))
-            }
-            }
-            }
+        for (exog in lexogenous){
+          if (exog %in% dvsFixed){
+            stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
+                        specified paths.  Please remove variable from exogenous list or 
+                        correct path specification'))
+          }
+        }
+        }
         
         ivsFixed     <- recode.vars(tableFixed$rhs, varnames, lvarnames)
         vsFixed      <- paste0(dvsFixed, "~", ivsFixed)
-          } else {
-            vsFixed <- NULL
-          }
+      } else {
+        vsFixed <- NULL
+      }
       list = list(paths  = vsFree,
                   remove = vsFixed)
       return(list)
-      }
+    }
     remove <- prep.paths(paths, varnames, lvarnames)$remove  
     paths  <- prep.paths(paths, varnames, lvarnames)$paths
-      } else {
-        remove <- NULL
-      }
+  } else {
+    remove <- NULL
+  }
   #------------------------------------------------------------------------------#
   
   ## code below creates the starting null syntax file
@@ -471,22 +347,6 @@ setup <- function (data,
   
   syntax <- c(line1, line2, line3, line4)
   
-<<<<<<< HEAD
-  # ensure endog variables set to zero covariance 
-  covzero <- NULL
-  for (i in (n_lagged+2):(n_lagged + n_endog)) {
-    for (j in (n_lagged+1):(i-1)){
-      covzero <- c(covzero, paste0(lvarnames[i],"~~0*", lvarnames[j]))
-    }
-  }
-  #all others (lagged, exogenous, bilinear) will correlate since they are not predicted (lavaan default)
-  
-  syntax <- c(syntax, covzero)
-  
-  
-  if (!is.null(paths)) syntax <- c(syntax, paths) #kmg: how does this work if they provide header names? 
-  # Seems like this would cause probs
-=======
 # ensure endog variables set to zero covariance 
     covzero <- NULL
     for (i in (n_lagged+2):(n_lagged + n_endog)) {
@@ -501,7 +361,6 @@ setup <- function (data,
   
   if (!is.null(paths)) syntax <- c(syntax, paths) #kmg: how does this work if they provide header names? 
     # Seems like this would cause probs
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
   
   ## create list of paths that make sense to gimme to open
   candidate_paths   <- apply(expand.grid(lvarnames[(n_lagged+1):n_vars_total], 
@@ -510,19 +369,11 @@ setup <- function (data,
   ###Then uses lvarnames[1:vars] to list ALL the variables and regresses them each on each from the first list.
   ###Is this okay? It's not problematic that the mult vars are listed twice, because the next part takes care
   ###of removing where they're DVs, right?
-<<<<<<< HEAD
-  
-  # kmg: makes sense to me, thanks for the explanation 
-  
-  ### remove paths that shouldn't be there 
-  # if path specified by a user is fixed to a certain value, 
-=======
   
   # kmg: makes sense to me, thanks for the explanation 
  
   ### remove paths that shouldn't be there 
    # if path specified by a user is fixed to a certain value, 
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
   # remove it from consideration when looking at MIs
   candidate_paths <- candidate_paths[!candidate_paths %in% remove]
   
@@ -540,21 +391,12 @@ setup <- function (data,
     syntax <- syntax[!syntax %in% exog_paths]
     ## Below ensures that MIs are produced 
     if(!is.null(mult_vars)){
-<<<<<<< HEAD
-      syntax <- c(syntax,paste0(lmult_pairs[1:length(lmult_pairs)], "~0*", lvarnames[1:length(lmult_pairs)]))
-    }
-    if(ex_lag==FALSE){
-      syntax <- c(syntax,paste0(lexogenous[1:n_exog], "~0*", lvarnames[1:n_exog]))
-    }
-=======
     syntax <- c(syntax,paste0(lmult_pairs[1:length(lmult_pairs)], "~0*", lvarnames[1:length(lmult_pairs)]))
     }
   if(ex_lag==FALSE){
     syntax <- c(syntax,paste0(lexogenous[1:n_exog], "~0*", lvarnames[1:n_exog]))
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
   }
 }
-  
   
   
   # if user specifies paths, add them to the list of fixed paths
@@ -587,11 +429,6 @@ setup <- function (data,
               "file_order" = file_order,
               "chisq_cutoff_mi_epc" = qchisq(1-(.05/((n_vars_total*(n_vars_total-1)/2)*n_subjects)), 1))
   return(dat)
-<<<<<<< HEAD
-    }
-
-
-=======
 }
   
->>>>>>> eb9565f5208b2ce42807c633244da1de4d4b5640
+
