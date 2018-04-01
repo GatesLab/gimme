@@ -1,4 +1,3 @@
-
 ## this setup function creates many values that later code refers back to
 setup <- function (data,
                    sep,
@@ -432,3 +431,4 @@ setup <- function (data,
   return(dat)
 }
   
+
