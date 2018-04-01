@@ -12,9 +12,11 @@
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
 #'          confirm_subgroup = NULL,
-#'          sub_feat    = "lag & contemp",
 #'          paths       = NULL,
 #'          exogenous   = NULL,
+#'          ex_lag      = FALSE,
+#'          mult_vars   = NULL,
+#'          mean_center_mult = FALSE,
 #'          groupcutoff = .75,
 #'          subcutoff   = .5,
 #'          diagnos     = FALSE)
@@ -49,6 +51,17 @@
 #' If no header is used, then variables should be referred to with V followed
 #' (with no separation) by the column number. If a header is used, variables
 #' should be referred to using variable names. Defaults to NULL.
+#' @param ex_lag Logical.  If true, lagged variables are created for exogenous variables.  
+#' Defaults to FALSE.
+#' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
+#' effects (optional). All multiplied variables will be treated as exogenous (X can predict
+#' Y but cannot be predicted by Y). Within the vector, multiplication of two variables should be
+#' indicated with an asterik (e.g. V1*V2). If no header is used, variables should be referred to with 
+#' V followed by the column number (with no separation). If a header is used, each variable should be
+#' referred to using variable names. If multiplication with the lag 1 of a variable is desired, the 
+#' variable name should be followed by "lag" with no separation (e.g. V1*V2lag). Defaults to NULL.
+#' @param mean_center_mult Logical. If TRUE, the variables indicated in mult_vars will be mean-centered
+#' before being multiplied together. Defaults to FALSE. 
 #' @param plot Logical. If TRUE, graphs depicting relations among variables
 #' of interest will automatically be
 #' created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
@@ -61,10 +74,6 @@
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community}
 #' function from the \code{igraph} package. Defaults to TRUE. 
-#' @param sub_feature Option to indicate feature(s) used to subgroup individuals. Defaults to
-#' "lag & contemp" for lagged and contemporaneous, which is the original method. Can use 
-#' "lagged" or "contemp" to subgroup solely on features related to lagged and contemporaneous 
-#' relations, respectively.
 #' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
 #' subgroup labels contained in the dataframe. Dataframe has 2 columns,
 #' the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.
@@ -154,14 +163,15 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               ar             = TRUE,
                               plot           = TRUE,
                               subgroup       = FALSE,
-                              sub_feature    = "lag & contemp",
                               confirm_subgroup = NULL,
                               paths          = NULL,
                               exogenous      = NULL,
+                              ex_lag         = FALSE,
+                              mult_vars      = NULL,
+                              mean_center_mult = FALSE,
                               groupcutoff    = .75,
                               subcutoff      = .5,
-                              diagnos        = FALSE
-                              ){
+                              diagnos        = FALSE){
 
   sub_membership = NULL
 
@@ -173,6 +183,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        ar                   = ar,
                        paths                = paths,
                        exogenous            = exogenous,
+                       ex_lag               = ex_lag,
+                       mult_vars            = mult_vars,
+                       mean_center_mult     = mean_center_mult,
                        subgroup             = subgroup,
                        ind                  = FALSE,
                        agg                  = FALSE,
@@ -238,8 +251,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                                file_order   = dat$file_order,
                                elig_paths   = dat$candidate_paths,
                                confirm_subgroup = confirm_subgroup,
-                               out_path     = dat$out, 
-                               sub_feature  = sub_feature)
+                               out_path     = dat$out)
 
   # begin subgroup-level search for paths ------------------------------------ #
 
