@@ -42,6 +42,10 @@ setup <- function (data,
       ts_ind       <- read.table(files[i], sep = sep, header = header)
       ts_list[[i]] <- ts_ind #creates a list of the TS of all files, with each sub as a slice
     }
+    varnames       <- colnames(ts_ind)
+    names(ts_list) <- tools::file_path_sans_ext(basename(files))
+    #rois           <- ncol(ts_ind)
+    n_orig_vars    <- ncol(ts_ind)
      } else if (is.list(data)){
     ts_list  <- list()
     ts_list  <- data
