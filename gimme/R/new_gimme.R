@@ -17,6 +17,7 @@
 #'          ex_lag      = FALSE,
 #'          mult_vars   = NULL,
 #'          mean_center_mult = FALSE,
+#'          standardize = FALSE,
 #'          groupcutoff = .75,
 #'          subcutoff   = .5,
 #'          diagnos     = FALSE)
@@ -59,9 +60,13 @@
 #' indicated with an asterik (e.g. V1*V2). If no header is used, variables should be referred to with 
 #' V followed by the column number (with no separation). If a header is used, each variable should be
 #' referred to using variable names. If multiplication with the lag 1 of a variable is desired, the 
-#' variable name should be followed by "lag" with no separation (e.g. V1*V2lag). Defaults to NULL.
+#' variable name should be followed by "lag" with no separation (e.g. V1*V2lag). Note that if
+#' multiplied variables are desired, at least one variable in the dataset must be specified as exogenous.
+#' Defaults to NULL.
 #' @param mean_center_mult Logical. If TRUE, the variables indicated in mult_vars will be mean-centered
 #' before being multiplied together. Defaults to FALSE. 
+#' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
+#' standard deviation of one. Defaults to FALSE. 
 #' @param plot Logical. If TRUE, graphs depicting relations among variables
 #' of interest will automatically be
 #' created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
@@ -169,6 +174,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               ex_lag         = FALSE,
                               mult_vars      = NULL,
                               mean_center_mult = FALSE,
+                              standardize    = FALSE,
                               groupcutoff    = .75,
                               subcutoff      = .5,
                               diagnos        = FALSE){
@@ -186,6 +192,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        ex_lag               = ex_lag,
                        mult_vars            = mult_vars,
                        mean_center_mult     = mean_center_mult,
+                       standardize          = standardize,
                        subgroup             = subgroup,
                        ind                  = FALSE,
                        agg                  = FALSE,

@@ -10,6 +10,7 @@ setup <- function (data,
                    ex_lag,
                    mult_vars,
                    mean_center_mult,
+                   standardize,
                    subgroup,
                    agg,
                    ind,
@@ -20,6 +21,13 @@ setup <- function (data,
   if (is.null(data)){
     stop(paste0("gimme ERROR: neither a data directory nor a data list is specified. ",
                 "Please either specify a directory of data or a list of individual data files."))
+  }
+  
+  ## check that if multiplied variables are specified, at least one exogenous variable is specified as well
+  ## otherwise gimme fails- will need to figure out why in the future! Added note in new_gimme at @mult_vars --KD
+  if(!is.null(mult_vars) & is.null(exogenous)) {
+    stop(paste0('gimme ERROR: multiplied variables are specified but no variables are specified as exogenous. ',
+                'Please specify a variable as exogenous.'))
   }
   
   ## code to create list of individual data files if used from directory
@@ -67,6 +75,11 @@ setup <- function (data,
         colnames(x)<-varnames 
         x 
       })
+    }
+    
+    ## standardize all variables if option is selected
+    if (standardize == TRUE){
+      ts_list <- lapply(ts_list, scale)
     }
     
 #reorder exogenous variables so they are at end
@@ -437,6 +450,7 @@ setup <- function (data,
               "group_cutoff" = groupcutoff,
               "sub_cutoff" = subcutoff,
               "ts_list" = ts_list,
+              "standardize" = standardize,
               "file_order" = file_order,
               "chisq_cutoff_mi_epc" = qchisq(1-(.05/((n_vars_total*(n_vars_total-1)/2)*n_subjects)), 1))
   return(dat)
