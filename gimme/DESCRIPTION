@@ -1,14 +1,15 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.3-2
-Date: 2017-11-14
+Version: 0.3-3
+Date: 2018-3-17
 Author: Stephanie Lane [aut, cre, trl],
     Kathleen Gates [aut],
     Peter Molenaar [aut],
     Michael Hallquist [ctb],
     Hallie Pike [ctb], 
     Zachary Fisher [ctb], 
-    Cara Arizmendi [ctb]
+    Cara Arizmendi [ctb],
+    Teague Henry [ctb]
 Maintainer: Stephanie Lane <slane@unc.edu>
 Depends: R (>= 3.0.2)
 Imports: lavaan (>= 0.5-19), igraph, qgraph
@@ -20,6 +21,5 @@ LazyData: true
 URL: https://github.com/GatesLab/gimme/
 BugReports: https://github.com/GatesLab/gimme/issues
 ByteCompile: true
-Packaged: 2017-10-24 14:31:07 UTC; stlane
 RoxygenNote: 6.0.1
 NeedsCompilation: no

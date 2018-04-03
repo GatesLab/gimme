@@ -79,6 +79,13 @@
 #' the width of the edge corresponds to the count. Defaults to TRUE.
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community}
+<<<<<<< HEAD
+#' function from the \code{igraph} package. Defaults to FALSE. 
+#' @param confirm_subgroup Dataframe. Option only available when subgroup = TRUE. Dataframe should contain two columns. The first
+#' column should specify file labels (the name of the data files without file extension), 
+#' and the second should contain integer values (beginning at 1) 
+#' specifying the subgroup membership for each individual.
+=======
 #' function from the \code{igraph} package. Defaults to TRUE. 
 #' @param sub_feature Option to indicate feature(s) used to subgroup individuals. Defaults to
 #' "lag & contemp" for lagged and contemporaneous, which is the original method. Can use 
@@ -87,6 +94,7 @@
 #' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
 #' subgroup labels contained in the dataframe. Dataframe has 2 columns,
 #' the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.
+>>>>>>> 3eb3e84a5d94b60988938f8827172e6d826d24d3
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
