@@ -483,8 +483,12 @@ determine.subgroups <- function(data_list,
                      function(x){x[grep('lag',z_list[[1]]$rhs),]})
   }
   
- # remove lines that have "NA" from z_list (occurs for exog and ar=FALSE)
-  z_list <- lapply(z_list, na.exclude) 
+  # remove lines that have "NA" from z_list (occurs for exog and ar=FALSE)
+  # commented out by stl april 2018 - likely to have unintended consequences
+  # because it will cause off-by-one errors in the creation of the similarity matrix
+  # these NA issues should instead by captured in the na.rm = T arguments
+  # added to the similarity matrix. if not, we can revisit
+  # z_list <- lapply(z_list, na.exclude) 
   
   sim_mi <- matrix(0, ncol = length(mi_list), nrow = length(mi_list))
   sim_z  <- sim_mi
