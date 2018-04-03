@@ -420,7 +420,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
               path_counts     = final$sample_counts,
               path_counts_sub = final$sub_counts,
               vcov            = store$vcov,
-              sim_matrix      = sub$sim
+              sim_matrix      = sub$sim, 
+              syntax          = dat$syntax
               )
   class(res) <- "gimmep"
 

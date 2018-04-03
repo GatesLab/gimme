@@ -716,7 +716,7 @@ get.params <- function(dat, grp, ind, k){
     
     ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
-    if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
+   # if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
       ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
       ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
       
@@ -725,7 +725,7 @@ get.params <- function(dat, grp, ind, k){
       
       rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged)]
       colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
-    } # stl comment out 11.20.17 # added back 3.29.2018 due to errors when no paths exist
+ #   } # stl comment out 11.20.17 
     
     if (dat$agg & !is.null(dat$out)){
       write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
