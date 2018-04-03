@@ -46,9 +46,16 @@ setup <- function (data,
     names(ts_list) <- tools::file_path_sans_ext(basename(files))
     #rois           <- ncol(ts_ind)
     n_orig_vars    <- ncol(ts_ind)
+    
      } else if (is.list(data)){
+       
     ts_list  <- list()
+    
+    # if the user-supplied list does not have names, add names 
+    if(is.null(names(data))){ names(data) <- paste0("subj", 1:length(data)) }
+    
     ts_list  <- data
+    
      }
   
     # rois     <- ncol(ts_list[[1]])
