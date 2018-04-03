@@ -23,13 +23,6 @@ setup <- function (data,
                 "Please either specify a directory of data or a list of individual data files."))
   }
   
-  ## check that if multiplied variables are specified, at least one exogenous variable is specified as well
-  ## otherwise gimme fails- will need to figure out why in the future! Added note in new_gimme at @mult_vars --KD
-  if(!is.null(mult_vars) & is.null(exogenous)) {
-    stop(paste0('gimme ERROR: multiplied variables are specified but no variables are specified as exogenous. ',
-                'Please specify a variable as exogenous.'))
-  }
-  
   ## code to create list of individual data files if used from directory
   ## or create lagged version if list already provided by user
   if (!is.list(data)){
@@ -174,6 +167,8 @@ setup <- function (data,
       lmult_pairs[[i]] <- lmult_name
     }
   }
+  
+  
  ###Problem line is now currently that it is unable to index the column values based on names when I run 
   ##from gimmesem(). I get this error:  Error in `[.data.frame`(all, , factor_1) : undefined columns selected .
   ##However it works perfectly when I just run this code....not sure what to do! 
@@ -361,7 +356,7 @@ setup <- function (data,
   # freely estimate autoregressive relationships if ar = TRUE
   # if ar = FALSE, set up nonsense paths fixed to zero 
   if (ar == TRUE) {
-    line4 <- paste0(lvarnames[(n_lagged+1):(n_lagged + n_lagged)], "~", lendog[1:n_lagged])
+    line4 <- paste0(lvarnames[(n_lagged+1):(n_lagged + n_lagged)], "~", lvarnames[1:n_lagged])
     ## creates list of AR paths so that later code doesn't kick them out
     fixed_paths <- paste0(lvarnames[(n_lagged+1):(n_lagged + n_lagged)], "~", lvarnames[1:n_lagged]) 
   } else {
@@ -417,9 +412,8 @@ setup <- function (data,
     if(!is.null(mult_vars)){
     syntax <- c(syntax,paste0(lmult_pairs[1:length(lmult_pairs)], "~0*", lvarnames[1:length(lmult_pairs)]))
     }
-  if(ex_lag==FALSE){
+  if(ex_lag==FALSE && n_exog>0)
     syntax <- c(syntax,paste0(lexogenous[1:n_exog], "~0*", lvarnames[1:n_exog]))
-  }
 }
   
   
