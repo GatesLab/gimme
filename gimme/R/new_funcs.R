@@ -427,7 +427,8 @@ determine.subgroups <- function(data_list,
                                 file_order,
                                 elig_paths,
                                 confirm_subgroup, 
-                                out_path = NULL){
+                                out_path = NULL,
+                                sub_feature = sub_feature){
   
   sub_membership  = NULL # appease CRAN check
   
@@ -445,10 +446,28 @@ determine.subgroups <- function(data_list,
   
   names(z_list) <- names(mi_list) <- names(data_list)
   
+  # drop individuals who did not converge
   drop    <- unique(c(which(is.na(z_list)), which(is.na(mi_list))))
+  
   if (length(drop) != 0){
     mi_list <- mi_list[-drop]
     z_list  <- z_list[-drop]
+  }
+  
+  #subgroup based only on contemporaneous paths kmg
+  if(sub_feature == "contemp"){
+    mi_list <- lapply(mi_list, 
+                      function(x){x[-grep('lag',mi_list[[1]]$rhs),]})
+    z_list <- lapply(z_list, 
+                     function(x){x[-grep('lag',z_list[[1]]$rhs),]})
+  }
+  
+  #subgroup based only on lagged paths kmg
+  if(sub_feature == "lagged"){
+    mi_list <- lapply(mi_list, 
+                      function(x){x[grep('lag',mi_list[[1]]$rhs),]})
+    z_list <- lapply(mi_list, 
+                     function(x){x[grep('lag',z_list[[1]]$rhs),]})
   }
   
   mi_list_temp <- lapply(mi_list, 

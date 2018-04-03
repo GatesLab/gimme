@@ -11,6 +11,7 @@
 #'          ar          = TRUE,
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
+#'          sub_feat    = "lag & contemp",
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
 #'          exogenous   = NULL,
@@ -79,6 +80,10 @@
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community}
 #' function from the \code{igraph} package. Defaults to TRUE. 
+#' @param sub_feature Option to indicate feature(s) used to subgroup individuals. Defaults to
+#' "lag & contemp" for lagged and contemporaneous, which is the original method. Can use 
+#' "lagged" or "contemp" to subgroup solely on features related to lagged and contemporaneous 
+#' relations, respectively.
 #' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
 #' subgroup labels contained in the dataframe. Dataframe has 2 columns,
 #' the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.
@@ -168,6 +173,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               ar             = TRUE,
                               plot           = TRUE,
                               subgroup       = FALSE,
+                              sub_feature    = "lag & contemp",
                               confirm_subgroup = NULL,
                               paths          = NULL,
                               exogenous      = NULL,
@@ -258,7 +264,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
                                file_order   = dat$file_order,
                                elig_paths   = dat$candidate_paths,
                                confirm_subgroup = confirm_subgroup,
-                               out_path     = dat$out)
+                               out_path     = dat$out, 
+                               sub_feature  = sub_feature)
 
   # begin subgroup-level search for paths ------------------------------------ #
 
