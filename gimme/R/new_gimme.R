@@ -59,10 +59,11 @@
 #' the width of the edge corresponds to the count. Defaults to TRUE.
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community}
-#' function from the \code{igraph} package. Defaults to TRUE. 
-#' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
-#' subgroup labels contained in the dataframe. Dataframe has 2 columns,
-#' the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.
+#' function from the \code{igraph} package. Defaults to FALSE. 
+#' @param confirm_subgroup Dataframe. Option only available when subgroup = TRUE. Dataframe should contain two columns. The first
+#' column should specify file labels (the name of the data files without file extension), 
+#' and the second should contain integer values (beginning at 1) 
+#' specifying the subgroup membership for each individual.
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
@@ -182,7 +183,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
       stop(paste0("gimme ERROR: confirmatory subgroup dataframe contains mismatched filenames.",
                   " Please ensure that the confirmatory subgroup filenames match the data filenames, sans extensions (Example: sub_1000, not sub_1000.csv)"))
     }
-    if(is.numeric(confirm_subgroup[,2])){
+    if(!is.numeric(confirm_subgroup[,2])){
       stop(paste0("gimme ERROR: confirmatory subgroup assignments are non-numeric.",
                   " Please ensure that the confirmatory subgroup assignments are integer valued, beginning from 1. (Example: 1, 2, 3, 4)"))
     }

@@ -466,12 +466,20 @@ determine.subgroups <- function(data_list,
   sim_mi <- matrix(0, ncol = length(mi_list), nrow = length(mi_list))
   sim_z  <- sim_mi
   
+  ## march 2018 stl - na.rm = TRUE added in creation of similarity matrix. 
+  ## This was added to address cases where the standard errors for certain paths,
+  ## particularly bidirectional paths, were NA. This caused NAs throughout
+  ## the adjacency matrix. We should consider whether this is the permanent 
+  ## solution we want, as it means that individuals contribute different numbers
+  ## of paths to the adjacency matrix (i.e., those individuals with paths
+  ## that have NA standard errors contribute fewer paths to the matrix)
+  
   for (i in 1:length(mi_list)){
     for (j in 1:length(mi_list)){
       sim_mi[i,j] <- sum(mi_list[[i]]$sig == 1 & mi_list[[j]]$sig == 1 & 
-                           sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc))
+                           sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc), na.rm = TRUE)
       sim_z[i,j]  <- sum(z_list[[i]]$sig == 1 & z_list[[j]]$sig == 1 &
-                           sign(z_list[[i]]$z) == sign(z_list[[j]]$z))
+                           sign(z_list[[i]]$z) == sign(z_list[[j]]$z), na.rm = TRUE)
     }
   }
   
@@ -862,6 +870,13 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           sub_s_coefs$color[sub_s_coefs$level == "group"] <- "black"
           sub_s_coefs$color[sub_s_coefs$level == "sub"]   <- "green3"
           sub_s_coefs$color[sub_s_coefs$level == "ind"]   <- "gray50"
+          
+          ## march 2018 stl - fix to remove error caused where lhs and rhs 
+          ## values are NA. there's no deeper trouble here - it was just due to an 
+          ## rbind where individuals with no paths (e.g., entirely NA) were included
+          ## in the full rbind, which led to variable names of "NA" 
+          sub_s_coefs <- sub_s_coefs[!is.na(sub_s_coefs$lhs), ]
+          sub_s_coefs <- sub_s_coefs[!is.na(sub_s_coefs$rhs), ]
           
           sub_s_summ <- transform(sub_s_coefs, 
                                   count = as.numeric(
