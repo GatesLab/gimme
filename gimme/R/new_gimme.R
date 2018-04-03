@@ -202,7 +202,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
       stop(paste0("gimme ERROR: confirmatory subgroup dataframe contains mismatched filenames.",
                   " Please ensure that the confirmatory subgroup filenames match the data filenames, sans extensions (Example: sub_1000, not sub_1000.csv)"))
     }
-    if(is.numeric(confirm_subgroup[,2])){
+    if(!is.numeric(confirm_subgroup[,2])){
       stop(paste0("gimme ERROR: confirmatory subgroup assignments are non-numeric.",
                   " Please ensure that the confirmatory subgroup assignments are integer valued, beginning from 1. (Example: 1, 2, 3, 4)"))
     }
