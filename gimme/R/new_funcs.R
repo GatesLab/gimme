@@ -454,6 +454,19 @@ determine.subgroups <- function(data_list,
     z_list  <- z_list[-drop]
   }
   
+  mi_list_temp <- lapply(mi_list, 
+                         function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
+                         x$sig   <- ifelse(x$mi > chisq_cutoff, 1, 0)
+                         return(x)})
+  
+  mi_list <- lapply(mi_list_temp, 
+                    function(x){subset(x, x$param %in% elig_paths)})
+  
+
+  z_list <- lapply(z_list, 
+                   function(x){x$sig <- ifelse(x$p < .05/n_subj, 1, 0)
+                   return(x)})
+  
   #subgroup based only on contemporaneous paths kmg
   if(sub_feature == "contemp"){
     mi_list <- lapply(mi_list, 
@@ -466,21 +479,12 @@ determine.subgroups <- function(data_list,
   if(sub_feature == "lagged"){
     mi_list <- lapply(mi_list, 
                       function(x){x[grep('lag',mi_list[[1]]$rhs),]})
-    z_list <- lapply(mi_list, 
+    z_list <- lapply(z_list, 
                      function(x){x[grep('lag',z_list[[1]]$rhs),]})
   }
   
-  mi_list_temp <- lapply(mi_list, 
-                         function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
-                         x$sig   <- ifelse(x$mi > chisq_cutoff, 1, 0)
-                         return(x)})
-  
-  mi_list <- lapply(mi_list_temp, 
-                    function(x){subset(x, x$param %in% elig_paths)})
-  
-  z_list <- lapply(z_list, 
-                   function(x){x$sig <- ifelse(x$p < .05/n_subj, 1, 0)
-                   return(x)})
+ # remove lines that have "NA" from z_list (occurs for exog and ar=FALSE)
+  z_list <- lapply(z_list, na.exclude) 
   
   sim_mi <- matrix(0, ncol = length(mi_list), nrow = length(mi_list))
   sim_z  <- sim_mi
