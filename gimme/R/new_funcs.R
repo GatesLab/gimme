@@ -864,6 +864,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     if(length(coefs[,1])>0){
       coefs$id    <- rep(names(store$coefs), sapply(store$coefs, nrow))
       coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
+      coefs <- coefs[!coefs$param %in% dat$nonsense_paths,] # Removes non-sense paths that occur when ar = FALSE or mult_vars is not null from output 
       
       coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
       coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
