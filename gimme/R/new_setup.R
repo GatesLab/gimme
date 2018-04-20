@@ -356,11 +356,12 @@ setup <- function (data,
   # freely estimate autoregressive relationships if ar = TRUE
   # if ar = FALSE, set up nonsense paths fixed to zero 
   if (ar == TRUE) {
-    line4 <- paste0(lvarnames[(n_lagged+1):(n_lagged + n_lagged)], "~", lvarnames[1:n_lagged])
+    #line4 <- paste0(lvarnames[(n_lagged+1):(n_lagged + n_lagged)], "~", lvarnames[1:n_lagged])
+    line4 <- paste0(gsub("lag\\b", "", grep('lag', lvarnames, value=TRUE)), "~", grep('lag', lvarnames, value=TRUE))
     ## creates list of AR paths so that later code doesn't kick them out
-    fixed_paths <- paste0(lvarnames[(n_lagged+1):(n_lagged + n_lagged)], "~", lvarnames[1:n_lagged]) 
+    fixed_paths <- paste0(gsub("lag\\b", "", grep('lag', lvarnames, value=TRUE)), "~", grep('lag', lvarnames, value=TRUE))
   } else {
-    line4 <- paste0(lvarnames[1:n_lagged], "~0*", lvarnames[(n_lagged+1):(n_lagged + n_lagged)])
+    line4 <- paste0(gsub("lag\\b", "", grep('lag', lvarnames, value=TRUE)), "~0*", grep('lag', lvarnames, value=TRUE))
     fixed_paths <- NULL
   }
   
@@ -450,4 +451,3 @@ setup <- function (data,
   return(dat)
 }
   
-

@@ -522,6 +522,7 @@ determine.subgroups <- function(data_list,
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
     sub$modularity  <- modularity(res)
+
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
   } else {
     sub_mem         <- confirm_subgroup
