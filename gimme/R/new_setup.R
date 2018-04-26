@@ -159,6 +159,9 @@ setup <- function (data,
           colnames(df_tobind) <- paste0(factor_1,"by",factor_2)
           all_appended <- cbind(all,df_tobind)
           ts_list[[p]] <- all_appended
+          if (standardize == TRUE){ #to scale the newly generated variabeles
+            ts_list <- lapply(ts_list, scale)
+          }
       }
       lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
       lfactor_1 <- lvars_to_mult[1]
@@ -350,8 +353,8 @@ setup <- function (data,
   line2 <- apply(expand.grid.unique(lvarnames[1:n_lagged], lvarnames[1:n_lagged], incl.eq = TRUE), 
                  1, paste, collapse = "~~")
   
-  # estimate variance of single-indicator latent variables 
-  line3 <- paste0(lvarnames[(n_lagged+1):n_vars_total], "~~", lvarnames[(n_lagged+1):n_vars_total]) 
+  # estimate variance of single-indicator endogenous latent variables (exog comes later)
+  line3 <- paste0(lvarnames[(n_lagged+1):(n_endog+n_lagged)], "~~", lvarnames[(n_lagged+1):(n_endog+n_lagged)]) 
   
   # freely estimate autoregressive relationships if ar = TRUE
   # if ar = FALSE, set up nonsense paths fixed to zero 
@@ -406,9 +409,20 @@ setup <- function (data,
                                     lvarnames[1:length(lvarnames)]), 1, paste, collapse = "~")
     if (ex_lag==TRUE)
       exog_paths <- exog_paths[!exog_paths %in% line4] 
+    
     candidate_paths <- candidate_paths[!candidate_paths %in% exog_paths]
     fixed_paths <- fixed_paths[!fixed_paths %in% exog_paths]
     syntax <- syntax[!syntax %in% exog_paths]
+    
+    # covary all exogenous variables with each other 
+   # line5 <- apply(expand.grid.unique(lexogenous, lexogenous, incl.eq = TRUE), 
+    #               1, paste, collapse = "~~")
+    # covary all exogenous variables with lagged variables
+    line6 <- apply(expand.grid.unique(lexogenous, lvarnames[1:n_lagged], incl.eq = TRUE), 
+                   1, paste, collapse = "~~")
+    
+    syntax <- c(syntax, line6) #, line5)
+    
     ## Below ensures that MIs are produced 
     if(!is.null(mult_vars)){
     syntax <- c(syntax,paste0(lmult_pairs[1:length(lmult_pairs)], "~0*", lvarnames[1:length(lmult_pairs)]))
