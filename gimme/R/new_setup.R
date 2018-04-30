@@ -442,15 +442,13 @@ setup <- function (data,
   # If multiplied vars are specified, take the lmultpair ~ V1lag required for MI creation out of the output
   if(!is.null(mult_vars)){
     nonsense_paths_mult <- paste0(lmult_pairs[1:length(lmult_pairs)], "~", lvarnames[1:length(lmult_pairs)])
-  }
-  else{
+  } else {
     nonsense_paths_mult <- NULL
   }
   # If ar = FALSE, take the var_lag ~ var_ paths out of the output
   if(!ar){
     nonsense_paths_ar <- paste0(lvarnames[1:n_lagged], "~", lvarnames[(n_lagged+1):(n_lagged + n_lagged)])
-  }
-  else{
+  } else {
     nonsense_paths_ar <- NULL
   }
   nonsense_paths <- c(nonsense_paths_mult,nonsense_paths_ar)
