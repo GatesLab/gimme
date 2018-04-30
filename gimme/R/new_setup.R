@@ -77,7 +77,7 @@ setup <- function (data,
     
 #reorder exogenous variables so they are at end
     if (!is.null(exogenous)){
-      id_exog <- which(varnames == exogenous)
+      id_exog <- which(varnames %in% exogenous)
     var_numbers <- seq(from = 1, to =n_orig_vars)
     var_exog_rem <- var_numbers[-id_exog]
     new_order   <- c(var_exog_rem, id_exog)
