@@ -740,7 +740,7 @@ get.params <- function(dat, grp, ind, k){
       ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged), ]
       ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged), ]
       
-      rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged)]
+      rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog)]
       colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
  #   } # stl comment out 11.20.17 
     
@@ -762,7 +762,7 @@ get.params <- function(dat, grp, ind, k){
     if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_lagged, ]
-      contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_vars_total), ]
+      contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_lagged+dat$n_endog), ]
       plot_vals   <- rbind(w2e(lagged), w2e(contemp))
       is_lagged   <- c(rep(TRUE, sum(lagged != 0)), 
                        rep(FALSE, sum(contemp != 0)))
@@ -918,13 +918,13 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           
           sub_s_mat_counts[cbind(sub_s_summ$row, sub_s_summ$col)] <- 
             as.numeric(as.character(sub_s_summ$count))
-          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
+          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
           colnames(sub_s_mat_counts) <- dat$varnames
-          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
+          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog)]
           
           sub_s_mat_means[cbind(sub_s_summ$row, sub_s_summ$col)]  <- sub_s_summ$mean
           sub_s_mat_colors[cbind(sub_s_summ$row, sub_s_summ$col)] <- sub_s_summ$color
-          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_lagged+1):(dat$n_vars_total), ]
+          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
           
           if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ #plot subgroup plot if >1 nodes in subgroup
             
@@ -1034,7 +1034,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     sample_counts <- matrix(0, ncol = (dat$n_vars_total), nrow = dat$n_lagged)
     sample_counts[cbind(c$row, c$col)] <- c$xcount
     colnames(sample_counts) <- dat$varnames
-    rownames(sample_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged+dat$n_lagged)]
+    rownames(sample_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_total_vars)]
     
     if (dat$plot){
       

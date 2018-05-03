@@ -12,9 +12,14 @@ gimmeSEM(data        = "",
          ar          = TRUE,
          plot        = TRUE,
          subgroup    = FALSE,
+         sub_feat    = "lag & contemp",
          confirm_subgroup = NULL,
          paths       = NULL,
          exogenous   = NULL,
+         ex_lag      = FALSE,
+         mult_vars   = NULL,
+         mean_center_mult = FALSE,
+         standardize = FALSE,
          groupcutoff = .75,
          subcutoff   = .5,
          diagnos     = FALSE)
@@ -55,11 +60,18 @@ the width of the edge corresponds to the count. Defaults to TRUE.}
 
 \item{subgroup}{Logical. If TRUE, subgroups are generated based on
 similarities in model features using the \code{walktrap.community}
-function from the \code{igraph} package. Defaults to TRUE.}
+function from the \code{igraph} package. Defaults to FALSE.}
 
-\item{confirm_subgroup}{Dataframe. If subgroup is also TRUE, option to provide
-subgroup labels contained in the dataframe. Dataframe has 2 columns,
-the first referring to file labels, and the second an integer variable referring to subgroup label.}
+\item{sub_feature}{Option to indicate feature(s) used to subgroup individuals. Defaults to
+"lag & contemp" for lagged and contemporaneous, which is the original method. Can use 
+"lagged" or "contemp" to subgroup solely on features related to lagged and contemporaneous 
+relations, respectively.}
+
+\item{confirm_subgroup}{Dataframe. Option only available when subgroup = TRUE. Dataframe should contain two columns. The first
+column should specify file labels (the name of the data files without file extension), 
+and the second should contain integer values (beginning at 1) 
+specifying the subgroup membership for each individual.
+function from the \code{igraph} package. Defaults to TRUE.}
 
 \item{paths}{\code{lavaan}-style syntax containing paths with which
 to begin model estimation (optional). That is, Y~X indicates that Y
@@ -76,6 +88,25 @@ If no header is used, then variables should be referred to with V followed
 (with no separation) by the column number. If a header is used, variables
 should be referred to using variable names. Defaults to NULL.}
 
+\item{ex_lag}{Logical.  If true, lagged variables are created for exogenous variables.
+Defaults to FALSE.}
+
+\item{mult_vars}{Vector of variable names to be multiplied to explore bilinear/modulatory
+effects (optional). All multiplied variables will be treated as exogenous (X can predict
+Y but cannot be predicted by Y). Within the vector, multiplication of two variables should be
+indicated with an asterik (e.g. V1*V2). If no header is used, variables should be referred to with 
+V followed by the column number (with no separation). If a header is used, each variable should be
+referred to using variable names. If multiplication with the lag 1 of a variable is desired, the 
+variable name should be followed by "lag" with no separation (e.g. V1*V2lag). Note that if
+multiplied variables are desired, at least one variable in the dataset must be specified as exogenous.
+Defaults to NULL.}
+
+\item{mean_center_mult}{Logical. If TRUE, the variables indicated in mult_vars will be mean-centered
+before being multiplied together. Defaults to FALSE.}
+
+\item{standardize}{Logical. If TRUE, all variables will be standardized to have a mean of zero and a
+standard deviation of one. Defaults to FALSE.}
+
 \item{groupcutoff}{Cutoff value for group-level paths. Defaults to .75,
 indicating that a path must be significant across 75\% of individuals to be
 included as a group-level path.}
@@ -85,6 +116,10 @@ indicating that a path must be significant across at least 50\% of the
 individuals in a subgroup to be considered a subgroup-level path.}
 
 \item{diagnos}{In development. Defaults to FALSE.}
+
+\item{confirm_subgroup}{Dataframe. If subgroup is also TRUE, option to provide
+subgroup labels contained in the dataframe. Dataframe has 2 columns,
+the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.}
 }
 \description{
 This function identifies structural equation models for each

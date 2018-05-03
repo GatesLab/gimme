@@ -36,10 +36,14 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
     } else if (estimates == FALSE){
       ind <- x$path_est_mats[[file]]
       colnames(ind) <- x$varnames
-      rownames(ind) <- x$varnames[(x$n_rois+1):(x$n_rois*2)]
+      # changed to reflect possibility of different # of lagged vars 
+      # rownames(ind) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
+      rownames(ind) <- x$varnames[(x$n_lagged+1):(x$n_vars_total)]
       ind <- round(ind, digits = 2)
-      ind_lag <- ind[ , 1:x$n_rois]
-      ind_con <- ind[ , (x$n_rois+1):(x$n_rois*2)]
+      #ind_lag <- ind[ , 1:x$n_lagged]
+      ind_lag <- ind[ , 1:x$n_lagged]
+      #ind_con <- ind[ , (x$n_lagged+1):(x$n_rois*2)]
+      ind_con <- ind[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Matrix for", file, "\n")
       print(ind_lag)
@@ -57,19 +61,23 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
   }
   if (!is.null(subgroup)){
     if (mean == TRUE){
-      subidx   <- x$fit[,c("file", "subgroup")]
-      files    <- subidx[subidx$subgroup == subgroup, ]$file
+      # subidx   <- x$fit[,c("file", "subgroup")]
+      # STL I'm not sure if this is what you meant: 
+      subidx   <- x$fit[,c("file", "sub_membership")]
+      files    <- subidx[subidx$sub_membership == subgroup, ]$file
       subfiles <- x$path_est_mats[files]
       if (length(files) == 1){
       cat("Subgroup", subgroup, "contains one individual. No average subgroup matrix provided.") 
       } else {
       s        <- apply(simplify2array(subfiles), 1:2, mean, na.rm = TRUE)
       colnames(s) <- x$varnames
-      rownames(s) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
+      #rownames(s) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
+      rownames(s) <- x$varnames[(x$n_lagged +1):(x$n_lagged+x$n_endog)]
       s     <- round(s, digits = 2)
-      #s     <- s[(x$n_rois+1):(x$n_rois*2), ]
-      s_lag <- s[ , 1:x$n_rois]
-      s_con <- s[ , (x$n_rois+1):(x$n_rois*2)]
+      #s     <- s[(x$n_rois+1):(x$n_rois*2), ] #kmg did not comment this out 5/3/2018
+      # s_lag <- s[ , 1:x$n_rois] #commented this out kmg
+      s_lag <- s[ , 1:x$n_lagged]
+      s_con <- s[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Average Matrix for Subgroup", subgroup, "\n")
       print(s_lag)
@@ -91,8 +99,10 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
         if (is.null(sub)){
           cat("Subgroup", subgroup, "contains one individual. No subgroup matrix provided.") 
         } else {
-          sub_lag <- sub[ , 1:x$n_rois]
-          sub_con <- sub[ , (x$n_rois+1):(x$n_rois*2)]
+          #sub_lag <- sub[ , 1:x$n_rois]
+          #sub_con <- sub[ , (x$n_rois+1):(x$n_rois*2)]
+          sub_lag <- sub[ , 1:x$n_lagged]
+          sub_con <- sub[ , (x$n_lagged+1):(x$n_vars_total)]
           cat("\n")
           cat("Lagged Count Matrix for Subgroup", subgroup, "\n")
           print(sub_lag)
@@ -115,8 +125,10 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
       cat("Please specify a file id for individual coefficient matrix. ", "\n", 
           "Otherwise, a summary count matrix is presented below.", "\n")
       all <- x$path_counts
-      all_lag <- all[ , 1:x$n_rois]
-      all_con <- all[ , (x$n_rois+1):(x$n_rois*2)]
+      #all_lag <- all[ , 1:x$n_rois]
+      all_lag <- all[ , 1:x$n_lagged]
+      #all_con <- all[ , (x$n_rois+1):(x$n_rois*2)]
+      all_con <- all[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Count Matrix for Sample", "\n")
       print(all_lag)
@@ -133,10 +145,12 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
           "Otherwise, a summary average matrix is presented below.", "\n")
       all2 <- apply(simplify2array(x$path_est_mats), 1:2, mean, na.rm = TRUE)
       colnames(all2) <- x$varnames
-      rownames(all2) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
+      #rownames(all2) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
+      rownames(all2) <- x$varnames[(x$n_lagged +1):(x$n_lagged + x$n_endog)]
       all2 <- round(all2, digits = 2)
-      all2_lag <- all2[ , 1:x$n_rois]
-      all2_con <- all2[ , (x$n_rois+1):(x$n_rois*2)]
+      #all2_lag <- all2[ , 1:x$n_rois]
+      all2_lag <- all2[ , 1:x$n_lagged]
+      all2_con <- all2[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Average Matrix for Sample", "\n")
       print(all2_lag)
