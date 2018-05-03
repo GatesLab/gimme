@@ -90,7 +90,8 @@ setup <- function (data,
     
   # simplify creation of variable names
   varnames  <- c(paste0(varnames[1:n_orig_vars], "lag"), varnames)
-  lvarnames <- c(paste0("VAR", c(new_order), "lag"), paste0("VAR", new_order))
+  lvarnameslag <- paste0("VAR", c(new_order), "lag")
+  lvarnames <- c(lvarnameslag, paste0("VAR", new_order))
 
   # create exogenous variable names and count n_endog
   lexog<- NULL
@@ -105,6 +106,7 @@ setup <- function (data,
   if(!is.null(exogenous)){
     # list of endogenous variable names
     lendog<-lvarnames[!lvarnames %in% lexog]
+    lendog<- lvarnames [!lendog %in% lvarnameslag]
     # list of lagged exogenous names
     lagged.exog.names  <- paste0(exogenous[1:length(exogenous)], "lag")
     # list of latent lagged exogenous names
@@ -372,9 +374,9 @@ setup <- function (data,
   
 # ensure endog variables set to zero covariance 
     covzero <- NULL
-    for (i in (n_lagged+2):(n_lagged + n_endog)) {
-      for (j in (n_lagged+1):(i-1)){
-        covzero <- c(covzero, paste0(lvarnames[i],"~~0*", lvarnames[j]))
+    for (i in (1:n_lagged)) {
+      for (j in ((n_lagged+1):(n_lagged+n_endog))){
+        covzero <- c(covzero, paste0(lvarnameslag[i],"~~0*", lvarnames[j]))
       }
     }
      #all others (lagged, exogenous, bilinear) will correlate since they are not predicted (lavaan default)
