@@ -50,7 +50,7 @@ print.indSEMp <- function(x, file = NULL, mean = FALSE, estimates = FALSE, fitMe
       cat("Please specify a file id for individual coefficient matrix. ", "\n", 
           "Otherwise, a summary count matrix is presented below.", "\n")
       all <- x$path_counts
-      all_lag <- all[ , 1:x$n_lagged]ind_lag 
+      all_lag <- all[ , 1:x$n_lagged]
       all_con <- all[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Count Matrix for Sample", "\n")

@@ -1086,7 +1086,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     c$row <- match(c$lhs, dat$lvarnames) - dat$n_lagged
     c$col <- match(c$rhs, dat$lvarnames)
     
-    sample_counts <- matrix(0, ncol = (dat$n_vars_total), nrow = dat$n_lagged)
+    sample_counts <- matrix(0, ncol = (dat$n_vars_total), nrow = (dat$n_vars_total - dat$n_lagged))
     sample_counts[cbind(c$row, c$col)] <- c$xcount
     colnames(sample_counts) <- dat$varnames
     rownames(sample_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
