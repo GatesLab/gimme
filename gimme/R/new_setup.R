@@ -15,7 +15,10 @@ setup <- function (data,
                    agg,
                    ind,
                    groupcutoff,
-                   subcutoff) {
+                   subcutoff, 
+                   conv_vars, 
+                   conv_length, 
+                   conv_intervals) {
 
   ## check that data argument is specified
   if (is.null(data)){
@@ -70,11 +73,6 @@ setup <- function (data,
       })
     }
     
-    ## standardize all variables if option is selected
-    if (standardize == TRUE){
-      ts_list <- lapply(ts_list, scale)
-    }
-    
 #reorder exogenous variables so they are at end
     if (!is.null(exogenous)){
       id_exog <- which(varnames %in% exogenous)
@@ -121,6 +119,21 @@ setup <- function (data,
   }
   if (ex_lag == TRUE | is.null(exogenous))  n_lagged <- n_orig_vars 
   
+  # convolve stimuli vectors
+  if(!is.null(conv_vars)){
+    for (t in 1:length(data)) 
+      for (onsets in 1:length(conv_vars)){
+        colnames(ts_list[[t]]) <- varnames[-(1:n_lagged)]
+        conv_use<- ts_list[[t]][,-(which(varnames %in% exogenous)-n_lagged)]
+        stimuli <- ts_list[[t]][,(which(varnames %in% conv_vars)-n_lagged)]
+        convolved <- sFIR(data            = conv_use, 
+                          stimuli         = stimuli, 
+                          response_length = conv_length, 
+                          interval        = conv_intervals)
+        ts_list[[t]][,which(colnames(ts_list[[t]]) == conv_vars[onsets])] <- convolved$conv_stim_onsets[1:length(data[[t]][,1])]
+        }
+  }
+  
   ## go back through list and create lagged variables
   for (p in 1:length(ts_list)){
     all          <- ts_list[[p]]
@@ -161,9 +174,6 @@ setup <- function (data,
           colnames(df_tobind) <- paste0(factor_1,"by",factor_2)
           all_appended <- cbind(all,df_tobind)
           ts_list[[p]] <- all_appended
-          if (standardize == TRUE){ #to scale the newly generated variabeles
-            ts_list <- lapply(ts_list, scale)
-          }
       }
       lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
       lfactor_1 <- lvars_to_mult[1]
@@ -173,7 +183,11 @@ setup <- function (data,
     }
   }
   
-  
+  ## standardize all variables if option is selected
+  if (standardize == TRUE){
+    ts_list <- lapply(ts_list, scale)
+  }
+
  ###Problem line is now currently that it is unable to index the column values based on names when I run 
   ##from gimmesem(). I get this error:  Error in `[.data.frame`(all, , factor_1) : undefined columns selected .
   ##However it works perfectly when I just run this code....not sure what to do! 

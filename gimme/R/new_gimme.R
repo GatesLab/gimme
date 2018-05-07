@@ -16,6 +16,9 @@
 #'          paths       = NULL,
 #'          exogenous   = NULL,
 #'          ex_lag      = FALSE,
+#'          conv_vars   = NULL,
+#'          conv_length = 16, 
+#'          conv_interval = 1. 
 #'          mult_vars   = NULL,
 #'          mean_center_mult = FALSE,
 #'          standardize = FALSE,
@@ -55,6 +58,12 @@
 #' should be referred to using variable names. Defaults to NULL.
 #' @param ex_lag Logical.  If true, lagged variables are created for exogenous variables.  
 #' Defaults to FALSE.
+#' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
+#' Response (sFIR). Defaults to NULL.
+#' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
+#' for the hemodynamic response function. 
+#' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
+#' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
 #' effects (optional). All multiplied variables will be treated as exogenous (X can predict
 #' Y but cannot be predicted by Y). Within the vector, multiplication of two variables should be
@@ -183,6 +192,9 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               paths          = NULL,
                               exogenous      = NULL,
                               ex_lag         = FALSE,
+                              conv_vars      = NULL,
+                              conv_length    = 16, 
+                              conv_intervals = 1, 
                               mult_vars      = NULL,
                               mean_center_mult = FALSE,
                               standardize    = FALSE,
@@ -208,7 +220,10 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        ind                  = FALSE,
                        agg                  = FALSE,
                        groupcutoff          = groupcutoff,
-                       subcutoff            = subcutoff)
+                       subcutoff            = subcutoff, 
+                       conv_vars            = conv_vars, 
+                       conv_length          = conv_length, 
+                       conv_intervals       = conv_intervals)
   
   #Error Check for Confirm Subgroup Labels
   if(subgroup & !is.null(confirm_subgroup)){

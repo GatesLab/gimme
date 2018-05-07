@@ -16,6 +16,61 @@ recode.vars <- function(data,
   newvec
 }
 
+#' Estimate response function for each person using smoothed Finite Impulse Response.
+#' @param data The data to be used to estimate response function 
+#' @param stimuli A vector containing '0' when the stimuli of interest is not present 
+#' and '1' otherwise. Number of observations across time must equal the length of data. 
+#' @param interval Time between observations; for fMRI this is the repetition time. 
+#' Defaults to 1.
+#' @return Shape of response function and convolved time series vector. 
+#' @keywords internal 
+sFIR <- function(data, 
+                 stimuli, 
+                 response_length = 16, 
+                 interval = 1){
+  
+  run_length <- length(stimuli)
+  t = seq(from = 1, to = response_length, by =interval)
+  
+  X_fir <- matrix(0, run_length, (response_length/interval))
+  
+  # set up basis vectors
+  c_onsets <- which(stimuli == 1)
+  id_cols <- seq(from=1, to = response_length/interval)
+  for (j in 1: length(c_onsets)){
+   id_rows <- seq(from =c_onsets[j], to= (c_onsets[j]+response_length/interval-1))
+  for (k in 1:length(id_rows))
+    X_fir[id_rows[k], id_cols[k]]<- 1
+  }
+  
+  ### estimate beta 
+  # get R2s to select which vector to use
+  R2 <- matrix(,length(data[1,]), 1)
+  for (p in 1:length(data[1,]))
+    R2[p]<- summary(lm(data[,p]~X_fir))$r.squared
+  best <- which(R2 == max(R2))
+  
+  ### For smoothing
+  C <- seq(1:length(t))%*%matrix(1, 1, length(t))
+  h <- sqrt(1/(7/interval))
+  
+  C2 <- apply((C-t(C)), c(1,2), function(i) i^2)
+  RI <- solve(.1*exp(-h/2*(C2)))
+  # MRI <- matrix(0,1, n_cond*length(t)+1)
+  MRI <- matrix(0,length(t),length(t))
+    MRI[1:length(t),1:length(t)] = RI
+  ## end smooth 
+  
+  est_hrf <- solve(t(X_fir)%*%X_fir + 1^2*MRI)%*%t(X_fir)%*%data[,best]
+  #plot(ts(est_hrf))
+  conv_onsets <- convolve(as.numeric(stimuli), rev(est_hrf), type = c("open"))
+  
+  res <- list(est_rf = est_hrf, 
+              conv_stim_onsets = conv_onsets)
+  return(res)
+}
+
+  
 #' Create edge list from weight matrix.
 #' @param x The coefficient matrix from an individual
 #' @return A list of all non-zero edges to feed to qgraph
@@ -737,8 +792,8 @@ get.params <- function(dat, grp, ind, k){
       ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
       ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
       
-      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged), ]
-      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_lagged), ]
+      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
+      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
       
       rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog)]
       colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
@@ -918,13 +973,13 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           
           sub_s_mat_counts[cbind(sub_s_summ$row, sub_s_summ$col)] <- 
             as.numeric(as.character(sub_s_summ$count))
-          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
+          sub_s_mat_counts <- sub_s_mat_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
           colnames(sub_s_mat_counts) <- dat$varnames
-          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog)]
+          rownames(sub_s_mat_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
           
           sub_s_mat_means[cbind(sub_s_summ$row, sub_s_summ$col)]  <- sub_s_summ$mean
           sub_s_mat_colors[cbind(sub_s_summ$row, sub_s_summ$col)] <- sub_s_summ$color
-          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
+          sub_s_mat_colors <- sub_s_mat_colors[(dat$n_lagged+1):(dat$n_vars_total), ]
           
           if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ #plot subgroup plot if >1 nodes in subgroup
             
@@ -1034,11 +1089,11 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     sample_counts <- matrix(0, ncol = (dat$n_vars_total), nrow = dat$n_lagged)
     sample_counts[cbind(c$row, c$col)] <- c$xcount
     colnames(sample_counts) <- dat$varnames
-    rownames(sample_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_total_vars)]
+    rownames(sample_counts) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
     
     if (dat$plot){
       
-      sample_colors <- matrix(NA, ncol = (dat$n_vars_total), nrow = dat$n_lagged)
+      sample_colors <- matrix(NA, ncol = (dat$n_vars_total), nrow = (dat$n_vars_total-dat$n_lagged))
       sample_colors[cbind(c$row, c$col)] <- c$color
       
       sample_paths  <- t(sample_counts)/dat$n_subj
