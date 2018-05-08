@@ -428,7 +428,8 @@ gimmeSEM <- gimme <- function(data           = NULL,
   # these objects are used in print.gimmep
   # if you change an object name here, 
   # you need to change it in the print.gimmep.R
-  res <- list(path_est_mats   = store$betas,
+  res <- list(data            = dat$ts_list,
+              path_est_mats   = store$betas,
               varnames        = dat$varnames,
               n_vars_total    = dat$n_vars_total,
               n_lagged        = dat$n_lagged,
