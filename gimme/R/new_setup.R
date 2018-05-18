@@ -380,8 +380,8 @@ setup <- function (data,
     ## creates list of AR paths so that later code doesn't kick them out
     fixed_paths <- paste0(gsub("lag\\b", "", grep('lag', lvarnames, value=TRUE)), "~", grep('lag', lvarnames, value=TRUE))
   } else {
-    line4 <- paste0(gsub("lag\\b", "", grep('lag', lvarnames, value=TRUE)), "~0*", grep('lag', lvarnames, value=TRUE))
-    fixed_paths <- NULL
+    line4 <- paste0( grep('lag', lvarnames, value=TRUE), "~0*",gsub("lag\\b", "", grep('lag', lvarnames, value=TRUE)))
+      fixed_paths <- NULL
   }
   
   syntax <- c(line1, line2, line3, line4)

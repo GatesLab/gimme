@@ -792,10 +792,10 @@ get.params <- function(dat, grp, ind, k){
       ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
       ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
       
-      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
-      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog), ]
+      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_vars_total), ]
+      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_vars_total), ]
       
-      rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_endog)]
+      rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_vars_total)]
       colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
  #   } # stl comment out 11.20.17 
     
@@ -817,7 +817,7 @@ get.params <- function(dat, grp, ind, k){
     if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_lagged, ]
-      contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_lagged+dat$n_endog), ]
+      contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_lagged+dat$n_vars_total), ]
       plot_vals   <- rbind(w2e(lagged), w2e(contemp))
       is_lagged   <- c(rep(TRUE, sum(lagged != 0)), 
                        rep(FALSE, sum(contemp != 0)))

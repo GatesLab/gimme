@@ -72,7 +72,7 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
       s        <- apply(simplify2array(subfiles), 1:2, mean, na.rm = TRUE)
       colnames(s) <- x$varnames
       #rownames(s) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
-      rownames(s) <- x$varnames[(x$n_lagged +1):(x$n_lagged+x$n_endog)]
+      rownames(s) <- x$varnames[(x$n_lagged +1):(x$n_vars_total)]
       s     <- round(s, digits = 2)
       #s     <- s[(x$n_rois+1):(x$n_rois*2), ] #kmg did not comment this out 5/3/2018
       # s_lag <- s[ , 1:x$n_rois] #commented this out kmg
@@ -146,7 +146,7 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
       all2 <- apply(simplify2array(x$path_est_mats), 1:2, mean, na.rm = TRUE)
       colnames(all2) <- x$varnames
       #rownames(all2) <- x$varnames[(x$n_rois +1):(x$n_rois*2)]
-      rownames(all2) <- x$varnames[(x$n_lagged +1):(x$n_lagged + x$n_endog)]
+      rownames(all2) <- x$varnames[(x$n_lagged +1):(x$n_vars_total)]
       all2 <- round(all2, digits = 2)
       #all2_lag <- all2[ , 1:x$n_rois]
       all2_lag <- all2[ , 1:x$n_lagged]
