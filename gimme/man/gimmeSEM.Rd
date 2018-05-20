@@ -12,14 +12,14 @@ gimmeSEM(data        = "",
          ar          = TRUE,
          plot        = TRUE,
          subgroup    = FALSE,
-         sub_feat    = "lag & contemp",
+         sub_feature = "lag & contemp",
          confirm_subgroup = NULL,
          paths       = NULL,
          exogenous   = NULL,
          ex_lag      = FALSE,
          conv_vars   = NULL,
          conv_length = 16, 
-         conv_interval = 1. 
+         conv_interval = 1,
          mult_vars   = NULL,
          mean_center_mult = FALSE,
          standardize = FALSE,
@@ -100,6 +100,9 @@ Response (sFIR). Defaults to NULL.}
 \item{conv_length}{Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 for the hemodynamic response function.}
 
+\item{conv_interval}{Interval between data acquisition. Currently must be a constant. For 
+fMRI studies, this is the repetition time. Defaults to 1.}
+
 \item{mult_vars}{Vector of variable names to be multiplied to explore bilinear/modulatory
 effects (optional). All multiplied variables will be treated as exogenous (X can predict
 Y but cannot be predicted by Y). Within the vector, multiplication of two variables should be
@@ -125,13 +128,6 @@ indicating that a path must be significant across at least 50\% of the
 individuals in a subgroup to be considered a subgroup-level path.}
 
 \item{diagnos}{In development. Defaults to FALSE.}
-
-\item{conv_interval}{Interval between data acquisition. Currently must be a constant. For 
-fMRI studies, this is the repetition time. Defaults to 1.}
-
-\item{confirm_subgroup}{Dataframe. If subgroup is also TRUE, option to provide
-subgroup labels contained in the dataframe. Dataframe has 2 columns,
-the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.}
 }
 \description{
 This function identifies structural equation models for each

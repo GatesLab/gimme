@@ -18,7 +18,7 @@ setup <- function (data,
                    subcutoff, 
                    conv_vars, 
                    conv_length, 
-                   conv_intervals) {
+                   conv_interval) {
 
   ## check that data argument is specified
   if (is.null(data)){
@@ -129,7 +129,7 @@ setup <- function (data,
         convolved <- sFIR(data            = conv_use, 
                           stimuli         = stimuli, 
                           response_length = conv_length, 
-                          interval        = conv_intervals)
+                          interval        = conv_interval)
         ts_list[[t]][,which(colnames(ts_list[[t]]) == conv_vars[onsets])] <- convolved$conv_stim_onsets[1:length(data[[t]][,1])]
         }
   }
