@@ -11,14 +11,14 @@
 #'          ar          = TRUE,
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
-#'          sub_feat    = "lag & contemp",
+#'          sub_feature = "lag & contemp",
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
 #'          exogenous   = NULL,
 #'          ex_lag      = FALSE,
 #'          conv_vars   = NULL,
 #'          conv_length = 16, 
-#'          conv_interval = 1. 
+#'          conv_interval = 1,
 #'          mult_vars   = NULL,
 #'          mean_center_mult = FALSE,
 #'          standardize = FALSE,
@@ -98,9 +98,6 @@
 #' "lag & contemp" for lagged and contemporaneous, which is the original method. Can use 
 #' "lagged" or "contemp" to subgroup solely on features related to lagged and contemporaneous 
 #' relations, respectively.
-#' @param confirm_subgroup Dataframe. If subgroup is also TRUE, option to provide
-#' subgroup labels contained in the dataframe. Dataframe has 2 columns,
-#' the first referring to file labels (without extensions), and the second an integer variable referring to subgroup label.
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
@@ -194,7 +191,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                               ex_lag         = FALSE,
                               conv_vars      = NULL,
                               conv_length    = 16, 
-                              conv_intervals = 1, 
+                              conv_interval = 1, 
                               mult_vars      = NULL,
                               mean_center_mult = FALSE,
                               standardize    = FALSE,
@@ -223,7 +220,7 @@ gimmeSEM <- gimme <- function(data           = NULL,
                        subcutoff            = subcutoff, 
                        conv_vars            = conv_vars, 
                        conv_length          = conv_length, 
-                       conv_intervals       = conv_intervals)
+                       conv_interval       = conv_interval)
   
   #Error Check for Confirm Subgroup Labels
   if(subgroup & !is.null(confirm_subgroup)){
