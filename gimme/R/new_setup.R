@@ -121,17 +121,21 @@ setup <- function (data,
   
   # convolve stimuli vectors
   if(!is.null(conv_vars)){
-    for (t in 1:length(data)) 
-      for (onsets in 1:length(conv_vars)){
+     for (t in 1:length(data)) {
+       if(any(is.na(data))){
+       stop(paste0("gimme ERROR: Data cannot contain missing values (NAs) when convolving."))
+         }    
+    for (onsets in 1:length(conv_vars)){
         colnames(ts_list[[t]]) <- varnames[-(1:n_lagged)]
         conv_use<- ts_list[[t]][,-(which(varnames %in% exogenous)-n_lagged)]
-        stimuli <- ts_list[[t]][,(which(varnames %in% conv_vars)-n_lagged)]
+        stimuli <- ts_list[[t]][,(which(varnames %in% conv_vars)-n_lagged)[onsets]]
         convolved <- sFIR(data            = conv_use, 
                           stimuli         = stimuli, 
                           response_length = conv_length, 
                           interval        = conv_interval)
         ts_list[[t]][,which(colnames(ts_list[[t]]) == conv_vars[onsets])] <- convolved$conv_stim_onsets[1:length(data[[t]][,1])]
-        }
+    }
+       }
   }
   
   ## go back through list and create lagged variables

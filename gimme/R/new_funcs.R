@@ -39,7 +39,7 @@ sFIR <- function(data,
   id_cols <- seq(from=1, to = response_length/interval)
   for (j in 1: length(c_onsets)){
    id_rows <- seq(from =c_onsets[j], to= (c_onsets[j]+response_length/interval-1))
-  for (k in 1:length(id_rows))
+  for (k in 1:min(length(id_rows),(length(X_fir[,1])-c_onsets[j])))
     X_fir[id_rows[k], id_cols[k]]<- 1
   }
   
@@ -792,8 +792,8 @@ get.params <- function(dat, grp, ind, k){
       ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
       ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
       
-      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_lagged + dat$n_vars_total), ]
-      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_lagged + dat$n_vars_total), ]
+      ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_vars_total), ]
+      ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_vars_total), ]
       
       rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_lagged + dat$n_vars_total)]
       colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
