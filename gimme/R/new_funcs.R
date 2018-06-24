@@ -233,9 +233,16 @@ return.zs <- function(fit){
   
   op  = NULL # appease CRAN check
   
-  converge <- lavInspect(fit, "converged")
   error   <- any(grepl("error", class(fit)))
-  zero_se <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  
+  if (!error) {
+    converge <- lavInspect(fit, "converged")
+    zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  } else {
+    converge <- FALSE
+    zero_se <- TRUE
+  }
+
   if (!error & !zero_se & converge){
     zs <- tryCatch(subset(standardizedSolution(fit), 
                           op == "~"),
