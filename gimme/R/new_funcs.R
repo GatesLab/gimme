@@ -744,11 +744,16 @@ get.params <- function(dat, grp, ind, k){
                                           ind$ind_paths[[k]]), 
                             data_file = data_file)
   }
-  converge <- lavInspect(fit, "converged")
-  # if (ind$n_ind_paths[k] > 0){ commented out on 11.20.17 by stl
-  # potentially insert some other check for an empty model
-  zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
-  # } else{ zero_se <- FALSE} commented out on 11.20.17 by stl
+  
+  error   <- any(grepl("error", class(fit)))
+  
+  if (!error) {
+    converge <- lavInspect(fit, "converged")
+    zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+  } else {
+    converge <- FALSE
+    zero_se  <- TRUE
+  }
   
   # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
@@ -770,14 +775,23 @@ get.params <- function(dat, grp, ind, k){
                                 data_file = data_file)
       }
     }
-    converge <- lavInspect(fit, "converged")
-    ind_coefs <- subset(standardizedSolution(fit), op == "~") # if betas = 0, no SEs
-    if (length(ind_coefs[,1]) > 0){
-      zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0}
-    else
-    {zero_se <- FALSE}
-    if (converge){
-      status <- "last known convergence"
+    
+    error   <- any(grepl("error", class(fit)))
+    
+    if (!error){
+      converge  <- lavInspect(fit, "converged")
+      ind_coefs <- subset(standardizedSolution(fit), op == "~") # if betas = 0, no SEs
+      if (length(ind_coefs[,1]) > 0){
+        zero_se   <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
+      } else {
+        zero_se <- FALSE
+      }
+      if (converge){
+        status <- "last known convergence"
+      }
+    } else {
+      converge <- FALSE
+      zero_se  <- TRUE
     }
   }
   
