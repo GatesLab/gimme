@@ -641,7 +641,7 @@ indiv.search <- function(dat, grp, ind){
     }
     
     if (!dat$agg){
-      writeLines(paste("individual-level search, subject", k))
+      writeLines(paste0("individual-level search, subject ", k, " (", names(dat$ts_list)[k],")"))
     }
     
     ind_spec <- search.paths(base_syntax  = dat$syntax, 
