@@ -426,10 +426,12 @@ search.paths <- function(base_syntax,
                                               fixed_syntax, 
                                               add_syntax),
                                 data_file = data_list[[k]])
+        
+        # zf 2018/07/13: added filenames to output 
         if(!subgroup_stage){
-          writeLines(paste("group-level search, subject", k))
+          writeLines(paste0("group-level search, subject ", k, " (",names(data_list)[k],")"))
         } else {
-          writeLines(paste("subgroup-level search, subject", k))
+          writeLines(paste0("subgroup-level search, subject ", k, " (",names(data_list)[k],")"))
         }
       } else 
         {
