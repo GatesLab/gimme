@@ -350,9 +350,9 @@ prune.paths <- function(base_syntax,
                                    data_file = data_list[[k]]) 
         } 
         if (subgroup_stage){
-          writeLines(paste("subgroup-level pruning, subject", k))
+          writeLines(paste0("subgroup-level pruning, subject ", k, " (",names(data_list)[k],")"))
         } else {
-          writeLines(paste("group-level pruning, subject", k))
+          writeLines(paste0("group-level pruning, subject ", k, " (",names(data_list)[k],")"))
         }
       } else{
         fit         <- fit.model(syntax    = c(base_syntax, 
@@ -501,7 +501,7 @@ determine.subgroups <- function(data_list,
   mi_list <- list()
   
   for (k in 1:n_subj){
-    writeLines(paste("subgroup search, subject", k))
+    writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
     fit          <- fit.model(syntax    = base_syntax,
                               data_file = data_list[[k]])
     z_list[[k]]  <- return.zs(fit)
