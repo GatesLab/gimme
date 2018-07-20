@@ -11,7 +11,15 @@
 #'        ar     = TRUE,
 #'        plot   = TRUE,
 #'        paths  = NULL,
-#'        exogenous = NULL)
+#'        exogenous = NULL, 
+#'        ex_lag   = FALSE
+#'        conv_vars   = NULL,
+#'        conv_length = 16, 
+#'        conv_interval = 1,
+#'        mult_vars   = NULL,
+#'        mean_center_mult = FALSE,
+#'        standardize = FALSE
+#'        )
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 
 #' or matrix must contain one matrix for each individual containing a 
@@ -43,6 +51,27 @@
 #' If no header is used, then variables should be referred to with V followed 
 #' (with no separation) by the column number. If a header is used, variables 
 #' should be referred to using variable names.  Defaults to NULL.
+#' @param ex_lag Logical.  If true, lagged variables are created for exogenous variables.  
+#' Defaults to FALSE.
+#' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
+#' Response (sFIR). Defaults to NULL.
+#' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
+#' for the hemodynamic response function. 
+#' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
+#' fMRI studies, this is the repetition time. Defaults to 1. 
+#' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
+#' effects (optional). All multiplied variables will be treated as exogenous (X can predict
+#' Y but cannot be predicted by Y). Within the vector, multiplication of two variables should be
+#' indicated with an asterik (e.g. V1*V2). If no header is used, variables should be referred to with 
+#' V followed by the column number (with no separation). If a header is used, each variable should be
+#' referred to using variable names. If multiplication with the lag 1 of a variable is desired, the 
+#' variable name should be followed by "lag" with no separation (e.g. V1*V2lag). Note that if
+#' multiplied variables are desired, at least one variable in the dataset must be specified as exogenous.
+#' Defaults to NULL.
+#' @param mean_center_mult Logical. If TRUE, the variables indicated in mult_vars will be mean-centered
+#' before being multiplied together. Defaults to FALSE. 
+#' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
+#' standard deviation of one. Defaults to FALSE. 
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -89,7 +118,14 @@ indSEM <- function(data,
                    ar     = TRUE,
                    plot   = TRUE,
                    paths  = NULL,
-                   exogenous = NULL){
+                   exogenous = NULL, 
+                   ex_lag         = FALSE,
+                   conv_vars      = NULL,
+                   conv_length    = 16, 
+                   conv_interval = 1, 
+                   mult_vars      = NULL,
+                   mean_center_mult = FALSE,
+                   standardize    = FALSE){
   
 
   dat  <- setup(data        = data,
@@ -100,6 +136,13 @@ indSEM <- function(data,
                 ar          = ar,
                 paths       = paths,
                 exogenous   = exogenous,
+                ex_lag      = ex_lag,
+                mult_vars   = mult_vars,
+                mean_center_mult  = mean_center_mult,  
+                standardize = standardize,
+                conv_vars = conv_vars, 
+                conv_length = conv_length, 
+                conv_interval = conv_interval,
                 groupcutoff = NULL,
                 subcutoff   = NULL,
                 subgroup    = FALSE,
