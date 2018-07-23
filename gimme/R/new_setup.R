@@ -434,6 +434,19 @@ setup <- function (data,
     fixed_paths <- fixed_paths[!fixed_paths %in% exog_paths]
     syntax <- syntax[!syntax %in% exog_paths]
     
+    # If multiplied vars are specified, remove prediction of first order effects by multiplied
+    # variables
+  vars_to_mult <- strsplit(mult_pairs, "*", fixed = TRUE)
+  vars_to_mult_mat <- unlist(vars_to_mult)
+  lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
+  multpaths<-apply(expand.grid(lvars_to_mult[1:length(lvars_to_mult)],
+                                lmult_pairs[1:length(lmult_pairs)]), 1, paste, collapse = "~")
+  if(!is.null(mult_vars)){
+     candidate_paths <- candidate_paths[!candidate_paths %in% multpaths]
+     fixed_paths <- fixed_paths[!fixed_paths %in% multpaths]
+     syntax <- syntax[!syntax %in% multpaths]
+   }
+    
     # covary all exogenous variables with each other 
    # line5 <- apply(expand.grid.unique(lexogenous, lexogenous, incl.eq = TRUE), 
     #               1, paste, collapse = "~~")
@@ -466,20 +479,6 @@ setup <- function (data,
     nonsense_paths_mult <- NULL
   }
   
-  
-  # If multiplied vars are specified, remove prediction of first order effects by multiplied
-  # variables
-  vars_to_mult <- strsplit(mult_pairs, "*", fixed = TRUE)
-  vars_to_mult_mat <- unlist(vars_to_mult)
-  lvars_to_mult <- recode.vars(vars_to_mult_mat, varnames, lvarnames)
-  multpaths<-apply(expand.grid(lvars_to_mult[1:length(lvars_to_mult)],
-                    lmult_pairs[1:length(lmult_pairs)]), 1, paste, collapse = "~")
-  
-  if(!is.null(mult_vars)){
-    candidate_paths <- candidate_paths[!candidate_paths %in% multpaths]
-    fixed_paths <- fixed_paths[!fixed_paths %in% multpaths]
-    syntax <- syntax[!syntax %in% multpaths]
-  }
   
   # If ar = FALSE, take the var_lag ~ var_ paths out of the output
   if(!ar){
