@@ -23,3 +23,6 @@ BugReports: https://github.com/GatesLab/gimme/issues
 ByteCompile: true
 RoxygenNote: 6.0.1
 NeedsCompilation: no
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
