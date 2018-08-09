@@ -894,8 +894,8 @@ get.params <- function(dat, grp, ind, k){
     if (!converge) status <- "nonconvergence"
     if (zero_se)   status <- "computationally singular"
     ind_fit   <- rep(NA, 8)
-    ind_coefs <- matrix(NA, nrow = 1, ncol = 7)
-    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est.std", "se", "z", "pvalue")
+    ind_coefs <- matrix(NA, nrow = 1, ncol = 9)
+    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est.std", "se", "z", "pvalue", "ci.lower", "ci.upper")
     ind_betas <- NA
     ind_vcov  <- NA
     ind_plot  <- NA
