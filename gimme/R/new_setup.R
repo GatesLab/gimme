@@ -121,8 +121,8 @@ setup <- function (data,
   
   # convolve stimuli vectors
   if(!is.null(conv_vars)){
-     for (t in 1:length(data)) {
-       if(any(is.na(data))){
+     for (t in 1:length(ts_list)) {
+       if(any(is.na(ts_list))){
        stop(paste0("gimme ERROR: Data cannot contain missing values (NAs) when convolving."))
          }    
     for (onsets in 1:length(conv_vars)){
@@ -133,7 +133,7 @@ setup <- function (data,
                           stimuli         = stimuli, 
                           response_length = conv_length, 
                           interval        = conv_interval)
-        ts_list[[t]][,which(colnames(ts_list[[t]]) == conv_vars[onsets])] <- convolved$conv_stim_onsets[1:length(data[[t]][,1])]
+        ts_list[[t]][,which(colnames(ts_list[[t]]) == conv_vars[onsets])] <- convolved$conv_stim_onsets[1:length(ts_list[[t]][,1])]
     }
        }
   }
