@@ -433,15 +433,18 @@ search.paths <- function(base_syntax,
         } else {
           writeLines(paste0("subgroup-level search, subject ", k, " (",names(data_list)[k],")"))
         }
-      } else 
-        {
+      } else {
         fit        <- fit.model(syntax    = c(base_syntax, 
                                               fixed_syntax, 
                                               add_syntax),
                                 data_file = data_list)
-        if (!"error" %in% class(fit) & lavInspect(fit, "converged")){
-          indices    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
-                                           "srmr", "nnfi", "cfi"))
+        if (!"error" %in% class(fit)){
+          # stl 2018/08/16 separated convergence check from error check
+          # can't inspect convergence of an error object
+          if (lavInspect(fit, "converged")){ 
+            indices    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
+                                             "srmr", "nnfi", "cfi"))
+          } else indices <- NULL
         } else indices <- NULL
       }
       mi_list[[k]] <- return.mis(fit)
