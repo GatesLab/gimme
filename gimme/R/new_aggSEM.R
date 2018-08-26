@@ -11,7 +11,14 @@
 #'        ar     = TRUE,
 #'        plot   = TRUE,
 #'        paths  = NULL,
-#'        exogenous = NULL)
+#'        exogenous = NULL, 
+#'        ex_lag    = FALSE,
+#'        conv_vars        = NULL,
+#'        conv_length      = 16, 
+#'        conv_interval    = 1, 
+#'        mult_vars        = NULL,
+#'        mean_center_mult = FALSE,
+#'        standardize      = FALSE)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. 
 #' Each file or matrix must contain one matrix 
@@ -101,14 +108,14 @@ aggSEM <- function(data,
                    ar     = TRUE,
                    plot   = TRUE,
                    paths  = NULL,
-                   exogenous = NULL, 
-                   ex_lag         = FALSE,
-                   conv_vars      = NULL,
-                   conv_length    = 16, 
-                   conv_interval = 1, 
-                   mult_vars      = NULL,
+                   exogenous        = NULL, 
+                   ex_lag           = FALSE,
+                   conv_vars        = NULL,
+                   conv_length      = 16, 
+                   conv_interval    = 1, 
+                   mult_vars        = NULL,
                    mean_center_mult = FALSE,
-                   standardize    = FALSE){
+                   standardize      = FALSE){
   
   ind      = NULL # appease CRAN check
   grp      = NULL # appease CRAN check
