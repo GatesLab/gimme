@@ -1030,7 +1030,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                         DoNotPlot    = TRUE), 
                                  error = function(e) e)
             
-            if (!is.null(dat$out)){
+            if (!is.null(dat$out) & !"error" %in% class(sub_plot)){
               pdf(file.path(dat$subgroup_dir, 
                             paste0("subgroup", s, "Plot.pdf")))
               plot(sub_plot)
