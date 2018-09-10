@@ -1011,7 +1011,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
             
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
             lagged     <- sub_s_counts[1:(dat$n_lagged), ]
-            if (n_exog_total!=0){
+            if (n_exog_total>0){
             lagged[,(dat$n_lagged+1):(dat$n_lagged+dat$n_exog_total)] <-0
             }
             contemp    <- sub_s_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
