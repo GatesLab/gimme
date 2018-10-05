@@ -1109,7 +1109,14 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     # ensures that subgroup paths will be displayed as green
     # and individual paths that appear in another subgroup
     # will not cause subgroup paths to all display as individual
-    b <- b[order(-b$count), ]
+    # CA 10.5.18 created variable to order by label.  Some individual paths were 
+    # being selected over subgroup paths in the duplicated function.
+       
+    b$labelnum[b$label=='group'] <- 1
+    b$labelnum[b$label=='ind'] <- 3
+    b$labelnum[is.na(b$labelnum)] <-2
+
+    b <- b[order(b$labelnum), ]
     c <- b[!duplicated(b$param), c("lhs", "rhs", "color", "xcount")] 
     
     c$row <- match(c$lhs, dat$lvarnames) - dat$n_lagged
@@ -1128,6 +1135,9 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
       sample_paths  <- t(sample_counts)/dat$n_subj
       
       lagged     <- sample_paths[1:(dat$n_lagged), ]
+      if (dat$n_exog_total>0){
+        lagged[,(dat$n_lagged+1):(dat$n_lagged+dat$n_exog_total)] <-0
+      }
       contemp    <- sample_paths[(dat$n_lagged+1):(dat$n_vars_total), ]
       plot_vals  <- rbind(w2e(lagged), w2e(contemp))
       is_lagged  <- c(rep(TRUE, sum(lagged != 0)),
