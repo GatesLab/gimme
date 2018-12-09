@@ -1057,7 +1057,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
           }
           sub_coefs[[s]] <- sub_s_coefs
           sub_summ[[s]]  <- sub_s_summ
-          sub_plots[[s]] <- sub_plots
+          sub_plots[[s]] <- sub_plot # fixed stl 12/9/2018
           sub_counts[[s]] <- sub_s_mat_counts
         }
         
