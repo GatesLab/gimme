@@ -58,7 +58,7 @@ create.tree <- function(history, subgroup, individual = FALSE, all.ind = FALSE){
       if(length(x)>1){
         res <- paste0(x,collapse=",")
       } else {
-        res <- as.character(x)
+        res <- x; #as.character(x)
       }
     
     } 

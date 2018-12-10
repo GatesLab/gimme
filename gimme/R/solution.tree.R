@@ -3,7 +3,13 @@
 solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids = "all", plot.tree = FALSE){
   
   
-  tree <- gimme:::batch.create.tree(x$grp_hist, x$ind_hist, x$ind_fit, x$dat$subgroup, names(x$dat$ts_list))
+  tree <- gimme:::batch.create.tree(
+    x$grp_hist, 
+    x$ind_hist, 
+    x$ind_fit, 
+    x$dat$subgroup, 
+    names(x$dat$ts_list),
+    x$sub)
   
   if(is.null(cols)){
     cols <- c("stage")

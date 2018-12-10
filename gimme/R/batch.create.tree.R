@@ -2,12 +2,12 @@
 #' @keywords internal 
 batch.create.tree <- function(hist, ind_hist, ind_fit, subgroup, names.ts_list, sub){
   ######
-  hist <- x$grp_hist
-  ind_hist <- x$ind_hist
-  ind_fit <- x$ind_fit
-  subgroup <- x$dat$subgroup
-  names.ts_list <- names(x$dat$ts_list)
-  sub <- x$sub
+  # hist <- x$grp_hist
+  # ind_hist <- x$ind_hist
+  # ind_fit <- x$ind_fit
+  # subgroup <- x$dat$subgroup
+  # names.ts_list <- names(x$dat$ts_list)
+  # sub <- x$sub
   #####
 
   #-----------------------------------------------#
@@ -255,7 +255,8 @@ batch.create.tree <- function(hist, ind_hist, ind_fit, subgroup, names.ts_list, 
     })
  
     trees_grpsub <- create.tree(grpsub_hist, subgroup, individual = FALSE)
-   return(trees)
+    
+   return(list(trees_grp = trees_grpsub, trees_ind = trees))
     
   }
 }
