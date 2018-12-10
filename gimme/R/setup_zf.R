@@ -122,12 +122,14 @@ setup <- function (data,
       
     }
     
-    # multiple latent variables need to be split apart
     
     lv_model_ind <- lapply(lv_model_all, function(x){
       pt  <- lavaan::lavParTable(x)
       lvs <- unique(pt[pt$op=="=~","lhs"])
       lapply(lvs, function(l){
+        if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) <= 2){
+          stop(pasteo("gimme ERROR: factors with only two indicators not currently supported."))
+        }
         paste0(paste0(l,"=~"), paste0(pt[pt$op=="=~" & pt$lhs == l,"rhs"],collapse="+"),collapse="")
       })
     })
@@ -148,6 +150,7 @@ setup <- function (data,
     )
 
     fs_info <- lapply(seq_along(ts_list_obs), function(i){
+      
       lapply(seq_along(model_list_ptech[[i]]), function(j){
         MIIVsem:::factorScores(
           data  = ts_list_obs[[i]], 
@@ -156,6 +159,8 @@ setup <- function (data,
           lv_estimator = lv_estimator 
         )   
       })
+      
+      
     })
   
     ts_list <- lapply(seq_along(fs_info), function(i){
