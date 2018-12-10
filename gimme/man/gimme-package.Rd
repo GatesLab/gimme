@@ -24,10 +24,10 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
 \author{
 {Stephanie Lane [aut, cre, trl],\cr 
    Kathleen Gates [aut], \cr
+   Zachary Fisher [aut],  \cr
    Peter Molenaar [aut], \cr
    Michael Hallquist [ctb], \cr
    Hallie Pike [ctb],  \cr
-   Zachary Fisher [ctb],  \cr
    Cara Arizmendi [ctb], \cr
    Teague Henry [ctb]
 }
