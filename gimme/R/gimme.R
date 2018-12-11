@@ -351,12 +351,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
       
     })
 
-    
-    # for testing purposes (beltz2016[1:10])
-    #solution 1 prune "V3~V3lag" "V4~V4lag"
-    #grp_prune[[1]]$add_syntax <- c("V1~V5")
-    #solution 2 prune "V3~V3lag" "V2~V4"
-    #grp_prune[[2]]$add_syntax  <- character()
+  
     
     # #-----------------------------------------------------------#
     # # Add the pruning information to the grp history.
@@ -475,11 +470,13 @@ gimmeSEM <- gimme <- function(data             = NULL,
       dat$lvgimme$miiv_est_table <- MIIVsem:::fitFinalGimmeModels(
           ts_list_obs = dat$lvgimme$ts_list_obs,
           meas_model  = dat$lvgimme$model_list_dfa,
-          lv_model    = store$syntax,
+          lv_model    = lapply(store$syntax, function(x){x[!grepl("0\\*", x)]}),
           miiv.dir    = file.path(dat$out,"miiv"),
           lv_final_estimator = lv_final_estimator
       )
     }
+    
+     
   
     print.gimme(x = sub[[1]],
                 y = subgroup,
@@ -545,17 +542,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
     ind_hist <- lapply(ind_results, "[[", "ind_history")
     ind_fit  <- lapply(ind_results, "[[", "res")
     
-    # ind_hist_old <- ind_hist
-    # ind_hist <- ind_hist_old
-    
-    # solution w/subgrouping off and mult ind solutions
-    # saveRDS(ind_hist,"~/Desktop/gg.RDS")
-    # gg <- readRDS("~/Desktop/gg.RDS")
-    
-    # solution w/subgrouping on and no mult ind solutions
-    # saveRDS(ind_hist,"~/Desktop/bb.RDS")
-    # bb <- readRDS("~/Desktop/bb.RDS")
-  
     writeLines("gimme multiple solutions finished running normally")
     
     res <- list(
