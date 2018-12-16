@@ -3,7 +3,7 @@
 #' @param data a list or directory.
 #' @param ctrlOpts a lit of control options.
 #' @keywords internal
-setupDataLists <- function(data, ctrlOpts  = NULL){
+setupDataLists <- function(data, ctrlOpts  = NULL, lv_model = NULL){
   
   ## throw error if data argument is null
   if (is.null(data)){
@@ -88,7 +88,9 @@ setupDataLists <- function(data, ctrlOpts  = NULL){
     varnames <- c(paste0("V", seq(1,n_orig_vars)))
     ts_list <- lapply(ts_list, function(x) { colnames(x)<-varnames;  x })
   } else {
-    ts_list <- lapply(ts_list, function(x) { x[,varnames]})
+    if(is.null(lv_model)){
+      ts_list <- lapply(ts_list, function(x) { x[,varnames]})
+    }
   }
   
     

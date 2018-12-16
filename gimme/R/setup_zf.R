@@ -85,7 +85,7 @@ setup <- function (data,
   #
   #-------------------------------------------------------------#
   
-  ts_list <- setupDataLists(data = data, ctrlOpts = ctrlOpts)
+  ts_list <- setupDataLists(data = data, ctrlOpts = ctrlOpts, lv_model = lv_model)
   
   #-------------------------------------------------------------#
   
@@ -199,7 +199,7 @@ setup <- function (data,
   exog <- unique(c(uexo, mult, lagg))
   endo <- setdiff(orig, exog) # only true if ar = TRUE
   catg <- NULL
-  stnd <- if(standardize) setdiff(c(endo,exog), c(categorical, conv_vars)) else NULL
+  stnd <- if(standardize) setdiff(c(endo,exog), c(catg, conv_vars)) else NULL
   #coln <- c(endo,exog) # future column names of data
   coln <- c(lagg, endo, uexo, mult)
   
