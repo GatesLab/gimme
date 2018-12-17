@@ -27,12 +27,10 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     mean.exog <- paste0(varLabels$exog, "~1")
     
     # Nonsense paths (fixed to zero)
-    nons.reg <- outer(varLabels$exog, varLabels$endo, function(x, y) paste0(x, "~0*", y))
-    nons.reg <- c(nons.reg[lower.tri(nons.reg, diag = FALSE)],nons.reg[upper.tri(nons.reg, diag = FALSE)])
-    
+    nons.reg <- c(t(outer(varLabels$exog, varLabels$endo, function(x, y) paste0(x, "~0*", y))))
+   
     # Nonsense paths (not fixed to zero)
-    nons.paths <- outer(varLabels$exog, varLabels$endo, function(x, y) paste0(x, "~", y))
-    nons.paths <- c(nons.paths[lower.tri(nons.paths, diag = FALSE)],nons.paths[upper.tri(nons.paths, diag = FALSE)])
+    nons.paths <- c(t(outer(varLabels$exog, varLabels$endo, function(x, y) paste0(x, "~", y))))
     
     # Any fixed paths
     fixed.paths <- paths
