@@ -3,15 +3,16 @@
 #' @title Group iterative multiple model estimation
 #' @description This package contains functions to identify group- and individual-level unified structural equation models.
 #' @author {Stephanie Lane [aut, cre, trl],\cr 
-#'    Kathleen Gates [aut], \cr
-#'    Zachary Fisher [aut],  \cr
-#'    Peter Molenaar [aut], \cr
+#'    Kathleen M. Gates [aut], \cr
+#'    Zachary F. Fisher [aut],  \cr
+#'    Peter C. M. Molenaar [aut], \cr
 #'    Michael Hallquist [ctb], \cr
 #'    Hallie Pike [ctb],  \cr
 #'    Cara Arizmendi [ctb], \cr
-#'    Teague Henry [ctb]
+#'    Teague R. Henry [ctb], \cr
+#'    Kelly A. Duffy [ctb]
 #' }
-#' Maintainer: Stephanie Lane \email{slane@@unc.edu}
+#' Maintainer: KM Gates \email{gateskm@email.unc.edu}
 #' @import lavaan 
 #' @import MIIVsem 
 #' @import data.tree
