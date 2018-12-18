@@ -186,5 +186,12 @@ print.gimmep <- function(x, file = NULL, subgroup = NULL,
   # } 
 
 
-
+print.gimme <- function(x, y, z){
+  writeLines("gimme finished running normally")
+  if (!is.null(z$out)) writeLines(paste("output is stored in", z$out))
+  if (y == TRUE) {
+    writeLines(paste("Number of subgroups =", x$n_subgroups))
+    writeLines(paste("Modularity =", round(x$modularity, digits = 5)))
+  }
+}
 
