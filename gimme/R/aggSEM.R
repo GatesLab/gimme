@@ -12,7 +12,6 @@
 #'        plot   = TRUE,
 #'        paths  = NULL,
 #'        exogenous = NULL, 
-#'        ex_lag    = FALSE,
 #'        conv_vars        = NULL,
 #'        conv_length      = 16, 
 #'        conv_interval    = 1, 
