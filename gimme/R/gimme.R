@@ -56,8 +56,6 @@
 #' If no header is used, then variables should be referred to with V followed
 #' (with no separation) by the column number. If a header is used, variables
 #' should be referred to using variable names. Defaults to NULL.
-#' @param ex_lag Logical.  If true, lagged variables are created for exogenous variables.  
-#' Defaults to FALSE.
 #' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
 #' Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
 #' To treat conv_vars as exogenous use the exogenous argument. Variables listed in conv_vars 
@@ -191,7 +189,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               confirm_subgroup = NULL,
                               paths            = NULL,
                               exogenous        = NULL,
-                              ex_lag           = FALSE,
                               conv_vars        = NULL,
                               conv_length      = 16, 
                               conv_interval    = 1, 
@@ -482,10 +479,10 @@ gimmeSEM <- gimme <- function(data             = NULL,
   
     # wrap-up and create output
     final <- final.org(dat,
-                       grp[[1]],
+                       grp = grp[[1]],
                        ind = store$ind,
-                       sub[[1]],
-                       sub_spec[[1]],
+                       sub = sub[[1]],
+                       sub_spec = sub_spec[[1]],
                        store)
   
     # these objects are used in print.gimmep
