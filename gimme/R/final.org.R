@@ -11,13 +11,6 @@
 #' @keywords internal
 final.org <- function(dat, grp, ind, sub, sub_spec, store){
   
-  #
-   # grp <- grp[[1]]
-   # ind = store$ind
-   # sub <- sub[[1]]
-   # sub_spec <- sub_spec[[1]]
-  #
-  
   sub_coefs  <- list()
   sub_summ   <- list()
   sub_plots  <- list()
@@ -39,7 +32,8 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
       coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
       coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
       coefs$color[coefs$level == "group"] <- "black"
-      coefs$color[coefs$level == "ind"]   <- "gray50"}
+      coefs$color[coefs$level == "ind"]   <- "gray50"
+    }
     
     indiv_paths <- NULL
     samp_plot <- NULL

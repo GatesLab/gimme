@@ -461,8 +461,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   if(!ms_allow){
     
-    # individual-level search
-    store <- indiv.search(dat, grp[[1]], ind[[1]])
+    # individual-level search # ind_old <- ind; grp_old <- grp
+    store <- indiv.search(dat, grp[[1]], ind[1])
     
     if(!is.null(lv_model)){
       dat$lvgimme$miiv_est_table <- MIIVsem:::fitFinalGimmeModels(
