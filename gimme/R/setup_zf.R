@@ -19,10 +19,11 @@ setup <- function (data,
                    conv_vars, 
                    conv_length, 
                    conv_interval,
-                   lv_model,
-                   lv_estimator,
-                   lv_scores,
-                   lv_miiv_scaling) {
+                   lv_model = NULL,
+                   lv_scores = "regression",       
+                   lv_estimator = "miiv",            
+                   lv_miiv_scaling  = "first.indicator", 
+                   lv_final_estimator = "miiv") {
   
 
     
