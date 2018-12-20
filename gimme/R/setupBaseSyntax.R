@@ -47,6 +47,23 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     all.poss <- outer(varLabels$endo, c(varLabels$endo, varLabels$exog), function(x, y) paste0(x, "~", y))
     all.poss <- c(all.poss[lower.tri(all.poss, diag = FALSE)], all.poss[upper.tri(all.poss, diag = FALSE)])
     
+     # If multiplied vars are specified, remove prediction of first order effects by multiplied
+     # variables
+     nons.mult<-character(2*length(varLabels$mult))
+     j<-1
+     if(!is.null(varLabels$mult)){
+       for(i in 1:length(varLabels$mult)){
+          mult.names <- unlist(strsplit(varLabels$mult[i], "_by_", fixed = TRUE))
+          nons<-apply(expand.grid(mult.names[1:length(mult.names)],
+                                  varLabels$mult[i]), 1, paste, collapse = "~")
+ 
+           nons.mult[j]<-nons[1]
+          nons.mult[j+1]<-nons[2]
+          j<-(j+2)
+     }
+     }
+ 
+      all.poss<-setdiff(all.poss, nons.mult)
     
     base.syntax <- c(
       var.endo,
