@@ -281,6 +281,7 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
+      if (dat$subgroup)
       write.csv(sub$sim, file.path(dat$out, "similarityMatrix.csv"), row.names = FALSE)
     }
     

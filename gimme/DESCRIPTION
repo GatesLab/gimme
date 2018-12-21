@@ -9,8 +9,9 @@ Author: Stephanie Lane [aut, cre, trl],
     Michael Hallquist [ctb],
     Hallie Pike [ctb], 
     Cara Arizmendi [ctb],
-    Teague Henry [ctb]
-Maintainer: Stephanie Lane <slane@unc.edu>
+    Teague Henry [ctb], 
+    Kelly Duffy [ctb]
+Maintainer: KM Gates <gateskm@email.unc.edu>
 Depends: R (>= 3.0.2)
 Imports: lavaan (>= 0.5-19), igraph, qgraph, data.tree, MIIVsem
 Description: Automated identification and estimation of group- and

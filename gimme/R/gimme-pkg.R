@@ -9,9 +9,10 @@
 #'    Michael Hallquist [ctb], \cr
 #'    Hallie Pike [ctb],  \cr
 #'    Cara Arizmendi [ctb], \cr
-#'    Teague Henry [ctb]
+#'    Teague Henry [ctb], 
+#'    Kelly Duffy [ctb]
 #' }
-#' Maintainer: Stephanie Lane \email{slane@@unc.edu}
+#' Maintainer: KM Gates \email{gateskm@email.unc.edu}
 #' @import lavaan 
 #' @import MIIVsem 
 #' @import data.tree

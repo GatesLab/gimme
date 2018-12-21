@@ -23,7 +23,14 @@
 #'          standardize = FALSE,
 #'          groupcutoff = .75,
 #'          subcutoff   = .5,
-#'          diagnos     = FALSE)
+#'          diagnos     = FALSE, 
+#'          ms_allow         = FALSE,
+#'          ms_tol           = 1e-5,
+#'          lv_model         = NULL, 
+#'          lv_scores        = "regression",       
+#'          lv_estimator     = "miiv",             
+#'          lv_miiv_scaling  = "first.indicator", 
+#'          lv_final_estimator = "miiv")
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -104,7 +111,20 @@
 #' @param subcutoff Cutoff value for subgroup- level paths. Defaults to .5,
 #' indicating that a path must be significant across at least 50\% of the
 #' individuals in a subgroup to be considered a subgroup-level path.
-#' @param diagnos In development. Defaults to FALSE.
+#' @param diagnos Logical.If TRUE provides internal output for diagnostic purposes. Defaults to FALSE. 
+#' @param ms_allow Logical. If TRUE provides multiple solutions when more than one path has identical 
+#' modification index values.
+#' @param ms_tol Precision used when evaluating similarity of modification indices when ms_allow = TRUE. 
+#' Defaults to 1e-5.
+#' @param lv_model Invoke latent variable modeling by providing the measurement model syntax here. lavaan
+#' conventions are used for relating observed variables to factors. Defaults to NULL
+#' @param lv_scores Method used for estimating latent variable scores from parameters obtained from the factor analysis 
+#' when lv_model is not NULL. Options are: "regression" (Default) or bartlett".
+#' @param lv_estimator Estimator used for factor analysis. Options are "miiv" (default) or "pml" (pseudo-ML).
+#' @param lv_miiv_scaling Type of scaling indicator to use when "miiv" selected for lv_estimator. Options are
+#' "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
+#' (best one for the group), or "individual" (each individual has the best one for them according to R2). 
+#' @param lv_final_estimator Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML). 
 #' @details
 #'  In main output directory:
 #'  \itemize{
