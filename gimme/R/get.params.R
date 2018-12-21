@@ -98,8 +98,12 @@ get.params <- function(dat, grp, ind, k){
     ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_vars_total), ]
     ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_vars_total), ]
     
-    rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
-    colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
+    #added to ensure correct ordering in matrices
+    ind_betas <- ind_betas[dat$varLabels$endo,]
+    ind_betas <- ind_betas[,dat$varLabels$coln]
+    
+    #rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
+    #colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
     #   } # stl comment out 11.20.17 
     
     if (dat$agg & !is.null(dat$out)){
