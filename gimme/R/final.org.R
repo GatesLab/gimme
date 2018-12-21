@@ -9,7 +9,7 @@
 #' @param store A list containing output from indiv.search().
 #' @return Aggregated information, such as counts, levels, and plots.
 #' @keywords internal
-final.org <- function(dat, grp, ind, sub, sub_spec, store){
+final.org <- function(dat, grp, ind, sub, sub_spec, diagnos, store){
   
   sub_coefs  <- list()
   sub_summ   <- list()
@@ -313,12 +313,22 @@ final.org <- function(dat, grp, ind, sub, sub_spec, store){
     samp_plot     <- NULL
   }
   
+  dx <- list()
+  if(diagnos){
+    dx[[1]]<- dat
+    dx[[2]] <- grp
+    dx[[3]] <- store
+    names(dx) <- c("dat", "grp", "store")
+    }
+
+    
   res <- list(fit           = fits,
               param_est     = indiv_paths,
               samp_plot     = samp_plot,
               sub_plots     = sub_plots,
               sample_counts = sample_counts,
-              sub_counts    = sub_counts)  
+              sub_counts    = sub_counts,
+              dx)  
   return(res)
   
 }

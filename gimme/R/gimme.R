@@ -502,6 +502,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        ind = store$ind,
                        sub = sub[[1]],
                        sub_spec = sub_spec[[1]],
+                       diagnos = diagnos,
                        store)
   
     # these objects are used in print.gimmep

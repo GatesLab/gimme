@@ -129,7 +129,7 @@ setup <- function (data,
       lvs <- unique(pt[pt$op=="=~","lhs"])
       lapply(lvs, function(l){
         if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) <= 2){
-          stop(pasteo("gimme ERROR: factors with only two indicators not currently supported."))
+          stop(paste0("gimme ERROR: factors with only two indicators not currently supported."))
         }
         paste0(paste0(l,"=~"), paste0(pt[pt$op=="=~" & pt$lhs == l,"rhs"],collapse="+"),collapse="")
       })
