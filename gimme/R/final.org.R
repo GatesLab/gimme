@@ -11,6 +11,7 @@
 #' @keywords internal
 final.org <- function(dat, grp, ind, sub, sub_spec, diagnos, store){
   
+  ind = store$ind
   sub_coefs  <- list()
   sub_summ   <- list()
   sub_plots  <- list()

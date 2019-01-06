@@ -499,7 +499,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
     # wrap-up and create output
     final <- final.org(dat,
                        grp = grp[[1]],
-                       ind = store$ind,
                        sub = sub[[1]],
                        sub_spec = sub_spec[[1]],
                        diagnos = diagnos,
