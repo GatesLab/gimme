@@ -153,7 +153,6 @@ indSEM <- function(data   = NULL,
 
   final <- final.org(dat, 
                      grp      = NULL, 
-                     ind      = store$ind, 
                      sub      = NULL, 
                      sub_spec = NULL, 
                      store)
