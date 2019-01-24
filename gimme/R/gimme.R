@@ -477,7 +477,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   if(!ms_allow){
     
-    # individual-level search # ind_old <- ind; grp_old <- grp
+    # individual-level search # ind <- ind[1]; grp <- grp[[1]]
     store <- indiv.search(dat, grp[[1]], ind[1])
     
     if(!is.null(lv_model)){
@@ -571,6 +571,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
     
     class(res) <- "gimmemsp"
     
+    # write gimme ms results to csv file
+    gimmems.write(res)
     
     invisible(res)
   }
