@@ -148,7 +148,6 @@ aggSEM <- function(data,
 
   final <- final.org(dat, 
                      grp, 
-                     ind = store$ind, 
                      sub, 
                      sub_spec, 
                      store)
