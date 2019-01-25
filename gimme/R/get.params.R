@@ -102,6 +102,9 @@ get.params <- function(dat, grp, ind, k){
     ind_betas <- ind_betas[dat$varLabels$endo,]
     ind_betas <- ind_betas[,dat$varLabels$coln]
     
+    # zf added 2019-01-23
+    ind_psi <- round(lavInspect(fit, "std")$psi, digits = 4)
+    
     #rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
     #colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
     #   } # stl comment out 11.20.17 
@@ -111,10 +114,18 @@ get.params <- function(dat, grp, ind, k){
                 row.names = TRUE)
       write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
                 row.names = TRUE)
+      
+      # zf added 2019-01-23
+      write.csv(ind_psi, file.path(dat$out, "allPsi.csv"),row.names = TRUE)
+      
     } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
       write.csv(ind_betas, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
                                             "Betas.csv")), row.names = TRUE)
+      # zf added 2019-01-23
+      write.csv(ind_psi, file.path(dat$ind_dir, 
+                                     paste0(dat$file_order[k,2], 
+                                            "Psi.csv")), row.names = TRUE)
       write.csv(ind_ses, file.path(dat$ind_dir,
                                    paste0(dat$file_order[k,2], 
                                           "StdErrors.csv")), row.names = TRUE)
