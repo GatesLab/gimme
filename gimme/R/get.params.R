@@ -85,9 +85,9 @@ get.params <- function(dat, grp, ind, k){
     ind_fit    <- round(ind_fit, digits = 4)
     ind_fit[2] <- round(ind_fit[2], digits = 0)
     
-    ind_vcov  <- lavInspect(fit, "vcov.std.all")
-    keep      <- rownames(ind_vcov) %in% dat$candidate_paths
-    ind_vcov  <- ind_vcov[keep, keep]
+    ind_vcov_full <- lavInspect(fit, "vcov.std.all")
+    keep          <- rownames(ind_vcov_full) %in% dat$candidate_paths
+    ind_vcov      <- ind_vcov_full[keep, keep]
     
     ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
@@ -110,8 +110,13 @@ get.params <- function(dat, grp, ind, k){
     #   } # stl comment out 11.20.17 
     
     if (dat$agg & !is.null(dat$out)){
+      
       write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
                 row.names = TRUE)
+      
+      # write.csv(ind_vcov_full, file.path(dat$out, "allvcov.csv"), 
+      #           row.names = TRUE)
+      
       write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
                 row.names = TRUE)
       
@@ -122,6 +127,10 @@ get.params <- function(dat, grp, ind, k){
       write.csv(ind_betas, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
                                             "Betas.csv")), row.names = TRUE)
+      
+      # write.csv(ind_vcov_full, file.path(dat$ind_dir, 
+      #                                paste0(dat$file_order[k,2], 
+      #                                       "vcov.csv")), row.names = TRUE)
       # zf added 2019-01-23
       write.csv(ind_psi, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
@@ -204,6 +213,7 @@ get.params <- function(dat, grp, ind, k){
               "ind_coefs" = ind_coefs, 
               "ind_betas" = ind_betas, 
               "ind_vcov"  = ind_vcov,
+              "ind_vcov_full"  = ind_vcov_full,
               "ind_plot"  = ind_plot,
               "ind_syntax" = c(dat$syntax, grp$group_paths,ind$sub_paths[[k]], ind$ind_paths[[k]])
               )

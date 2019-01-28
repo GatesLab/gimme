@@ -15,13 +15,14 @@ indiv.search <- function(dat, grp, ind){
     ind <- NULL
   }
   
-  status  <- list()
-  fits    <- list()
-  coefs   <- list()
-  betas   <- list()
-  vcov    <- list()
-  plots   <- list()
-  syntax  <- list()
+  status   <- list()
+  fits     <- list()
+  coefs    <- list()
+  betas    <- list()
+  vcov     <- list()
+  vcovfull <- list()
+  plots    <- list()
+  syntax   <- list()
   
   n_ind    <- ifelse(dat$agg, 1, dat$n_subj) 
   
@@ -98,6 +99,7 @@ indiv.search <- function(dat, grp, ind){
     coefs[[k]]  <- s10$ind_coefs
     betas[[k]]  <- s10$ind_betas
     vcov[[k]]   <- s10$ind_vcov
+    vcovfull[[k]]   <- s10$ind_vcov_full
     plots[[k]]  <- s10$ind_plot
     syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k]])
   }
@@ -110,7 +112,7 @@ indiv.search <- function(dat, grp, ind){
     #     names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
   } else {
     names(status) <- names(fits) <- names(coefs) <- 
-      names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
+      names(betas) <- names(vcov) <- names(vcovfull) <- names(plots) <- names(dat$ts_list)
   }
   
   res <- list("status" = status,
@@ -118,6 +120,7 @@ indiv.search <- function(dat, grp, ind){
               "coefs"  = coefs,
               "betas"  = betas,
               "vcov"   = vcov,
+              "vcovfull"   = vcovfull,
               "plots"  = plots,
               "ind"    = ind,
               "syntax" = syntax)

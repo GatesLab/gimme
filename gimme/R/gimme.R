@@ -522,6 +522,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 path_counts     = final$sample_counts,
                 path_counts_sub = final$sub_counts,
                 vcov            = store$vcov,
+                vcovfull        = store$vcovfull,
                 sim_matrix      = sub[[1]]$sim, 
                 syntax          = dat$syntax,
                 lvgimme         = dat$lvgimme
