@@ -155,7 +155,8 @@ indSEM <- function(data   = NULL,
                      grp      = NULL, 
                      sub      = NULL, 
                      sub_spec = NULL, 
-                     store)
+                     diagnos = FALSE,
+                     store = store)
   
   print.gimme.indSEM(z = dat)
   
