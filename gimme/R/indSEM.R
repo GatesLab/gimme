@@ -155,8 +155,13 @@ indSEM <- function(data   = NULL,
                      grp      = NULL, 
                      sub      = NULL, 
                      sub_spec = NULL, 
+<<<<<<< HEAD
                      diagnos = FALSE,
                      store = store)
+=======
+                     diagnos  = FALSE,
+                     store    = store)
+>>>>>>> ac6fbf5e05b37485384ec133e9d26422a11ff686
   
   print.gimme.indSEM(z = dat)
   
@@ -168,7 +173,8 @@ indSEM <- function(data   = NULL,
               plots = store$plots,
               group_plot = final$samp_plot,
               path_counts = final$sample_counts,
-              vcov = store$vcov)
+              vcov = store$vcov,
+              vcovfull = store$vcovfull)
   
   class(res) <-  "indSEMp"
   
