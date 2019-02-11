@@ -155,9 +155,9 @@ indSEM <- function(data   = NULL,
                      grp      = NULL, 
                      sub      = NULL, 
                      sub_spec = NULL, 
-                     diagnos  = FALSE,
-                     store    = store)
-  
+                     diagnos = FALSE,
+                     store = store)
+
   print.gimme.indSEM(z = dat)
   
   res <- list(path_est_mats = store$betas,
