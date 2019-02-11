@@ -41,7 +41,7 @@ solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids 
       
     } else {
       
-      to_print <- which(ids %in% names(x$dat$ts_list))
+      to_print <- which(names(x$dat$ts_list) %in% ids)
       
     }
     
