@@ -45,14 +45,35 @@ solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids 
       
     }
     
-    for(i in to_print){
-      cat(paste0(names(x$dat$ts_list)[i]),"\n\n")
+    
+    if(length(ids == 1) && ids != "all"){
+      
       if(plot.tree){
-        plot(ind_tree[[i]])
+        plot(ind_tree[[to_print]])
       } else {
-        do.call(print, c(ind_tree[[i]], cols))
+        do.call(print, c(ind_tree, cols))
       }
+      
+    } else {
+      
+      for(i in to_print){
+        cat(paste0(names(x$dat$ts_list)[i]),"\n\n")
+        if(plot.tree){
+          plot(ind_tree[[i]])
+        } else {
+          do.call(print, c(ind_tree[[i]], cols))
+        }
+      }
+      
     }
+    
+    
+    
+
+    
+    
+    
+    
     
   }
     

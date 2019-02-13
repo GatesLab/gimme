@@ -212,6 +212,7 @@ get.params <- function(dat, grp, ind, k){
               "ind_fit"   = ind_fit, 
               "ind_coefs" = ind_coefs, 
               "ind_betas" = ind_betas, 
+              "ind_psi"   = ind_psi, 
               "ind_vcov"  = ind_vcov,
               "ind_vcov_full"  = ind_vcov_full,
               "ind_plot"  = ind_plot,
