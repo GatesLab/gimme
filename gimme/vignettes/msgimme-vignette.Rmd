@@ -1,0 +1,81 @@
+---
+title: "Multiple Solutions GIMME"
+author: "Cara Arizmendi"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Brief description of ms-gimme with reference to article.  Why someone might want to use ms-gimme.  What the vignette will cover.
+
+## Selecting multiple solutions gimme
+
+We will need some data that either runs in a couple minutes or we don't run this part and have a gimme object already in the package.
+
+```{r}
+library(gimme)
+load("~/gimme/gimme/data/fit.RData")
+```
+
+
+```{r, eval=FALSE}
+fit <- gimme(data        = simData,
+             ar          = FALSE,
+             plot        = TRUE,
+             subgroup    = FALSE,
+             paths       = NULL,
+             mean_center_mult = FALSE,
+             standardize = FALSE,
+             groupcutoff = .75,
+             subcutoff   = .5,
+             diagnos     = FALSE, 
+             ms_allow         = TRUE,
+             ms_tol           = 1e-5)
+```
+
+
+Discuss important defaults (especially standardize=FALSE).  Describe why someone might want to adjust a default.
+
+## Exploring output object
+
+
+## Plotting tree of solutions
+
+Reference tree package.
+
+### Tree table
+
+Go into detail about what indicates multiple solutions.  How do we interpret this table?
+
+```{r}
+solution.tree(fit, level = "group", cols = c("stage", "pruned"))
+```
+
+### Tree plot
+
+Again, how do we interpret this plot?
+
+```{r}
+solution.tree(fit, level = "group", plot.tree = TRUE)
+```
+
+
+## Exploring output folder
+
+Description of what to expect in output folder.  Explain how individual models are chosen and how users can make other decisions based on the information.
+
+## Deciding between models
+
+Provide guidance for interpretation and decision making process based on fit indices.
+
+
