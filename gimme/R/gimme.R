@@ -48,7 +48,8 @@
 #' @param header Logical. Indicate TRUE for data files with a header. Only
 #' necessary to specify if reading data in from physical directory.
 #' @param ar Logical. If TRUE, begins search for group model with
-#' autoregressive (AR) paths freed for estimation. Defaults to TRUE.
+#' autoregressive (AR) paths freed for estimation. If ms_allow=TRUE, it is recommended
+#' to set ar=FALSE.  Multiple solutions are unlikely to be found when ar=TRUE.  Defaults to TRUE.
 #' @param paths \code{lavaan}-style syntax containing paths with which
 #' to begin model estimation (optional). That is, Y~X indicates that Y
 #' is regressed on X, or X predicts Y. If no header is used,
@@ -95,7 +96,8 @@
 #' the width of the edge corresponds to the count. Defaults to TRUE.
 #' @param subgroup Logical. If TRUE, subgroups are generated based on
 #' similarities in model features using the \code{walktrap.community}
-#' function from the \code{igraph} package. Defaults to FALSE. 
+#' function from the \code{igraph} package. When ms_allow=TRUE, subgroup
+#' should be set to FALSE.  Defaults to FALSE. 
 #' @param confirm_subgroup Dataframe. Option only available when subgroup = TRUE. Dataframe should contain two columns. The first
 #' column should specify file labels (the name of the data files without file extension), 
 #' and the second should contain integer values (beginning at 1) 
@@ -113,8 +115,11 @@
 #' individuals in a subgroup to be considered a subgroup-level path.
 #' @param diagnos Logical.If TRUE provides internal output for diagnostic purposes. Defaults to FALSE. 
 #' @param ms_allow Logical. If TRUE provides multiple solutions when more than one path has identical 
-#' modification index values.
-#' @param ms_tol Precision used when evaluating similarity of modification indices when ms_allow = TRUE. 
+#' modification index values.  When ms_allow=TRUE, it is recommended
+#' to set ar=FALSE.  Multiple solutions are unlikely to be found when ar=TRUE.  Additionally,
+#' subgroup should be set to FALSE.
+#' @param ms_tol Precision used when evaluating similarity of modification indices when ms_allow = TRUE.  We recommend
+#' that ms_tol not be greater than the default, especially when standardize=TRUE.     
 #' Defaults to 1e-5.
 #' @param lv_model Invoke latent variable modeling by providing the measurement model syntax here. lavaan
 #' conventions are used for relating observed variables to factors. Defaults to NULL
@@ -225,7 +230,19 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv"){          # c("miiv", "pml")
 
-  sub_membership = NULL
+ #Error check for ms_allow
+  if(ms_allow & subgroup){
+      stop(paste0("gimme ERROR: Subgrouping is not available for ms-gimme.",
+                  " Please ensure that subgroup=FALSE if ms_allow=TRUE"))
+  }
+  
+  if(ms_allow & ar){
+    writeLines("gimme WARNING: Multiple solutions not likely when ar=TRUE.",
+                " We recommend setting ar to FALSE.")
+  }
+  
+  
+   sub_membership = NULL
 
   dat         <- setup(data                 = data,
                        sep                  = sep,
