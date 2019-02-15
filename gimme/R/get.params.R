@@ -203,6 +203,8 @@ get.params <- function(dat, grp, ind, k){
     ind_betas <- NA
     ind_vcov  <- NA
     ind_plot  <- NA
+    ind_psi   <- NA
+    ind_vcov_full <- NA
   }
   
   if (!dat$plot)
