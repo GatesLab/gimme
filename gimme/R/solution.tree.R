@@ -13,7 +13,9 @@
 #' @param level A character vector indicating what levels of the solution tree 
 #' you would like returned.  Options are "group", "individual", or c("group", "individual").
 #' Defaults to c("group", "individual").
-#' @param cols   
+#' @param cols Defaults to NULL.  
+#' @param ids Defaults to "all."
+#' @param plot.tree Logical.  If TRUE, plot of tree is produced.  Defaults to false.
 #' @export solution.tree
 solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids = "all", plot.tree = FALSE){
   
