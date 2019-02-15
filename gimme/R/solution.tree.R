@@ -1,4 +1,19 @@
 #' solution.tree
+#' @name solution.tree
+#' @title Solution trees for multiple solutions gimme.
+#' @description This function allows for the exploration of divergences in multiple
+#' solutions gimme for both the group and individuals.
+#' @usage 
+#' solution.tree(x         =  x,
+#'               level     =  c("group", "individual"),
+#'               cols      =  NULL,
+#'               ids       =  "all",
+#'               plot.tree =  FALSE)
+#' @param x A fitted gimme object.
+#' @param level A character vector indicating what levels of the solution tree 
+#' you would like returned.  Options are "group", "individual", or c("group", "individual").
+#' Defaults to c("group", "individual").
+#' @param cols   
 #' @export solution.tree
 solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids = "all", plot.tree = FALSE){
   
