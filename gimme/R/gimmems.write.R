@@ -36,11 +36,20 @@ gimmems.write <- function(x){
               
               df$status <- grp_sol_i_ind_j_sol_k$status
               
-              diag.psi <- diag(grp_sol_i_ind_j_sol_k$psi)
+              if( df$status == "converged normally"){
+                
+                diag.psi <- diag(grp_sol_i_ind_j_sol_k$psi)
+                
+                improper.var  <- any(diag.psi > 1 | diag.psi < -1)
+                
+                df$checkPsi <- improper.var 
+                
+              } else {
+                
+                df$checkPsi <- NA
+                
+              }
               
-              improper.var  <- any(diag.psi > 1 | diag.psi < -1)
-              
-              df$checkPsi <- improper.var 
                 
               df
             
