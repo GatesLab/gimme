@@ -8,18 +8,6 @@
 #' @keywords internal 
 indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
   
-  ##########################
-  # grp_num <- 1
-  # old_grp <- grp
-  # old_ind <- ind
-  # grp <- old_grp[[1]]
-  # ind <- old_ind
-  
-  #grp <- old_grp
-  #ind <- old_ind
-  ########################
-  
-
   #-----------------------------------------------#
   # Prepare data depending on proc (agg vs gimme) #
   #-----------------------------------------------#
