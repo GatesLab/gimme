@@ -2,7 +2,6 @@
 #' @export solution.tree
 solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids = "all", plot.tree = FALSE){
   
-  
   tree <- gimme:::batch.create.tree(
     x$grp_hist, 
     x$ind_hist, 
@@ -28,8 +27,6 @@ solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids 
       do.call(print, c(grp_tree, cols))
     }
     
-
-    
   } else {
 
     ind_tree <-  tree[[2]]
@@ -44,7 +41,6 @@ solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids 
       to_print <- which(names(x$dat$ts_list) %in% ids)
       
     }
-    
     
     if(length(ids == 1) && ids != "all"){
       
@@ -68,15 +64,6 @@ solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids 
     }
     
     
-    
-
-    
-    
-    
-    
-    
   }
     
-
-  
 }
