@@ -177,6 +177,9 @@
 #' @references Lane, S.T. & Gates, K.M. (2017). Automated selection of robust
 #' individual-level structural equation models for time series data.
 #' Structural Equation Modeling.
+#' @references Adriene M. Beltz & Peter C. M. Molenaar (2016) Dealing 
+#' with Multiple Solutions in Structural Vector Autoregressive Models, 
+#' Multivariate Behavioral Research, 51:2-3, 357-373.
 #' @author Stephanie Lane and Zachary Fisher
 #' @examples
 #'  \dontrun{
