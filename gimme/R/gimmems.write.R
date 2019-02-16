@@ -32,7 +32,27 @@ gimmems.write <- function(x){
                 "ind_sol" = k
               )
               
-              df <- cbind(id_cols,  t(data.frame(grp_sol_i_ind_j_sol_k$fits)))
+              # check fit info from lavaan
+              
+              fit_info_lav <- grp_sol_i_ind_j_sol_k$fits
+              
+              # are the elements NA
+              
+              if(all(is.na(fit_info_lav))){
+                
+                # zf: designed this way so gimme will throw
+                #     an error here if the fit object changes.
+                #     this patch is needed because
+                #     gimme passes unnamed vector of NAs 
+                #     for fit info when model does not converge.
+                names(fit_info_lav) <- c(
+                  "chisq", "df", "npar", "pvalue", "rmsea", 
+                  "srmr", "nnfi", "cfi", "bic", "aic", "logl"
+                )
+                
+              }
+                            
+              df <- cbind(id_cols,  t(data.frame(fit_info_lav)))
               
               df$status <- grp_sol_i_ind_j_sol_k$status
               
@@ -103,8 +123,6 @@ gimmems.write <- function(x){
               
               df <- cbind(id_cols, df)
               
-              # add model fit information
-              #df <- cbind(df, t(data.frame(grp_sol_i_ind_j_sol_k$fits)))
               
               df$op <- df$ci.lower <- df$ci.upper <- NULL
               
