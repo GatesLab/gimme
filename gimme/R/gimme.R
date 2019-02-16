@@ -590,7 +590,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     class(res) <- "gimmemsp"
     
     # write gimme ms results to csv file
-    gimmems.write(res)
+    res$tables <- gimmems.write(res)
     
     invisible(res)
   }
