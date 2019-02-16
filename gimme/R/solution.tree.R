@@ -13,9 +13,11 @@
 #' @param level A character vector indicating what levels of the solution tree 
 #' you would like returned.  Options are "group", "individual", or c("group", "individual").
 #' Defaults to c("group", "individual").
-#' @param cols Defaults to NULL.  
-#' @param ids Defaults to "all."
-#' @param plot.tree Logical.  If TRUE, plot of tree is produced.  Defaults to false.
+#' @param cols A character vector indicating additional information to include in tree plot.
+#' Options include "stage", "pruned", "rmsea", "nnfi", "cfi","srmr", "grp_sol",
+#' "bic", "aic", "modularity." Defaults to NULL.  
+#' @param ids A character vector indicating the names of subjects to print.  Defaults to "all."
+#' @param plot.tree Logical.  If TRUE, plot of tree is produced.  Defaults to FALSE.
 #' @export solution.tree
 solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids = "all", plot.tree = FALSE){
   
