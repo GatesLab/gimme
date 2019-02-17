@@ -12,7 +12,7 @@
 
 <meta name="author" content="Cara Arizmendi" />
 
-<meta name="date" content="2018-12-21" />
+<meta name="date" content="2019-02-17" />
 
 <title>Multiple Solutions GIMME</title>
 
@@ -74,108 +74,113 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Multiple Solutions GIMME</h1>
 <h4 class="author"><em>Cara Arizmendi</em></h4>
-<h4 class="date"><em>2018-12-21</em></h4>
+<h4 class="date"><em>2019-02-17</em></h4>
 
 
 
-<p>Brief description of ms-gimme with reference to article. Why someone might want to use ms-gimme. What the vignette will cover.</p>
+<p>This vignette will cover basic functionality of ms-gimme including how to run ms-gimme, how to avoid potential problems when using ms-gimme, and how to use the solution.tree() function to explore the branching of multiple solutions.</p>
+<p>Ms-gimme is a modification of gimme (group iterative multiple model estimation), allowing for the recovery of multiple uSEM (unified SEM) solutions with a data driven approach (Beltz and Molenaar, 2016).</p>
 <div id="selecting-multiple-solutions-gimme" class="section level2">
 <h2>Selecting multiple solutions gimme</h2>
-<p>We will need some data that either runs in a couple minutes or we don’t run this part and have a gimme object already in the package.</p>
+<p>To begin, we load a fitted gimme object, with which multiple solutions were found. This object is available as part of the gimme package and can be accessed as shown below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(gimme)
-<span class="kw">load</span>(<span class="st">&quot;~/gimme/gimme/data/fit.RData&quot;</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">gimme</span>(<span class="dt">data        =</span> simData,
-             <span class="dt">ar          =</span> <span class="ot">FALSE</span>,
-             <span class="dt">plot        =</span> <span class="ot">TRUE</span>,
-             <span class="dt">subgroup    =</span> <span class="ot">FALSE</span>,
-             <span class="dt">paths       =</span> <span class="ot">NULL</span>,
-             <span class="dt">mean_center_mult =</span> <span class="ot">FALSE</span>,
-             <span class="dt">standardize =</span> <span class="ot">FALSE</span>,
-             <span class="dt">groupcutoff =</span> .<span class="dv">75</span>,
-             <span class="dt">subcutoff   =</span> .<span class="dv">5</span>,
-             <span class="dt">diagnos     =</span> <span class="ot">FALSE</span>, 
-             <span class="dt">ms_allow         =</span> <span class="ot">TRUE</span>,
-             <span class="dt">ms_tol           =</span> <span class="fl">1e-5</span>)</code></pre></div>
-<p>Discuss important defaults (especially standardize=FALSE). Describe why someone might want to adjust a default.</p>
+<span class="kw">data</span>(ms.fit.rda, <span class="dt">package=</span><span class="st">&quot;gimme&quot;</span>)
+<span class="co">#&gt; Warning in data(ms.fit.rda, package = &quot;gimme&quot;): data set 'ms.fit.rda' not</span>
+<span class="co">#&gt; found</span></code></pre></div>
+<p>Here we show the syntax used to arrive at the fitted object. To return multiple solutions, ms_allow should be TRUE. We only show the most relevant arguments to ms-gimme. We recommend that the default ar=FALSE be kept, as multiple solutions are unlikely to be found when ar=TRUE. Additionally, the default of subgroup=FALSE should be kept, as ms-gimme does not have the functionality for subgrouping. The remaining arguments are up to user discretion. For general gimme usage, we recommend standardize=TRUE; however, this is not the default since standardize=TRUE modifies the data. We do not recommend that ms_tol be greater than the default, but smaller tolerances can be set.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ms.fit &lt;-<span class="st"> </span><span class="kw">gimme</span>(<span class="dt">data        =</span> ms.sim,
+                <span class="dt">out         =</span> <span class="st">'~/outputfolder/'</span>,
+                <span class="dt">ar          =</span> <span class="ot">FALSE</span>,
+                <span class="dt">subgroup    =</span> <span class="ot">FALSE</span>,
+                <span class="dt">standardize =</span> <span class="ot">TRUE</span>,
+                <span class="dt">ms_allow    =</span> <span class="ot">TRUE</span>,
+                <span class="dt">ms_tol      =</span> <span class="fl">1e-5</span>)</code></pre></div>
 </div>
 <div id="exploring-output-object" class="section level2">
 <h2>Exploring output object</h2>
-</div>
-<div id="plotting-tree-of-solutions" class="section level2">
-<h2>Plotting tree of solutions</h2>
-<p>Reference tree package.</p>
 <div id="tree-table" class="section level3">
 <h3>Tree table</h3>
-<p>Go into detail about what indicates multiple solutions. How do we interpret this table?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution.tree</span>(fit, <span class="dt">level =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;stage&quot;</span>, <span class="st">&quot;pruned&quot;</span>))
-<span class="co">#&gt;                                                                                                levelName</span>
-<span class="co">#&gt; 1  NULL MODEL                                                                                           </span>
-<span class="co">#&gt; 2   °--V2~V2lag                                                                                         </span>
-<span class="co">#&gt; 3       °--V1~V1lag                                                                                     </span>
-<span class="co">#&gt; 4           °--V9~V9lag                                                                                 </span>
-<span class="co">#&gt; 5               °--V9~V1lag                                                                             </span>
-<span class="co">#&gt; 6                   °--V4~V4lag                                                                         </span>
-<span class="co">#&gt; 7                       °--V8~V1                                                                        </span>
-<span class="co">#&gt; 8                           °--V5~V5lag                                                                 </span>
-<span class="co">#&gt; 9                               °--V7~V7lag                                                             </span>
-<span class="co">#&gt; 10                                  °--V6~V6lag                                                         </span>
-<span class="co">#&gt; 11                                      °--V1~V5lag                                                     </span>
-<span class="co">#&gt; 12                                          °--V3~V3lag                                                 </span>
-<span class="co">#&gt; 13                                              °--V10~V10lag                                           </span>
-<span class="co">#&gt; 14                                                  °--V3~V5lag                                         </span>
-<span class="co">#&gt; 15                                                      °--V5~V1lag                                     </span>
-<span class="co">#&gt; 16                                                          °--V5~V9lag                                 </span>
-<span class="co">#&gt; 17                                                              °--V5~V3                                </span>
-<span class="co">#&gt; 18                                                                  °--V7~V1lag                         </span>
-<span class="co">#&gt; 19                                                                      °--V7~V8                        </span>
-<span class="co">#&gt; 20                                                                          °--V8~V5                    </span>
-<span class="co">#&gt; 21                                                                              °--V3~V8                </span>
-<span class="co">#&gt; 22                                                                                  °--V7~V1            </span>
-<span class="co">#&gt; 23                                                                                      °--V4~V7        </span>
-<span class="co">#&gt; 24                                                                                          °--V4~V10lag</span>
-<span class="co">#&gt; 25                                                                                              °--V2~V6</span>
-<span class="co">#&gt;    stage pruned</span>
-<span class="co">#&gt; 1              </span>
-<span class="co">#&gt; 2              </span>
-<span class="co">#&gt; 3              </span>
-<span class="co">#&gt; 4              </span>
-<span class="co">#&gt; 5              </span>
-<span class="co">#&gt; 6              </span>
-<span class="co">#&gt; 7              </span>
-<span class="co">#&gt; 8              </span>
-<span class="co">#&gt; 9              </span>
-<span class="co">#&gt; 10             </span>
-<span class="co">#&gt; 11             </span>
-<span class="co">#&gt; 12             </span>
-<span class="co">#&gt; 13             </span>
-<span class="co">#&gt; 14             </span>
-<span class="co">#&gt; 15             </span>
-<span class="co">#&gt; 16             </span>
-<span class="co">#&gt; 17             </span>
-<span class="co">#&gt; 18             </span>
-<span class="co">#&gt; 19             </span>
-<span class="co">#&gt; 20             </span>
-<span class="co">#&gt; 21             </span>
-<span class="co">#&gt; 22             </span>
-<span class="co">#&gt; 23             </span>
-<span class="co">#&gt; 24             </span>
-<span class="co">#&gt; 25 group</span></code></pre></div>
+<p>The function solution.tree() allows for exploration of diverging solutions. Below, we see that there were six different solutions at the group level. The first branch occured at ‘V1~V3’ versus ‘V3~V1.’ Within the solution where ‘V1~V3’ was selected, another divergence occurs between ‘V2~V4’ and ‘V4~V2.’</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution.tree</span>(ms.fit, <span class="dt">level =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">cols=</span><span class="st">&quot;stage&quot;</span>)
+<span class="co">#&gt;                               levelName stage</span>
+<span class="co">#&gt; 1  NULL MODEL                                </span>
+<span class="co">#&gt; 2   ¦--V1~V3                                 </span>
+<span class="co">#&gt; 3   ¦   ¦--V2~V4                             </span>
+<span class="co">#&gt; 4   ¦   ¦   °--V3~V2                         </span>
+<span class="co">#&gt; 5   ¦   ¦       °--V4~V1lag                  </span>
+<span class="co">#&gt; 6   ¦   ¦           °--V3~V3lag              </span>
+<span class="co">#&gt; 7   ¦   ¦               °--V4~V4lag     group</span>
+<span class="co">#&gt; 8   ¦   °--V4~V2                             </span>
+<span class="co">#&gt; 9   ¦       ¦--V2~V3                         </span>
+<span class="co">#&gt; 10  ¦       ¦   °--V3~V3lag                  </span>
+<span class="co">#&gt; 11  ¦       ¦       °--V4~V3lag         group</span>
+<span class="co">#&gt; 12  ¦       °--V3~V2                         </span>
+<span class="co">#&gt; 13  ¦           °--V2~V4lag                  </span>
+<span class="co">#&gt; 14  ¦               °--V4~V4lag              </span>
+<span class="co">#&gt; 15  ¦                   °--V3~V3lag     group</span>
+<span class="co">#&gt; 16  °--V3~V1                                 </span>
+<span class="co">#&gt; 17      ¦--V2~V4                             </span>
+<span class="co">#&gt; 18      ¦   °--V4~V3                         </span>
+<span class="co">#&gt; 19      ¦       °--V4~V2                     </span>
+<span class="co">#&gt; 20      ¦           °--V1~V3lag              </span>
+<span class="co">#&gt; 21      ¦               °--V3~V3lag          </span>
+<span class="co">#&gt; 22      ¦                   °--V2~V3lag group</span>
+<span class="co">#&gt; 23      °--V4~V2                             </span>
+<span class="co">#&gt; 24          °--V2~V3                         </span>
+<span class="co">#&gt; 25              °--V1~V3lag                  </span>
+<span class="co">#&gt; 26                  °--V4~V1lag              </span>
+<span class="co">#&gt; 27                      ¦--V1~V3        group</span>
+<span class="co">#&gt; 28                      °--V3~V3lag     group</span></code></pre></div>
 </div>
 <div id="tree-plot" class="section level3">
 <h3>Tree plot</h3>
-<p>Again, how do we interpret this plot?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution.tree</span>(fit, <span class="dt">level =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">plot.tree =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<div id="htmlwidget-6a306a9a93cb721ed886" style="width:288px;height:288px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6a306a9a93cb721ed886">{"x":{"diagram":"digraph {\n\n\n\n\n  \"1\" [label = \"NULL MODEL\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"2\" [label = \"V2~V2lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"3\" [label = \"V1~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"4\" [label = \"V9~V9lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"5\" [label = \"V9~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"6\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"7\" [label = \"V8~V1\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"8\" [label = \"V5~V5lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"9\" [label = \"V7~V7lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"10\" [label = \"V6~V6lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"11\" [label = \"V1~V5lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"12\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"13\" [label = \"V10~V10lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"14\" [label = \"V3~V5lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"15\" [label = \"V5~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"16\" [label = \"V5~V9lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"17\" [label = \"V5~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"18\" [label = \"V7~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"19\" [label = \"V7~V8\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"20\" [label = \"V8~V5\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"21\" [label = \"V3~V8\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"22\" [label = \"V7~V1\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"23\" [label = \"V4~V7\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"24\" [label = \"V4~V10lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"25\" [label = \"V2~V6\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"1\"->\"2\" \n  \"2\"->\"3\" \n  \"3\"->\"4\" \n  \"4\"->\"5\" \n  \"5\"->\"6\" \n  \"6\"->\"7\" \n  \"7\"->\"8\" \n  \"8\"->\"9\" \n  \"9\"->\"10\" \n  \"10\"->\"11\" \n  \"11\"->\"12\" \n  \"12\"->\"13\" \n  \"13\"->\"14\" \n  \"14\"->\"15\" \n  \"15\"->\"16\" \n  \"16\"->\"17\" \n  \"17\"->\"18\" \n  \"18\"->\"19\" \n  \"19\"->\"20\" \n  \"20\"->\"21\" \n  \"21\"->\"22\" \n  \"22\"->\"23\" \n  \"23\"->\"24\" \n  \"24\"->\"25\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<p>We can also produce a plot version of the above table. \ Further functionality is documented in R help.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution.tree</span>(ms.fit, <span class="dt">level =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">plot.tree =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div id="htmlwidget-e7f00ac6819b45c46903" style="width:288px;height:288px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e7f00ac6819b45c46903">{"x":{"diagram":"digraph {\n\n\n\n\n  \"1\" [label = \"NULL MODEL\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"2\" [label = \"V1~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"3\" [label = \"V2~V4\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"4\" [label = \"V3~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"5\" [label = \"V4~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"6\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"7\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"8\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"9\" [label = \"V2~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"10\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"11\" [label = \"V4~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"12\" [label = \"V3~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"13\" [label = \"V2~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"14\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"15\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"16\" [label = \"V3~V1\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"17\" [label = \"V2~V4\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"18\" [label = \"V4~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"19\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"20\" [label = \"V1~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"21\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"22\" [label = \"V2~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"23\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"24\" [label = \"V2~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"25\" [label = \"V1~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"26\" [label = \"V4~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"27\" [label = \"V1~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"28\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"1\"->\"2\" \n  \"1\"->\"16\" \n  \"2\"->\"3\" \n  \"2\"->\"8\" \n  \"16\"->\"17\" \n  \"16\"->\"23\" \n  \"3\"->\"4\" \n  \"8\"->\"9\" \n  \"8\"->\"12\" \n  \"17\"->\"18\" \n  \"23\"->\"24\" \n  \"4\"->\"5\" \n  \"9\"->\"10\" \n  \"12\"->\"13\" \n  \"18\"->\"19\" \n  \"24\"->\"25\" \n  \"5\"->\"6\" \n  \"10\"->\"11\" \n  \"13\"->\"14\" \n  \"19\"->\"20\" \n  \"25\"->\"26\" \n  \"6\"->\"7\" \n  \"14\"->\"15\" \n  \"20\"->\"21\" \n  \"26\"->\"27\" \n  \"26\"->\"28\" \n  \"21\"->\"22\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
-</div>
-<div id="exploring-output-folder" class="section level2">
-<h2>Exploring output folder</h2>
-<p>Description of what to expect in output folder. Explain how individual models are chosen and how users can make other decisions based on the information.</p>
 </div>
 <div id="deciding-between-models" class="section level2">
 <h2>Deciding between models</h2>
-<p>Provide guidance for interpretation and decision making process based on fit indices.</p>
+<p>We refer users to Beltz and Molenaar (2016) for guidance on model selection. The AIC is the most widely used fit statistic for model selection and can be accessed in the gimme object as partially shown below or in file ‘summaryFit.csv’ in the output folder if an output folder is specified.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ms.fit<span class="op">$</span>tables<span class="op">$</span>summaryFit[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]
+<span class="co">#&gt;                          subj grp_sol ind_sol   chisq df npar pvalue</span>
+<span class="co">#&gt; fit_info_lav    A1_Phi1_subj1       1       1 11.2634 16   28 0.7929</span>
+<span class="co">#&gt; fit_info_lav1   A2_Phi1_subj2       1       1  8.9444 16   28 0.9157</span>
+<span class="co">#&gt; fit_info_lav2   A3_Phi1_subj3       1       1 10.8864 16   28 0.8164</span>
+<span class="co">#&gt; fit_info_lav3   A4_Phi1_subj4       1       1 27.1169 16   28 0.0402</span>
+<span class="co">#&gt; fit_info_lav4   A5_Phi1_subj5       1       1  8.1448 16   28 0.9444</span>
+<span class="co">#&gt; fit_info_lav5   A6_Phi1_subj6       1       1 14.8355 16   28 0.5367</span>
+<span class="co">#&gt; fit_info_lav6   A7_Phi1_subj7       1       1  8.5935 16   28 0.9292</span>
+<span class="co">#&gt; fit_info_lav7   A8_Phi1_subj8       1       1 21.0296 16   28 0.1774</span>
+<span class="co">#&gt; fit_info_lav8   A9_Phi1_subj9       1       1 15.6445 16   28 0.4780</span>
+<span class="co">#&gt; fit_info_lav9 A10_Phi1_subj10       1       1 19.5190 16   28 0.2427</span>
+<span class="co">#&gt;                rmsea   srmr   nnfi    cfi      bic      aic      logl</span>
+<span class="co">#&gt; fit_info_lav  0.0000 0.0250 1.0093 1.0000 1460.856 1388.193 -666.0963</span>
+<span class="co">#&gt; fit_info_lav1 0.0000 0.0192 1.0145 1.0000 1502.374 1429.711 -686.8554</span>
+<span class="co">#&gt; fit_info_lav2 0.0000 0.0189 1.0115 1.0000 1572.892 1500.228 -722.1141</span>
+<span class="co">#&gt; fit_info_lav3 0.0838 0.0521 0.9522 0.9727 1962.509 1889.846 -916.9230</span>
+<span class="co">#&gt; fit_info_lav4 0.0000 0.0263 1.0222 1.0000 1731.804 1659.141 -801.5703</span>
+<span class="co">#&gt; fit_info_lav5 0.0000 0.0385 1.0032 1.0000 1723.683 1651.020 -797.5099</span>
+<span class="co">#&gt; fit_info_lav6 0.0000 0.0278 1.0166 1.0000 1570.380 1497.716 -720.8582</span>
+<span class="co">#&gt; fit_info_lav7 0.0563 0.0335 0.9827 0.9901 1852.670 1780.007 -862.0035</span>
+<span class="co">#&gt; fit_info_lav8 0.0000 0.0342 1.0013 1.0000 1860.983 1788.320 -866.1600</span>
+<span class="co">#&gt; fit_info_lav9 0.0471 0.0289 0.9916 0.9952 1605.973 1533.310 -738.6548</span>
+<span class="co">#&gt;                           status checkPsi</span>
+<span class="co">#&gt; fit_info_lav  converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav1 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav2 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav3 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav4 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav5 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav6 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav7 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav8 converged normally    FALSE</span>
+<span class="co">#&gt; fit_info_lav9 converged normally    FALSE</span></code></pre></div>
+</div>
+<div id="reference" class="section level2">
+<h2>Reference</h2>
+<p>Adriene M. Beltz &amp; Peter C. M. Molenaar (2016) Dealing with Multiple Solutions in Structural Vector Autoregressive Models, Multivariate Behavioral Research, 51:2-3, 357-373, DOI: 10.1080/00273171.2016.1151333</p>
 </div>
 
 

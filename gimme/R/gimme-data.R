@@ -22,3 +22,14 @@ NULL
 #' @format A list of data frames with 25 individuals, who each have 200 observations on 10 variables.
 NULL
 
+#' Fitted gimme object with multiple solutions
+#'
+#' This object contains a fitted gimme object where multiple solutions gimme was used.  The simulated
+#' data had 25 individuals, each with 100 time points.
+#'
+#' @docType data
+#' @keywords datasets
+#' @name ms.fit
+#' @usage ms.fit
+#' @format A fitted gimme object, where multiple solutions gimme was used.
+NULL
