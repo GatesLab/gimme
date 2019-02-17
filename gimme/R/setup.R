@@ -80,7 +80,7 @@ setup <- function (data,
   #   # Notes:
   #   #  Now all datasets share the same column order.
   #   #
-  #   # Do this her:
+  #   # Do this here:
   #   # remove lagged conv_vars (if neccessary)
   #   # remove lagged exog_vars (if neccessary)
   #
@@ -94,6 +94,7 @@ setup <- function (data,
   #-------------------------------------------------------------#
   # lv_gimme
   #-------------------------------------------------------------#
+
   if(is.null(lv_model)){
     
      lvgimme <- NULL
@@ -106,6 +107,7 @@ setup <- function (data,
       
        writeLines(paste0("lvgimme: measurement model invariant across subjects"))
        lv_model_all <- replicate(length(ts_list_obs), lv_model)
+       same_meas_model  <- TRUE
        
     } else if (length(lv_model) == length(ts_list_obs)){
       
@@ -123,16 +125,53 @@ setup <- function (data,
       
     }
     
+    # zf: uncomment once changes pushed through final MIIV estimation
+    # first let's look for single indicator LVs and extract the raw data:
+    # single_indicator_lvs <- lapply(seq_along(lv_model_all), function(i){
+    #   pt  <- lavaan::lavParTable(lv_model_all[[i]])
+    #   lvs <- unique(pt[pt$op=="=~","lhs"])
+    #   do.call( "cbind",lapply(lvs, function(l){
+    #     if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) == 1){
+    #       keep <- pt[pt$op=="=~" & pt$lhs == l,"rhs"]
+    #       ts_list_obs[[i]][,keep, drop = F]
+    #     }
+    #   }))
+    # })
     
+    
+    # # since these are observed variables every model should have
+    # # the same set. otherwise this will cause an error later. 
+    
+    # now we need to remove the single indicator LVs from the model
     lv_model_ind <- lapply(lv_model_all, function(x){
-      pt  <- lavaan::lavParTable(x)
-      lvs <- unique(pt[pt$op=="=~","lhs"])
-      lapply(lvs, function(l){
-        if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) <= 2){
-          stop(paste0("gimme ERROR: factors with only two indicators not currently supported."))
+      
+      pt       <- lavaan::lavParTable(x)
+      lvs      <- unique(pt[pt$op=="=~","lhs"])
+      mod.list <- list()
+      cnt      <- 1L
+      
+      for(j in 1:length(lvs)){
+        
+        if (length(pt[pt$op=="=~" & pt$lhs == lvs[j],"rhs"]) == 1){
+          
+          # remove this error once the functionality is pushed through the final MIIV estimation.
+          stop(paste0("gimme ERROR: factors with only one indicator not currently supported."))
+          
+        } else if (length(pt[pt$op=="=~" & pt$lhs == lvs[j],"rhs"]) == 2){
+          
+           stop(paste0("gimme ERROR: factors with only two indicators not currently supported."))
+          
+        } else {
+        
+          mod.list[[cnt]] <- paste0(paste0(lvs[j],"=~"), paste0(pt[pt$op=="=~" & pt$lhs == lvs[j],"rhs"],collapse="+"),collapse="")
+          cnt <- cnt + 1
+          
         }
-        paste0(paste0(l,"=~"), paste0(pt[pt$op=="=~" & pt$lhs == l,"rhs"],collapse="+"),collapse="")
-      })
+        
+      }
+      
+      mod.list
+      
     })
     
 
@@ -168,6 +207,14 @@ setup <- function (data,
       as.data.frame(do.call("cbind", lapply(fs_info[[i]],"[[", "fs")))
     })   
     
+    # add back in any single indicator lvs
+    # zf: uncomment once changes pushed through final MIIV estimation
+    # if(!all(unlist(lapply(single_indicator_lvs,function(x){is.null(x)})))){
+    #   ts_list <- lapply(seq_along(ts_list), function(i){
+    #     cbind(ts_list[[i]], single_indicator_lvs[[i]])
+    #   })   
+    # }
+
     names(ts_list) <- names(ts_list_obs)
     
     lvgimme <- list(
@@ -180,9 +227,6 @@ setup <- function (data,
          
   }
     
-    
-  
-  
 
   #-------------------------------------------------------------#
   # Assemble different variable sets.
