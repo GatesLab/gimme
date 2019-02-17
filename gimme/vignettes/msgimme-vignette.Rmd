@@ -27,7 +27,7 @@ To begin, we load a fitted gimme object, with which multiple solutions were foun
 
 ```{r}
 library(gimme)
-data(ms.fit.rda, package="gimme")
+data(ms.fit, package="gimme")
 ```
 
 Here we show the syntax used to arrive at the fitted object.  To return multiple solutions, ms_allow should be TRUE.  We only show the most relevant arguments to ms-gimme.  We recommend that the default ar=FALSE be kept, as multiple solutions are unlikely to be found when ar=TRUE.  Additionally, the default of subgroup=FALSE should be kept, as ms-gimme does not have the functionality for subgrouping.  The remaining arguments are up to user discretion.  For general gimme usage, we recommend standardize=TRUE; however, this is not the default since standardize=TRUE modifies the data.  We do not recommend that ms_tol be greater than the default, but smaller tolerances can be set.     
