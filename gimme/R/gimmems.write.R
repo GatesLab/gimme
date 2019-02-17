@@ -114,7 +114,15 @@ gimmems.write <- function(x){
               # we don't want to include any impossible paths.
               # such as those where lag is on the LHS. 
               
-              df <- df[!grepl("lag", df$lhs) & grepl("~", df$op),]
+              if(nrow(df) == 1 & all(is.na(df[,"lhs"])) & all(is.na(df[,"op"]))){
+                
+                # do nothing
+                
+              } else {
+                
+                 df <- df[!grepl("lag", df[,"lhs"]) & grepl("~", df[,"op"]),]
+                
+              }
               
               # we want to add some identifying information
               id_cols <- data.frame(
