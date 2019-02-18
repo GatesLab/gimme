@@ -19,7 +19,8 @@
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit lm convolve
 #' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv
-#' @importFrom qgraph qgraph
+#' @importFrom qgraph qgraph 
+#' @importFrom imputeTS na.kalman
 #' @importFrom igraph graph.adjacency walktrap.community modularity membership
 #' @importFrom graphics plot
 #' @keywords gimme

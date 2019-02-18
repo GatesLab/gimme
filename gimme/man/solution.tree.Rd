@@ -4,7 +4,7 @@
 \alias{solution.tree}
 \title{Solution trees for multiple solutions gimme.}
 \usage{
-solution.tree(x         =  x,
+solution.tree(x,
               level     =  c("group", "individual"),
               cols      =  NULL,
               ids       =  "all",
