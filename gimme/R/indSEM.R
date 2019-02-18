@@ -49,8 +49,6 @@
 #' If no header is used, then variables should be referred to with V followed 
 #' (with no separation) by the column number. If a header is used, variables 
 #' should be referred to using variable names.  Defaults to NULL.
-#' @param ex_lag Logical.  If true, lagged variables are created for exogenous variables.  
-#' Defaults to FALSE.
 #' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
 #' Response (sFIR). Defaults to NULL.
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
@@ -117,7 +115,6 @@ indSEM <- function(data   = NULL,
                    plot   = TRUE,
                    paths  = NULL,
                    exogenous = NULL, 
-                   ex_lag         = FALSE,
                    conv_vars      = NULL,
                    conv_length    = 16, 
                    conv_interval = 1, 
@@ -134,7 +131,6 @@ indSEM <- function(data   = NULL,
                 ar          = ar,
                 paths       = paths,
                 exogenous   = exogenous,
-                ex_lag      = ex_lag,
                 mult_vars   = mult_vars,
                 mean_center_mult  = mean_center_mult,  
                 standardize = standardize,

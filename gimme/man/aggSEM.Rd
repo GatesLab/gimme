@@ -12,7 +12,6 @@ aggSEM(data   = "",
        plot   = TRUE,
        paths  = NULL,
        exogenous = NULL, 
-       ex_lag    = FALSE,
        conv_vars        = NULL,
        conv_length      = 16, 
        conv_interval    = 1, 
@@ -62,9 +61,6 @@ That is, exogenous variable X can predict Y  but cannot be predicted by Y.
 If no header is used, then variables should be referred to with V followed 
 (with no separation) by the column number. If a header is used, variables 
 should be referred to using variable names.  Defaults to NULL.}
-
-\item{ex_lag}{Logical.  If true, lagged variables are created for exogenous variables.
-Defaults to FALSE.}
 
 \item{conv_vars}{Vector of variable names to be convolved via smoothed Finite Impulse 
 Response (sFIR). Defaults to NULL.}

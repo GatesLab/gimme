@@ -4,7 +4,7 @@
 \alias{setupDataLists}
 \title{Create a list of dataframes}
 \usage{
-setupDataLists(data, ctrlOpts = NULL)
+setupDataLists(data, ctrlOpts = NULL, lv_model = NULL)
 }
 \arguments{
 \item{data}{a list or directory.}

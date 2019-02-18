@@ -4,7 +4,7 @@
 \alias{create.tree}
 \title{Create structure of group search solutions.}
 \usage{
-create.tree(history, subgroup)
+create.tree(history, subgroup, individual = FALSE, all.ind = FALSE)
 }
 \description{
 Create structure of group search solutions.

@@ -8,6 +8,10 @@ setupTransformData(ts_list = NULL, varLabels = NULL, ctrlOpts = NULL)
 }
 \arguments{
 \item{ts_list}{a list or directory}
+
+\item{varLabels}{Variable labels.}
+
+\item{ctrlOpts}{List used in setup function.}
 }
 \description{
 Transform raw data as required.

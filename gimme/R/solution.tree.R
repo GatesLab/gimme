@@ -4,7 +4,7 @@
 #' @description This function allows for the exploration of divergences in multiple
 #' solutions gimme for both the group and individuals.
 #' @usage 
-#' solution.tree(x         =  x,
+#' solution.tree(x,
 #'               level     =  c("group", "individual"),
 #'               cols      =  NULL,
 #'               ids       =  "all",

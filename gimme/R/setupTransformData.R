@@ -1,8 +1,8 @@
 #' Transform raw data as required.
 #'
 #' @param ts_list a list or directory
-#' @param varLabels
-#' @param ctrlOpts
+#' @param varLabels Variable labels. 
+#' @param ctrlOpts List used in setup function.
 #' @keywords internal
 setupTransformData <- function(ts_list       = NULL, 
                                varLabels     = NULL,
