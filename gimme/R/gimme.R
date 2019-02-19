@@ -233,7 +233,18 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv"){          # c("miiv", "pml")
 
- #Error check for ms_allow
+ # satisfy CRAN checks
+  ind     = NULL
+  varnames = NULL
+  lvarnames = NULL
+  sub_membership = NULL
+
+  setupConvolve = NULL
+  ts = NULL
+  setupFinalDataChecks = NULL
+  
+  
+  #Error check for ms_allow
   if(ms_allow & subgroup){
       stop(paste0("gimme ERROR: Subgrouping is not available for ms-gimme.",
                   " Please ensure that subgroup=FALSE if ms_allow=TRUE"))

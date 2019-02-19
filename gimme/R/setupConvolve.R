@@ -9,6 +9,8 @@
 #' @keywords internal
 setupConvolve <- function(ts_list = NULL, varLabels = NULL, conv_length = 16, conv_interval = 1){
   
+  # Satisfy CRAN checks
+ ts = NULL
   # We only convolve contemporaneous (lagged contemporaneous created afterwards). 
   to_convolve <- setdiff(varLabels$coln, c(varLabels$conv, varLabels$exog))
   
@@ -18,7 +20,7 @@ setupConvolve <- function(ts_list = NULL, varLabels = NULL, conv_length = 16, co
     
     if(any(apply(conv_use, 2, function(x) any(is.na(x) | is.infinite(x))))){
       
-      conv_use[]  <- apply(conv_use, 2, function(x) { imputeTS::na.kalman(ts(x)) })
+      conv_use[]  <- apply(conv_use, 2, function(x) { imputeTS::na.kalman(stats::ts(x)) })
       
     }
     

@@ -9,6 +9,10 @@
 #' @keywords internal
 setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   
+  # Satisfy CRAN checks
+  varnames = NULL
+  lvarnames = NULL
+  
   table   <- lavaan::lavParTable(paths)
   
   # only include paths in the syntax which are specified free by the user

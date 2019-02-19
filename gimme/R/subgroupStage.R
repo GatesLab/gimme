@@ -6,7 +6,8 @@ subgroupStage <- function(dat,
                           sub_feature,
                           ms_tol,
                           ms_allow){
-
+# Satisfy CRAN checks
+  sub_membership = NULL
 
     sub <- determine.subgroups(base_syntax  = c(dat$syntax, grp$group_paths),
                                data_list    = dat$ts_list,

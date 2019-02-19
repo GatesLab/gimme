@@ -1,6 +1,9 @@
 #' Do some final checks on the data.
 #' @keywords internal
 setupFinalDataChecks <- function(data){
+  # satisfy CRAN checks
+  ts_list = NULL
+  ind = NULL
   
   n_subjects   <- length(data)
   cols         <- numeric()

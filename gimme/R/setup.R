@@ -69,6 +69,10 @@ setup <- function (data,
   
   class(ctrlOpts) <- "ctrlOpts"
   
+  # Satisfy CRAN checks
+  factorScores = NULL
+  getModelList = NULL
+  
   # if (diagnostics) { print(ctrlOpts) }
   
   #-------------------------------------------------------------#
@@ -174,14 +178,15 @@ setup <- function (data,
     })
     
 
-    model_list_ptech <- MIIVsem:::getModelList(
+    model_list_ptech <- factorScores
+    getModelList(
       data = ts_list_obs, 
       model = lv_model_ind, 
       scaling = lv_miiv_scaling, 
       lag = FALSE
     )
     
-    model_list_dfa <- MIIVsem:::getModelList(
+    model_list_dfa <- getModelList(
       data = ts_list_obs, 
       model = lv_model_ind, 
       scaling = lv_miiv_scaling, 
@@ -191,7 +196,7 @@ setup <- function (data,
     fs_info <- lapply(seq_along(ts_list_obs), function(i){
       
       lapply(seq_along(model_list_ptech[[i]]), function(j){
-        MIIVsem:::factorScores(
+        factorScores(
           data  = ts_list_obs[[i]], 
           model = model_list_ptech[[i]][j], 
           lv_scores = lv_scores, 

@@ -21,7 +21,7 @@
 #' @export solution.tree
 solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids = "all", plot.tree = FALSE){
   
-  tree <- gimme:::batch.create.tree(
+  tree <- batch.create.tree(
     x$grp_hist, 
     x$ind_hist, 
     x$ind_fit, 
