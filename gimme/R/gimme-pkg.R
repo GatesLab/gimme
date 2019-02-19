@@ -21,6 +21,7 @@
 #' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv
 #' @importFrom qgraph qgraph 
 #' @importFrom imputeTS na.kalman
+#' @importFrom stats ts
 #' @importFrom igraph graph.adjacency walktrap.community modularity membership
 #' @importFrom graphics plot
 #' @keywords gimme
