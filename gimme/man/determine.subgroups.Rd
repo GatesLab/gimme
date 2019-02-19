@@ -4,8 +4,8 @@
 \alias{determine.subgroups}
 \title{Determines subgroups.}
 \usage{
-determine.subgroups(data_list, base_syntax, n_subj, chisq_cutoff, file_order,
-  elig_paths, confirm_subgroup, out_path = NULL, sub_feature)
+determine.subgroups(data_list, base_syntax, n_subj, chisq_cutoff,
+  file_order, elig_paths, confirm_subgroup, out_path = NULL, sub_feature)
 }
 \arguments{
 \item{data_list}{A list of all datasets.}

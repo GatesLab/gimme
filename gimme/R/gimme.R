@@ -255,7 +255,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        ar                   = ar,
                        paths                = paths,
                        exogenous            = exogenous,
-                       ex_lag               = ex_lag,
                        mult_vars            = mult_vars,
                        mean_center_mult     = mean_center_mult,
                        standardize          = standardize,
@@ -501,7 +500,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     store <- indiv.search(dat, grp[[1]], ind[1])
     
     if(!is.null(lv_model)){
-      dat$lvgimme$miiv_est_table <- MIIVsem:::fitFinalGimmeModels(
+      dat$lvgimme$miiv_est_table <- fitFinalGimmeModels(
           ts_list_obs = dat$lvgimme$ts_list_obs,
           meas_model  = dat$lvgimme$model_list_dfa,
           lv_model    = lapply(store$syntax, function(x){x[!grepl("0\\*", x)]}),
