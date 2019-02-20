@@ -2,7 +2,8 @@
 #' @aliases gimme-package
 #' @title Group iterative multiple model estimation
 #' @description This package contains functions to identify group- and individual-level unified structural equation models.
-#' @author {Stephanie Lane [aut, cre, trl],\cr 
+#' @author {
+#'    Stephanie Lane [aut, cre, trl],\cr 
 #'    Kathleen Gates [aut], \cr
 #'    Zachary Fisher [aut],  \cr
 #'    Peter Molenaar [aut], \cr
@@ -18,7 +19,7 @@
 #' @import data.tree
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit lm convolve
-#' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv
+#' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv getFromNamespace
 #' @importFrom qgraph qgraph 
 #' @importFrom imputeTS na.kalman
 #' @importFrom stats ts

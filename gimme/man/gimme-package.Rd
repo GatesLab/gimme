@@ -22,7 +22,8 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
    user to specify the directory containing the data and a directory for output to be stored.
 }
 \author{
-{Stephanie Lane [aut, cre, trl],\cr 
+{
+   Stephanie Lane [aut, cre, trl],\cr 
    Kathleen Gates [aut], \cr
    Zachary Fisher [aut],  \cr
    Peter Molenaar [aut], \cr

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Cara Arizmendi" />
 
-<meta name="date" content="2019-02-17" />
+<meta name="date" content="2019-02-19" />
 
 <title>Multiple Solutions GIMME</title>
 
@@ -23,7 +23,7 @@
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
@@ -59,7 +59,29 @@ code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
 code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -74,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Multiple Solutions GIMME</h1>
 <h4 class="author"><em>Cara Arizmendi</em></h4>
-<h4 class="date"><em>2019-02-17</em></h4>
+<h4 class="date"><em>2019-02-19</em></h4>
 
 
 
@@ -84,9 +106,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Selecting multiple solutions gimme</h2>
 <p>To begin, we load a fitted gimme object, with which multiple solutions were found. This object is available as part of the gimme package and can be accessed as shown below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(gimme)
-<span class="kw">data</span>(ms.fit.rda, <span class="dt">package=</span><span class="st">&quot;gimme&quot;</span>)
-<span class="co">#&gt; Warning in data(ms.fit.rda, package = &quot;gimme&quot;): data set 'ms.fit.rda' not</span>
-<span class="co">#&gt; found</span></code></pre></div>
+<span class="kw">data</span>(ms.fit, <span class="dt">package=</span><span class="st">&quot;gimme&quot;</span>)</code></pre></div>
 <p>Here we show the syntax used to arrive at the fitted object. To return multiple solutions, ms_allow should be TRUE. We only show the most relevant arguments to ms-gimme. We recommend that the default ar=FALSE be kept, as multiple solutions are unlikely to be found when ar=TRUE. Additionally, the default of subgroup=FALSE should be kept, as ms-gimme does not have the functionality for subgrouping. The remaining arguments are up to user discretion. For general gimme usage, we recommend standardize=TRUE; however, this is not the default since standardize=TRUE modifies the data. We do not recommend that ms_tol be greater than the default, but smaller tolerances can be set.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ms.fit &lt;-<span class="st"> </span><span class="kw">gimme</span>(<span class="dt">data        =</span> ms.sim,
                 <span class="dt">out         =</span> <span class="st">'~/outputfolder/'</span>,
@@ -136,8 +156,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3>Tree plot</h3>
 <p>We can also produce a plot version of the above table. \ Further functionality is documented in R help.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution.tree</span>(ms.fit, <span class="dt">level =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">plot.tree =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<div id="htmlwidget-e7f00ac6819b45c46903" style="width:288px;height:288px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e7f00ac6819b45c46903">{"x":{"diagram":"digraph {\n\n\n\n\n  \"1\" [label = \"NULL MODEL\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"2\" [label = \"V1~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"3\" [label = \"V2~V4\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"4\" [label = \"V3~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"5\" [label = \"V4~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"6\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"7\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"8\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"9\" [label = \"V2~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"10\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"11\" [label = \"V4~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"12\" [label = \"V3~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"13\" [label = \"V2~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"14\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"15\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"16\" [label = \"V3~V1\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"17\" [label = \"V2~V4\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"18\" [label = \"V4~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"19\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"20\" [label = \"V1~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"21\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"22\" [label = \"V2~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"23\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"24\" [label = \"V2~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"25\" [label = \"V1~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"26\" [label = \"V4~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"27\" [label = \"V1~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"28\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"1\"->\"2\" \n  \"1\"->\"16\" \n  \"2\"->\"3\" \n  \"2\"->\"8\" \n  \"16\"->\"17\" \n  \"16\"->\"23\" \n  \"3\"->\"4\" \n  \"8\"->\"9\" \n  \"8\"->\"12\" \n  \"17\"->\"18\" \n  \"23\"->\"24\" \n  \"4\"->\"5\" \n  \"9\"->\"10\" \n  \"12\"->\"13\" \n  \"18\"->\"19\" \n  \"24\"->\"25\" \n  \"5\"->\"6\" \n  \"10\"->\"11\" \n  \"13\"->\"14\" \n  \"19\"->\"20\" \n  \"25\"->\"26\" \n  \"6\"->\"7\" \n  \"14\"->\"15\" \n  \"20\"->\"21\" \n  \"26\"->\"27\" \n  \"26\"->\"28\" \n  \"21\"->\"22\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-8e04ee01318eba18d5d6" style="width:288px;height:288px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8e04ee01318eba18d5d6">{"x":{"diagram":"digraph {\n\n\n\n\n  \"1\" [label = \"NULL MODEL\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"2\" [label = \"V1~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"3\" [label = \"V2~V4\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"4\" [label = \"V3~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"5\" [label = \"V4~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"6\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"7\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"8\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"9\" [label = \"V2~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"10\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"11\" [label = \"V4~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"12\" [label = \"V3~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"13\" [label = \"V2~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"14\" [label = \"V4~V4lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"15\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"16\" [label = \"V3~V1\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"17\" [label = \"V2~V4\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"18\" [label = \"V4~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"19\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"20\" [label = \"V1~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"21\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"22\" [label = \"V2~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"23\" [label = \"V4~V2\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"24\" [label = \"V2~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"25\" [label = \"V1~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"26\" [label = \"V4~V1lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"27\" [label = \"V1~V3\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"28\" [label = \"V3~V3lag\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"1\"->\"2\" \n  \"1\"->\"16\" \n  \"2\"->\"3\" \n  \"2\"->\"8\" \n  \"16\"->\"17\" \n  \"16\"->\"23\" \n  \"3\"->\"4\" \n  \"8\"->\"9\" \n  \"8\"->\"12\" \n  \"17\"->\"18\" \n  \"23\"->\"24\" \n  \"4\"->\"5\" \n  \"9\"->\"10\" \n  \"12\"->\"13\" \n  \"18\"->\"19\" \n  \"24\"->\"25\" \n  \"5\"->\"6\" \n  \"10\"->\"11\" \n  \"13\"->\"14\" \n  \"19\"->\"20\" \n  \"25\"->\"26\" \n  \"6\"->\"7\" \n  \"14\"->\"15\" \n  \"20\"->\"21\" \n  \"26\"->\"27\" \n  \"26\"->\"28\" \n  \"21\"->\"22\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="deciding-between-models" class="section level2">

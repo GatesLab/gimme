@@ -165,7 +165,6 @@
 #'  }
 #'  Note: if a subgroup of size n = 1 is discovered, subgroup-level output is
 #'  not produced. \cr
-
 #'  In individual output directory (where \strong{\emph{id}} represents the
 #'  original file name for each individual):
 #'  \itemize{

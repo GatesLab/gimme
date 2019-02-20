@@ -1,4 +1,3 @@
-
 setup <- function (data,
                    sep,
                    header,
@@ -68,10 +67,6 @@ setup <- function (data,
   )
   
   class(ctrlOpts) <- "ctrlOpts"
-  
-  # Satisfy CRAN checks
-  factorScores = NULL
-  getModelList = NULL
   
   # if (diagnostics) { print(ctrlOpts) }
   
@@ -178,8 +173,7 @@ setup <- function (data,
     })
     
 
-    model_list_ptech <- factorScores
-    getModelList(
+    model_list_ptech <- getModelList(
       data = ts_list_obs, 
       model = lv_model_ind, 
       scaling = lv_miiv_scaling, 
@@ -373,4 +367,3 @@ setup <- function (data,
     )
   return(dat)
 }
-  
