@@ -145,8 +145,9 @@ aggSEM <- function(data,
   final <- final.org(dat, 
                      grp, 
                      sub, 
-                     sub_spec, 
-                     store)
+                     sub_spec,
+                     diagnos = FALSE,
+                     store=store)
   
   res <- list(path_est_mat = store$betas, 
               varnames     = dat$varnames, 
