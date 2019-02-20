@@ -235,7 +235,7 @@ setup <- function (data,
   #-------------------------------------------------------------#
   
   orig <- colnames(ts_list[[1]])
-  uexo <- exogenous
+  uexo <- unique(exogenous)
   conv <- conv_vars
   lagg <- paste0(setdiff(orig,unique(uexo, conv)), "lag")
   mult <- setupMultVarNames(mult_vars)
