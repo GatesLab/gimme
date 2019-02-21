@@ -41,20 +41,25 @@ determine.subgroups <- function(data_list,
   sub     <- list()
   z_list  <- list()
   mi_list <- list()
-  
+  converge <- matrix(,n_subj,1)
+
   for (k in 1:n_subj){
     writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
     fit          <- fit.model(syntax    = base_syntax,
                               data_file = data_list[[k]])
     z_list[[k]]  <- return.zs(fit)
     mi_list[[k]] <- return.mis(fit)
+    converge[k]  <- lavInspect(fit, "converged")
   }
   
   names(z_list) <- names(mi_list) <- names(data_list)
   
   # drop individuals who did not converge
-  drop    <- unique(c(which(is.na(z_list)), which(is.na(mi_list))))
-  
+  # kmg: this is an imperfect approach because the z_list is NA if no paths 
+  # were added. Caused errors, commenting out, added "converge" to return.zs output. 
+  # drop    <- unique(c(which(is.na(z_list)), which(is.na(mi_list))))
+   drop <- which(converge==FALSE)
+   
   if (length(drop) != 0){
     mi_list <- mi_list[-drop]
     z_list  <- z_list[-drop]
@@ -68,7 +73,8 @@ determine.subgroups <- function(data_list,
   mi_list <- lapply(mi_list_temp, 
                     function(x){subset(x, x$param %in% elig_paths)})
   
-  
+  # if no group-level paths added, don't consider z_list
+  if (length(which(is.na(z_list)))==0)
   z_list <- lapply(z_list, 
                    function(x){x$sig <- ifelse(x$p < .05/n_subj, 1, 0)
                    return(x)})
@@ -111,6 +117,7 @@ determine.subgroups <- function(data_list,
     for (j in 1:length(mi_list)){
       sim_mi[i,j] <- sum(mi_list[[i]]$sig == 1 & mi_list[[j]]$sig == 1 & 
                            sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc), na.rm = TRUE)
+      if (length(which(is.na(z_list)))==0)
       sim_z[i,j]  <- sum(z_list[[i]]$sig == 1 & z_list[[j]]$sig == 1 &
                            sign(z_list[[i]]$z) == sign(z_list[[j]]$z), na.rm = TRUE)
     }
