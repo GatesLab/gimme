@@ -45,6 +45,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
         
         sub_paths_count <- table(unlist(
           lapply(sub_spec, FUN = function(x) c(x$sub_paths))))
+        # if path exists in all subgroups, push it up to group level
         sub_to_group    <- names(
           sub_paths_count[sub_paths_count == sub$n_subgroups])
         
@@ -56,10 +57,11 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                      ncol = (dat$n_vars_total))
           
           sub_s_coefs <- coefs[coefs$id %in% sub_spec[[s]]$sub_s_subjids, ]
-          sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
-          sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
+          # kmg 2/19/2019: reordered statements. ind$ind_paths include subgroup level paths
           sub_s_coefs$level[sub_s_coefs$param %in% unique(
             unlist(ind[ind[[1]]$sub_membership == s]$ind_paths))] <- "ind"
+          sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
+          sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
           sub_s_coefs$color[sub_s_coefs$level == "group"] <- "black"
           sub_s_coefs$color[sub_s_coefs$level == "sub"]   <- "green3"
           sub_s_coefs$color[sub_s_coefs$level == "ind"]   <- "gray50"
