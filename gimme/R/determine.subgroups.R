@@ -128,7 +128,7 @@ determine.subgroups <- function(data_list,
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
   if(is.null(confirm_subgroup)){
-    res        <- walktrap.community(graph.adjacency(sim, mode = "undirected"), 
+    res        <- cluster_walktrap(graph.adjacency(sim, mode = "undirected"), 
                                      steps = 4)
     sub_mem    <- data.frame(names      = names(membership(res)), 
                              sub_membership = as.numeric(membership(res)))
