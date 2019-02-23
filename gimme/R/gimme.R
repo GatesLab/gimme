@@ -507,7 +507,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
   if(!ms_allow){
     
     # individual-level search # ind <- ind[1]; grp <- grp[[1]]
-    store <- indiv.search(dat, grp[[1]], ind[1])
+    # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
+    if(subgroup){
+      store <- indiv.search(dat, grp[[1]], ind[[1]])
+    } else {
+      store <- indiv.search(dat, grp[[1]], ind[1])
+    }
     
     if(!is.null(lv_model)){
       dat$lvgimme$miiv_est_table <- fitFinalGimmeModels(
