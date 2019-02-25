@@ -23,7 +23,7 @@
 #' @importFrom qgraph qgraph 
 #' @importFrom imputeTS na.kalman
 #' @importFrom stats ts
-#' @importFrom igraph graph.adjacency walktrap.community modularity membership
+#' @importFrom igraph graph.adjacency cluster_walktrap modularity membership
 #' @importFrom graphics plot
 #' @keywords gimme
 #' @details Researchers across varied domains gather multivariate data for each individual unit of study
