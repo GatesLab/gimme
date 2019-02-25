@@ -2,7 +2,11 @@
 title: "CS-GIMME Tutorial"
 author: "Lan Luo & Teague Henry"
 date: "November 7, 2018"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CS-GIMME}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
