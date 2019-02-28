@@ -59,8 +59,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
           sub_s_coefs <- coefs[coefs$id %in% sub_spec[[s]]$sub_s_subjids, ]
           sub_s_coefs$level[sub_s_coefs$param %in% unique(
             unlist(ind[ind$sub_membership == s,]$ind_paths))] <- "ind"
-          sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
           sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
+          sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
           sub_s_coefs$color[sub_s_coefs$level == "group"] <- "black"
           sub_s_coefs$color[sub_s_coefs$level == "sub"]   <- "green3"
           sub_s_coefs$color[sub_s_coefs$level == "ind"]   <- "gray50"
