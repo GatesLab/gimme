@@ -124,7 +124,7 @@
 #' @param lv_model Invoke latent variable modeling by providing the measurement model syntax here. lavaan
 #' conventions are used for relating observed variables to factors. Defaults to NULL
 #' @param lv_scores Method used for estimating latent variable scores from parameters obtained from the factor analysis 
-#' when lv_model is not NULL. Options are: "regression" (Default) or bartlett".
+#' when lv_model is not NULL. Options are: "regression" (Default), "bartlett" or "SVD".
 #' @param lv_estimator Estimator used for factor analysis. Options are "miiv" (default) or "pml" (pseudo-ML).
 #' @param lv_miiv_scaling Type of scaling indicator to use when "miiv" selected for lv_estimator. Options are
 #' "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
@@ -505,8 +505,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   # If this is classic gimme...
   #-------------------------------------------------------------#
   if(!ms_allow){
-    
-    # individual-level search # ind <- ind[1]; grp <- grp[[1]]
+  
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
       store <- indiv.search(dat, grp[[1]], ind[[1]])
