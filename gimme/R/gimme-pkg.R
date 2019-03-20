@@ -2,21 +2,28 @@
 #' @aliases gimme-package
 #' @title Group iterative multiple model estimation
 #' @description This package contains functions to identify group- and individual-level unified structural equation models.
-#' @author {Stephanie Lane [aut, cre, trl],\cr 
+#' @author {
+#'    Stephanie Lane [aut, cre, trl],\cr 
 #'    Kathleen Gates [aut], \cr
+#'    Zachary Fisher [aut],  \cr
 #'    Peter Molenaar [aut], \cr
 #'    Michael Hallquist [ctb], \cr
 #'    Hallie Pike [ctb],  \cr
-#'    Zachary Fisher [ctb],  \cr
-#'    Cara Arizmendi [ctb]
+#'    Cara Arizmendi [ctb], \cr
+#'    Teague Henry [ctb], 
+#'    Kelly Duffy [ctb]
 #' }
-#' Maintainer: Stephanie Lane \email{slane@@unc.edu}
+#' Maintainer: KM Gates \email{gateskm@email.unc.edu}
 #' @import lavaan 
+#' @import MIIVsem 
+#' @import data.tree
 #' @importFrom grDevices dev.off pdf
-#' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit
-#' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv
-#' @importFrom qgraph qgraph
-#' @importFrom igraph graph.adjacency walktrap.community modularity membership
+#' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit lm convolve
+#' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv getFromNamespace
+#' @importFrom qgraph qgraph 
+#' @importFrom imputeTS na.kalman
+#' @importFrom stats ts
+#' @importFrom igraph graph.adjacency cluster_walktrap modularity membership
 #' @importFrom graphics plot
 #' @keywords gimme
 #' @details Researchers across varied domains gather multivariate data for each individual unit of study

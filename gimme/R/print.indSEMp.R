@@ -26,10 +26,10 @@ print.indSEMp <- function(x, file = NULL, mean = FALSE, estimates = FALSE, fitMe
     } else if (estimates == FALSE){
       ind <- x$path_est_mats[[file]]
       colnames(ind) <- x$varnames
-      rownames(ind) <- x$varnames[(x$n_rois + 1):(x$n_rois*2)]
+      rownames(ind) <- x$varnames[(x$n_lagged+1):(x$n_vars_total)]
       ind <- round(ind, digits = 2)
-      ind_lag <- ind[ , 1:x$n_rois]
-      ind_con <- ind[ , (x$n_rois+1):(x$n_rois*2)]
+      ind_lag <- ind[ , 1:x$n_lagged]
+      ind_con <- ind[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Matrix for", file, "\n")
       print(ind_lag)
@@ -50,8 +50,8 @@ print.indSEMp <- function(x, file = NULL, mean = FALSE, estimates = FALSE, fitMe
       cat("Please specify a file id for individual coefficient matrix. ", "\n", 
           "Otherwise, a summary count matrix is presented below.", "\n")
       all <- x$path_counts
-      all_lag <- all[ , 1:x$n_rois]
-      all_con <- all[ , (x$n_rois+1):(x$n_rois*2)]
+      all_lag <- all[ , 1:x$n_lagged]
+      all_con <- all[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Count Matrix for Sample", "\n")
       print(all_lag)
@@ -68,10 +68,10 @@ print.indSEMp <- function(x, file = NULL, mean = FALSE, estimates = FALSE, fitMe
           "Otherwise, a summary average matrix is presented below.", "\n")
       all2 <- apply(simplify2array(x$path_est_mats), 1:2, mean, na.rm = TRUE)
       colnames(all2) <- x$varnames
-      rownames(all2) <- x$varnames[(x$n_rois+1):(x$n_rois*2)]
+      rownames(all2) <- x$varnames[(x$n_lagged+1):(x$n_vars_total)]
       all2 <- round(all2, digits = 2)
-      all2_lag <- all2[ , 1:x$n_rois]
-      all2_con <- all2[ , (x$n_rois+1):(x$n_rois*2)]
+      all2_lag <- all2[ , 1:x$n_lagged]
+      all2_con <- all2[ , (x$n_lagged+1):(x$n_vars_total)]
       cat("\n")
       cat("Lagged Average Matrix for Sample", "\n")
       print(all2_lag)

@@ -22,14 +22,17 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
    user to specify the directory containing the data and a directory for output to be stored.
 }
 \author{
-{Stephanie Lane [aut, cre, trl],\cr 
+{
+   Stephanie Lane [aut, cre, trl],\cr 
    Kathleen Gates [aut], \cr
+   Zachary Fisher [aut],  \cr
    Peter Molenaar [aut], \cr
    Michael Hallquist [ctb], \cr
    Hallie Pike [ctb],  \cr
-   Zachary Fisher [ctb],  \cr
-   Cara Arizmendi [ctb]
+   Cara Arizmendi [ctb], \cr
+   Teague Henry [ctb], 
+   Kelly Duffy [ctb]
 }
-Maintainer: Stephanie Lane \email{slane@unc.edu}
+Maintainer: KM Gates \email{gateskm@email.unc.edu}
 }
 \keyword{gimme}

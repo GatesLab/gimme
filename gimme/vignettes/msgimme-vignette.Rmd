@@ -1,0 +1,76 @@
+---
+title: "Multiple Solutions GIMME"
+author: "Cara Arizmendi"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MS GIMME}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+This vignette will cover basic functionality of ms-gimme including how to run ms-gimme, how to avoid potential problems when using ms-gimme, and how to use the solution.tree() function to explore the branching of multiple solutions.
+
+Ms-gimme is a modification of gimme (group iterative multiple model estimation), allowing for the recovery of multiple uSEM (unified SEM) solutions with a data driven approach (Beltz and Molenaar, 2016).
+
+## Selecting multiple solutions gimme
+
+To begin, we load a fitted gimme object, with which multiple solutions were found.  This object is available as part of the gimme package and can be accessed as shown below.
+
+```{r}
+library(gimme)
+data(ms.fit, package="gimme")
+```
+
+Here we show the syntax used to arrive at the fitted object.  To return multiple solutions, ms_allow should be TRUE.  We only show the most relevant arguments to ms-gimme.  We recommend that the default ar=FALSE be kept, as multiple solutions are unlikely to be found when ar=TRUE.  Additionally, the default of subgroup=FALSE should be kept, as ms-gimme does not have the functionality for subgrouping.  The remaining arguments are up to user discretion.  For general gimme usage, we recommend standardize=TRUE; however, this is not the default since standardize=TRUE modifies the data.  We do not recommend that ms_tol be greater than the default, but smaller tolerances can be set.     
+
+```{r, eval=FALSE}
+ms.fit <- gimme(data        = ms.sim,
+                out         = '~/outputfolder/',
+                ar          = FALSE,
+                subgroup    = FALSE,
+                standardize = TRUE,
+                ms_allow    = TRUE,
+                ms_tol      = 1e-5)
+```
+
+## Exploring output object
+
+### Tree table
+
+The function solution.tree() allows for exploration of diverging solutions.  Below, we see that there were six different solutions at the group level.  The first branch occured at 'V1~V3' versus 'V3~V1.'  Within the solution where 'V1~V3' was selected, another divergence occurs between 'V2~V4' and 'V4~V2.' 
+
+```{r}
+solution.tree(ms.fit, level = "group", cols="stage")
+```
+
+
+### Tree plot
+
+We can also produce a plot version of the above table.
+\\
+Further functionality is documented in R help.
+
+```{r}
+solution.tree(ms.fit, level = "group", plot.tree = TRUE)
+```
+
+## Deciding between models
+
+We refer users to Beltz and Molenaar (2016) for guidance on model selection.  The AIC is the most widely used fit statistic for model selection and can be accessed in the gimme object as partially shown below or in file 'summaryFit.csv' in the output folder if an output folder is specified.
+
+```{r}
+ms.fit$tables$summaryFit[1:10,]
+```
+
+## Reference
+
+Adriene M. Beltz & Peter C. M. Molenaar (2016) Dealing with Multiple Solutions in Structural Vector Autoregressive Models, Multivariate Behavioral Research, 51:2-3, 357-373, DOI: 10.1080/00273171.2016.1151333
