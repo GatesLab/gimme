@@ -235,7 +235,7 @@ setup <- function (data,
   #-------------------------------------------------------------#
   
   ### Distinguish between lagged and contemporaenous exogenous variables
-  exog_con <- exogenous[regexp("lag", exogenous)<0]
+  exog_con <- exogenous[regexpr("lag", exogenous)<0]
   exog_lag <- sub("lag", "", exogenous[regexpr("lag", exogenous)>0])
   
   
