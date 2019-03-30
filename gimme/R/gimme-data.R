@@ -33,3 +33,15 @@ NULL
 #' @usage ms.fit
 #' @format A fitted gimme object, where multiple solutions gimme was used.
 NULL
+
+#' Latent variable example, heterogeneous data, group, subgroup level effects.
+#'
+#' This object contains a list of simulated time series data for twenty individuals 
+#' with 500 time points and 9 variables, or regions of interest. 
+#'
+#' @docType data
+#' @keywords datasets
+#' @name simDataLV
+#' @usage simDataLV
+#' @format A list of data frames with 20 individuals, who each have 500 observations on 9 variables.
+NULL
