@@ -61,8 +61,10 @@
 #' @param exogenous Vector of variable names to be treated as exogenous (optional).
 #' That is, exogenous variable X can predict Y but cannot be predicted by Y.
 #' If no header is used, then variables should be referred to with V followed
-#' (with no separation) by the column number. If a header is used, variables
-#' should be referred to using variable names. Defaults to NULL.
+#' (with no separation) by the column number. The default for exogenous variables is that lagged 
+#' effects of the exogenous variables are not included in the model search.  If lagged paths are wanted, 
+#' "lag" should be added to the end of the variable
+#' name with no separation.  If a header is used, variables should be referred to using variable names. Defaults to NULL.
 #' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
 #' Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
 #' To treat conv_vars as exogenous use the exogenous argument. Variables listed in conv_vars 
