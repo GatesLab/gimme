@@ -34,18 +34,6 @@ NULL
 #' @format A fitted gimme object, where multiple solutions gimme was used.
 NULL
 
-#' Fitted gimme object where HRF-gimme was used
-#'
-#' This object contains a fitted gimme object where HRF-gimme was used.  The simulated
-#' data had 50 individuals, each with 500 time points.
-#'
-#' @docType data
-#' @keywords datasets
-#' @name HRF.fit
-#' @usage HRF.fit
-#' @format A fitted gimme object, where HRF-gimme was used.
-NULL
-
 #' HRF example, direct and modulatory effect
 #' 
 #' This object contains a list of simulated time series data designed to be used for HRF-GIMME 
