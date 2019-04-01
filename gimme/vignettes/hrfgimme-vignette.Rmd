@@ -37,7 +37,7 @@ I will provide more details on the arguments relevant to HRF-GIMME. For further 
 
 HRF-GIMME can be run on this simple example of simulated data with the code shown below:
 ```{r}
-HRF.fit <- gimme(data = HRFsim,
+HRF.fit <- gimme(data = data,
                  out = '~/outputfolder/',
                  ar = TRUE,
                  standardize = TRUE,
