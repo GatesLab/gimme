@@ -16,6 +16,7 @@
 #' Maintainer: KM Gates \email{gateskm@email.unc.edu}
 #' @import lavaan 
 #' @import MIIVsem 
+#' @import igraph
 #' @import data.tree
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit lm convolve

@@ -23,7 +23,8 @@ determine.subgroups <- function(data_list,
                                 elig_paths,
                                 confirm_subgroup, 
                                 out_path = NULL,
-                                sub_feature){
+                                sub_feature,
+                                sub_method){
   #######################
   # base_syntax  = c(dat$syntax, grp[[i]]$group_paths)
   # data_list    = dat$ts_list
@@ -128,8 +129,25 @@ determine.subgroups <- function(data_list,
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
   if(is.null(confirm_subgroup)){
-    res        <- igraph::cluster_walktrap(graph.adjacency(sim, mode = "undirected"), 
-                                     steps = 4)
+    g            <- graph.adjacency(sim, mode = "undirected", weighted = TRUE)
+    weights      <- E(g)$weight
+    if (sub_method == "Walktrap")
+      res        <- cluster_walktrap(g, weights = weights, steps = 4)
+    if (sub_method == "Infomap")
+      res        <- cluster_infomap(g, weights = weights)
+    if (sub_method == "Edge Betweenness")
+      res        <- cluster_edge_betweenness(g, weights = weights)
+    if (sub_method == "Fast Greedy")
+      res        <- cluster_fast_greedy(g, weights = weights)
+    if (sub_method == "Label Prop")
+      res        <- cluster_label_prop(g, weights = weights)
+    if (sub_method == "Leading Eigen")
+      res        <- cluster_leading_eigen(g, weights = weights)
+    if (sub_method == "Louvain")
+      res        <- cluster_louvain(g, weights = weights)
+    if (sub_method == "Spinglass")
+      res        <- cluster_spinglass(g, weights = weights)
+    
     sub_mem    <- data.frame(names      = names(membership(res)), 
                              sub_membership = as.numeric(membership(res)))
     sub$sim         <- sim
