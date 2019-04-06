@@ -12,6 +12,7 @@
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
 #'          sub_feature = "lag & contemp",
+#'          sub_method = "Walktrap",
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
 #'          exogenous   = NULL,
@@ -107,6 +108,9 @@
 #' "lag & contemp" for lagged and contemporaneous, which is the original method. Can use 
 #' "lagged" or "contemp" to subgroup solely on features related to lagged and contemporaneous 
 #' relations, respectively.
+#' @param sub_method Community detection method used to cluster individuals into subgroups. Options align 
+#' with those available in the igraph package: "Walktrap" (default), "Infomap", "Louvain", "Edge Betweenness", 
+#' "Label Prop", "Fast Greedy", "Leading Eigen", and "Spinglass". 
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
@@ -212,6 +216,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               plot             = TRUE,
                               subgroup         = FALSE,
                               sub_feature      = "lag & contemp",
+                              sub_method       = "Walktrap",
                               confirm_subgroup = NULL,
                               paths            = NULL,
                               exogenous        = NULL,
@@ -439,6 +444,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
         grp[[i]],
         confirm_subgroup,
         sub_feature,
+        sub_method,
         ms_tol   = ms_tol,
         ms_allow = FALSE
       )

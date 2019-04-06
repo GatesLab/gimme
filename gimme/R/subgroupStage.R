@@ -4,6 +4,7 @@ subgroupStage <- function(dat,
                           grp,
                           confirm_subgroup,
                           sub_feature,
+                          sub_method,
                           ms_tol,
                           ms_allow){
 # Satisfy CRAN checks
@@ -17,7 +18,8 @@ subgroupStage <- function(dat,
                                elig_paths   = dat$candidate_paths,
                                confirm_subgroup = confirm_subgroup,
                                out_path     = dat$out, 
-                               sub_feature  = sub_feature)
+                               sub_feature  = sub_feature,
+                               sub_method   = sub_method)
 
   # begin subgroup-level search for paths ------------------------------------ #
 
