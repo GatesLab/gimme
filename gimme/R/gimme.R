@@ -62,8 +62,10 @@
 #' @param exogenous Vector of variable names to be treated as exogenous (optional).
 #' That is, exogenous variable X can predict Y but cannot be predicted by Y.
 #' If no header is used, then variables should be referred to with V followed
-#' (with no separation) by the column number. If a header is used, variables
-#' should be referred to using variable names. Defaults to NULL.
+#' (with no separation) by the column number. The default for exogenous variables is that lagged 
+#' effects of the exogenous variables are not included in the model search.  If lagged paths are wanted, 
+#' "lag" should be added to the end of the variable
+#' name with no separation.  If a header is used, variables should be referred to using variable names. Defaults to NULL.
 #' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
 #' Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
 #' To treat conv_vars as exogenous use the exogenous argument. Variables listed in conv_vars 
@@ -128,8 +130,8 @@
 #' @param lv_model Invoke latent variable modeling by providing the measurement model syntax here. lavaan
 #' conventions are used for relating observed variables to factors. Defaults to NULL
 #' @param lv_scores Method used for estimating latent variable scores from parameters obtained from the factor analysis 
-#' when lv_model is not NULL. Options are: "regression" (Default) or bartlett".
-#' @param lv_estimator Estimator used for factor analysis. Options are "miiv" (default) or "pml" (pseudo-ML).
+#' when lv_model is not NULL. Options are: "regression" (Default), "bartlett".
+#' @param lv_estimator Estimator used for factor analysis. Options are "miiv" (default), "pml" (pseudo-ML) or "SVD".
 #' @param lv_miiv_scaling Type of scaling indicator to use when "miiv" selected for lv_estimator. Options are
 #' "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
 #' (best one for the group), or "individual" (each individual has the best one for them according to R2). 
@@ -511,8 +513,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   # If this is classic gimme...
   #-------------------------------------------------------------#
   if(!ms_allow){
-    
-    # individual-level search # ind <- ind[1]; grp <- grp[[1]]
+  
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
       store <- indiv.search(dat, grp[[1]], ind[[1]])

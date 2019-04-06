@@ -60,7 +60,7 @@ gimmems.write <- function(x){
                 
                 diag.psi <- diag(grp_sol_i_ind_j_sol_k$psi)
                 
-                improper.var  <- any(diag.psi > 1 | diag.psi < -1)
+                improper.var  <- any(diag.psi > 1 | diag.psi < 0)
                 
                 df$checkPsi <- improper.var 
                 

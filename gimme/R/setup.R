@@ -234,17 +234,22 @@ setup <- function (data,
   #
   #-------------------------------------------------------------#
   
+  ### Distinguish between lagged and contemporaenous exogenous variables
+  exog_con <- exogenous[regexpr("lag", exogenous)<0]
+  exog_lag <- sub("lag", "", exogenous[regexpr("lag", exogenous)>0])
+  
+  
   orig <- colnames(ts_list[[1]])
   uexo <- unique(exogenous)
   conv <- conv_vars
-  lagg <- paste0(setdiff(orig,unique(uexo, conv)), "lag")
+  lagg <- paste0(setdiff(orig,unique(exog_con, conv)), "lag")
   mult <- setupMultVarNames(mult_vars)
   exog <- unique(c(uexo, mult, lagg))
   endo <- setdiff(orig, exog) # only true if ar = TRUE
   catg <- NULL
   stnd <- if(standardize) setdiff(c(endo,exog), c(catg, conv_vars)) else NULL
   #coln <- c(endo,exog) # future column names of data
-  coln <- c(lagg, endo, uexo, mult)
+  coln <- unique(c(lagg, endo, uexo, mult))
   
 
   varLabels <- list(
@@ -336,6 +341,7 @@ setup <- function (data,
               "agg" = ctrlOpts$agg,
               "n_subj" = length(ts_list),
               "n_lagged" = length(varLabels$lagg),
+              "n_exog_lag" = length(exog_lag),
               "n_exog" = length(varLabels$uexo),
               "n_bilinear" = length(varLabels$mult),
               "n_endog"  = length(varLabels$endo),

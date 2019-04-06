@@ -96,7 +96,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
             lagged     <- sub_s_counts[1:(dat$n_lagged), ]
             if (dat$n_exog_total>0){
-              lagged[,(dat$n_lagged+1):(dat$n_lagged+dat$n_exog_total)] <-0
+              lagged[,(dat$n_lagged+1):(dat$n_lagged+dat$n_exog_total-dat$n_exog_lag)] <-0
             }
             contemp    <- sub_s_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
             plot_vals  <- rbind(w2e(lagged), w2e(contemp))
@@ -220,7 +220,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       
       lagged     <- sample_paths[1:(dat$n_lagged), ]
       if (dat$n_exog_total>0){
-        lagged[,(dat$n_lagged+1):(dat$n_lagged+dat$n_exog_total)] <-0
+        lagged[,(dat$n_lagged+1):(dat$n_lagged+dat$n_exog_total-dat$n_exog_lag)] <-0
       }
       contemp    <- sample_paths[(dat$n_lagged+1):(dat$n_vars_total), ]
       plot_vals  <- rbind(w2e(lagged), w2e(contemp))

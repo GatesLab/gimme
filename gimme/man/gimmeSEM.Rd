@@ -150,9 +150,9 @@ Defaults to 1e-5.}
 conventions are used for relating observed variables to factors. Defaults to NULL}
 
 \item{lv_scores}{Method used for estimating latent variable scores from parameters obtained from the factor analysis 
-when lv_model is not NULL. Options are: "regression" (Default) or bartlett".}
+when lv_model is not NULL. Options are: "regression" (Default), "bartlett".}
 
-\item{lv_estimator}{Estimator used for factor analysis. Options are "miiv" (default) or "pml" (pseudo-ML).}
+\item{lv_estimator}{Estimator used for factor analysis. Options are "miiv" (default), "pml" (pseudo-ML) or "SVD".}
 
 \item{lv_miiv_scaling}{Type of scaling indicator to use when "miiv" selected for lv_estimator. Options are
 "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
