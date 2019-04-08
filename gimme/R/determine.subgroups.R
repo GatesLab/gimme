@@ -132,7 +132,7 @@ determine.subgroups <- function(data_list,
     g            <- graph.adjacency(sim, mode = "undirected", weighted = TRUE)
     weights      <- E(g)$weight
     if (sub_method == "Walktrap")
-      res        <- cluster_walktrap(g, weights = weights, steps = 4)
+      res        <- cluster_walktrap(g, e.weights = weights, steps = 4)
     if (sub_method == "Infomap")
       res        <- cluster_infomap(g, weights = weights)
     if (sub_method == "Edge Betweenness")
