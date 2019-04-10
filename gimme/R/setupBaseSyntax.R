@@ -20,11 +20,22 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     int.endo  <- paste0(varLabels$endo, "~1")
   
     # Cov & Var among variables than cannot be predicted.
-    cov.exog <- outer(varLabels$exog, varLabels$exog, function(x, y) paste0(x, "~~", y))
+    
+  ### Removes "conceptually exogenous" variables that are not statistically exogenous
+  ### so covariances won't be estimated for those
+    
+  if(!is.null(varLabels$exog)){
+    exog_model <- varLabels$exog[!varLabels$exog%in%varLabels$exog_lag]
+  } else {
+    exog_model <- varLabels$exog
+  }
+    
+    
+    cov.exog <- outer(exog_model, exog_model, function(x, y) paste0(x, "~~", y))
     cov.exog <- cov.exog[lower.tri(cov.exog, diag = TRUE)]
     
     # Means of exogenous variables
-    mean.exog <- paste0(varLabels$exog, "~1")
+    mean.exog <- paste0(exog_model, "~1")
     
     # Nonsense paths (fixed to zero)
     nons.reg <- c(t(outer(varLabels$exog, varLabels$endo, function(x, y) paste0(x, "~0*", y))))
@@ -37,8 +48,8 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     
     if(ctrlOpts$ar) {
       ar.paths    <- paste0(
-        setdiff(varLabels$orig, varLabels$uexo), 
-        "~", paste0(setdiff(varLabels$orig, varLabels$uexo),"lag")
+        setdiff(varLabels$orig, varLabels$exog_con), 
+        "~", paste0(setdiff(varLabels$orig, varLabels$exog_con),"lag")
       )
       fixed.paths <- c(fixed.paths, ar.paths)
     }
