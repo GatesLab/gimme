@@ -15,9 +15,20 @@ return.mis <- function(fit){
   } 
   
   if (!error & !zero_se){
-    mis   <- tryCatch(modindices(fit, op = "~", 
-                                 standardized = FALSE,
-                                 sort. = FALSE), 
+    #commented out by lan 4.11.2019
+    #mis   <- tryCatch(modindices(fit, op = "~", 
+    #                             standardized = FALSE,
+    #                             sort. = FALSE), 
+    #                  error = function(e) e)
+    
+    lanMod <- function(fit){
+      mis0 <- modindices(fit, standardized = FALSE, sort. = FALSE)
+      mis0_idx <- paste0(mis0$lhs,mis0$op,mis0$rhs)
+      mis <- mis0[mis0$op == "~" | mis0_idx %in% dat$candidate_corr,]
+      return(mis)
+    }
+    
+    mis   <- tryCatch(lanMod(fit),
                       error = function(e) e)
     error <- any(grepl("error", class(mis)))
     if (error) mis <- NA 
