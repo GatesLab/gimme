@@ -325,18 +325,19 @@ gimmeSEM <- gimme <- function(data             = NULL,
     "group_paths"   = c()
   )
 
+  if(!hybrid){
+    elig_paths   = dat$candidate_paths
+  } else{
+    elig_paths   = c(dat$candidate_paths, dat$candidate_corr)
+  }
+  
   grp_hist  <- search.paths(
-    if(!hybrid){
-      elig_paths   = dat$candidate_paths
-    } else{
-      elig_paths   = c(dat$candidate_paths, dat$candidate_corr)
-    },
     base_syntax    = dat$syntax,
     fixed_syntax   = NULL,
     add_syntax     = grp$group_paths,
     n_paths        = grp$n_group_paths,
     data_list      = dat$ts_list,
-    #elig_paths     = dat$candidate_paths, 
+    elig_paths     = elig_paths, 
     prop_cutoff    = dat$group_cutoff,
     n_subj         = dat$n_subj,
     chisq_cutoff   = qchisq(1-.05/dat$n_subj, 1),
