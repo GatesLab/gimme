@@ -253,12 +253,12 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       
     } else samp_plot <- NULL
     
-    indiv_paths     <- coefs[, c("id", "lhs", "rhs", "est.std", 
+    indiv_paths     <- coefs[, c("id", "lhs", "op", "rhs", "est.std", 
                                  "se", "z", "pvalue", "level")]
     indiv_paths$lhs <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)
     indiv_paths     <- indiv_paths[order(indiv_paths$id, indiv_paths$level), ]
-    colnames(indiv_paths) <- c("file", "dv", "iv", "beta", "se", 
+    colnames(indiv_paths) <- c("file", "lhs","op", "rhs", "beta", "se", 
                                "z", "pval", "level")
     # } # end "if no coefficients" commented out stl 11.20.17
     # combine fit information for summaryFit.csv
@@ -293,9 +293,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     indiv_paths$lhs  <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs  <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)
     indiv_paths      <- indiv_paths[order(indiv_paths$file), ]
-    indiv_paths      <- indiv_paths[ ,c("file", "lhs", "rhs", "est.std", 
+    indiv_paths      <- indiv_paths[ ,c("file", "lhs","op", "rhs", "est.std", 
                                         "se", "z", "pvalue")]
-    colnames(indiv_paths) <- c("file", "dv", "iv", "beta", "se", "z", "pval")
+    colnames(indiv_paths) <- c("file", "lhs", "op", "rhs", "beta", "se", "z", "pval")
     
     fits          <- store$fits[[1L]]
     file          <- c("all")
