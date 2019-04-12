@@ -62,7 +62,14 @@ get.params <- function(dat, grp, ind, k){
     
     if (!error){
       converge  <- lavInspect(fit, "converged")
-      ind_coefs <- subset(standardizedSolution(fit), op == "~") # if betas = 0, no SEs
+      
+      ind_coefs0 <- standardizedSolution(fit)
+      ind_coefs_idx <- paste0(ind_coefs0$lhs,ind_coefs0$op,ind_coefs0$rhs)
+      ind_coefs <- ind_coefs0[ind_coefs0$op == "~" |
+                                ind_coefs_idx %in% c(dat$candidate_paths, dat$candidate_corr),]
+      #ind_coefs <- ind_coefs0[ind_coefs_idx %in% elig_paths,]
+      #commented out by lan 4.11.2019
+      #ind_coefs <- subset(standardizedSolution(fit), op == "~") # if betas = 0, no SEs
       if (length(ind_coefs[,1]) > 0){
         zero_se   <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
       } else {
@@ -89,7 +96,12 @@ get.params <- function(dat, grp, ind, k){
     keep          <- rownames(ind_vcov_full) %in% dat$candidate_paths
     ind_vcov      <- ind_vcov_full[keep, keep]
     
-    ind_coefs <- subset(standardizedSolution(fit), op == "~")
+    
+    ind_coefs0 <- standardizedSolution(fit)
+    ind_coefs_idx <- paste0(ind_coefs0$lhs,ind_coefs0$op,ind_coefs0$rhs)
+    ind_coefs <- ind_coefs0[ind_coefs0$op == "~" |
+                              ind_coefs_idx %in% c(dat$candidate_paths, dat$candidate_corr),]
+    #ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
     # if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
     ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
