@@ -106,7 +106,7 @@ search.paths.ms <- function(obj,
           }
           
           
-          mi_list[[k]] <- return.mis(fit)
+          mi_list[[k]] <- return.mis(fit, elig_paths)
         }
         
         

@@ -58,6 +58,11 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     all.poss <- outer(varLabels$endo, c(varLabels$endo, varLabels$exog), function(x, y) paste0(x, "~", y))
     all.poss <- c(all.poss[lower.tri(all.poss, diag = FALSE)], all.poss[upper.tri(all.poss, diag = FALSE)])
     
+    # All Possible Contemporaneous Correlations
+    all.corr <- outer(varLabels$endo, varLabels$endo, function(x,y) paste0(x, "~~", y))
+    all.corr <- c(all.corr[lower.tri(all.corr, diag = FALSE)], all.corr[upper.tri(all.corr, diag = FALSE)])
+    # Both V1~~V2 and V2~~V1 are kept for now because we don't know which one lavaan produces
+    
      # If multiplied vars are specified, remove prediction of first order effects by multiplied
      # variables
      nons.mult<-character(2*length(varLabels$mult))
@@ -89,6 +94,7 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
       syntax = base.syntax,
       fixed.paths = fixed.paths,
       candidate.paths = setdiff(all.poss, fixed.paths),
+      candidate.corr = all.corr,
       nonsense.paths =  nons.paths 
     ))
   
