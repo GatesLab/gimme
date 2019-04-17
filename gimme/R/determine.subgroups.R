@@ -49,7 +49,7 @@ determine.subgroups <- function(data_list,
     fit          <- fit.model(syntax    = base_syntax,
                               data_file = data_list[[k]])
     z_list[[k]]  <- return.zs(fit)
-    mi_list[[k]] <- return.mis(fit)
+    mi_list[[k]] <- return.mis(fit, elig_paths)
     converge[k]  <- lavInspect(fit, "converged")
   }
   
