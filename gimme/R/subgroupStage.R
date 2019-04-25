@@ -35,7 +35,7 @@ subgroupStage <- function(dat,
                                       na.rm = TRUE),
                   sub_membership    = s)
 
-    if (sub_s$n_sub_subj > 1){
+    if ((sub_s$n_sub_subj > 1) & (length(unique(sub_s$sub_membership))>1)){
       s4 <- search.paths(base_syntax  = dat$syntax,
                          fixed_syntax = grp$group_paths,
                          add_syntax   = character(),
