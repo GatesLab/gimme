@@ -311,8 +311,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                             error = function(e) e)
       samp_colors_corr <- t(sample_colors_corr)
       colors_corr      <- c(samp_colors_corr[1:(dat$n_lagged), ],
-                       samp_colors[(dat$n_lagged+1):(dat$n_vars_total), ])
-      colors_corr      <- colors[!is.na(colors)]
+                       samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total), ])
+      colors_corr      <- colors_corr[!is.na(colors_corr)]
       
       if (sum(sample_paths_corr)>0){
         corr   <- sample_paths_corr[(dat$n_lagged+1):(dat$n_vars_total), ]
