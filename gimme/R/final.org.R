@@ -15,7 +15,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
   sub_coefs  <- list()
   sub_summ   <- list()
   sub_plots  <- list()
+  sub_plots_cov <- list()
   sub_counts <- list()
+  sub_counts_cov <- list()
   
   param  = NULL # appease CRAN check
   est.std = NULL # appease CRAN check
@@ -143,7 +145,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             
             sub_s_counts_cov <- t(sub_s_mat_counts_cov/sub_spec[[s]]$n_sub_subj)
             contemp_cov    <- sub_s_counts_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
-            plot_vals_cov  <- w2e(contemp)
+            plot_vals_cov  <- w2e(contemp_cov)
             sub_colors_cov <- t(sub_s_mat_colors_cov)
             colors     <- c(sub_colors_cov[1:(dat$n_lagged), ],
                             sub_colors_cov[(dat$n_lagged+1):(dat$n_vars_total), ])
@@ -200,6 +202,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
         sub_coefs <- NULL
         sub_plots <- NULL
         sub_paths <- NULL
+        sub_plots_cov <- NULL
+        sub_counts_cov <- NULL
         summ <- transform(coefs, count = as.numeric(
           ave(param, param, FUN = length)))
         summ <- subset(summ, !duplicated(param)) 
@@ -209,6 +213,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       sub_coefs <- NULL
       sub_plots <- NULL
       sub_paths <- NULL
+      sub_plots_cov <- NULL
+      sub_counts_cov <- NULL
       summ <- transform(coefs, count = as.numeric(
         ave(param, param, FUN = length)))
       summ <- subset(summ, !duplicated(param)) 
@@ -303,13 +309,18 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                    label.cex    = 2,
                                    DoNotPlot    = TRUE), 
                             error = function(e) e)
+      samp_colors_corr <- t(sample_colors_corr)
+      colors_corr      <- c(samp_colors_corr[1:(dat$n_lagged), ],
+                       samp_colors[(dat$n_lagged+1):(dat$n_vars_total), ])
+      colors_corr      <- colors[!is.na(colors)]
+      
       if (sum(sample_paths_corr)>0){
         corr   <- sample_paths_corr[(dat$n_lagged+1):(dat$n_vars_total), ]
         plot_vals_corr  <- w2e(corr)
         samp_plot_corr <- tryCatch(qgraph(plot_vals_corr,
                                           layout       = "circle",
                                           edge.labels  = FALSE,
-                                          edge.color   = colors,
+                                          edge.color   = colors_corr,
                                           parallelEdge = TRUE,
                                           fade         = FALSE,
                                           arrows       = FALSE,
