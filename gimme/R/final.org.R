@@ -254,10 +254,10 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     b$labelnum[is.na(b$labelnum)] <-2
     
     b <- b[order(b$labelnum), ]
-    c <- b[!duplicated(b$param), c("lhs", "op", "rhs", "color", "xcount")] 
+    d <- b[!duplicated(b$param), c("lhs", "op", "rhs", "color", "xcount")] 
     
-    c_direct <- c[-which(c$op == "~~"),]
-    c_corr   <- c[-which(c$op == "~"),]
+    c_direct <- d[which(d$op == "~"),]
+    c_corr   <- d[which(d$op == "~~"),]
     
     c_direct$row <- match(c_direct$lhs, dat$lvarnames) - dat$n_lagged
     c_direct$col <- match(c_direct$rhs, dat$lvarnames)
