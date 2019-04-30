@@ -125,16 +125,48 @@ setup <- function (data,
     
     # zf: uncomment once changes pushed through final MIIV estimation
     # first let's look for single indicator LVs and extract the raw data:
-    # single_indicator_lvs <- lapply(seq_along(lv_model_all), function(i){
-    #   pt  <- lavaan::lavParTable(lv_model_all[[i]])
-    #   lvs <- unique(pt[pt$op=="=~","lhs"])
-    #   do.call( "cbind",lapply(lvs, function(l){
-    #     if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) == 1){
-    #       keep <- pt[pt$op=="=~" & pt$lhs == l,"rhs"]
-    #       ts_list_obs[[i]][,keep, drop = F]
-    #     }
-    #   }))
-    # })
+    single_indicator_lvs <- lapply(seq_along(lv_model_all), function(i){
+      pt  <- lavaan::lavParTable(lv_model_all[[i]])
+      lvs <- unique(pt[pt$op=="=~","lhs"])
+      do.call( "cbind",lapply(lvs, function(l){
+        if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) == 1){
+          keep <- pt[pt$op=="=~" & pt$lhs == l,"rhs"]
+          tmp <- ts_list_obs[[i]][,keep, drop = F]
+          colnames(tmp) <- l
+          tmp
+        }
+      }))
+    })
+    
+    lv_names <- list()
+    ov_names <- list()
+    
+    for(j in 1:length(lv_model_all)){
+      
+      pt  <- lavaan::lavParTable(lv_model_all[[j]])
+      lvs <- unique(pt[pt$op=="=~","lhs"])
+      
+      for(k in 1:length(lvs)){
+        
+        if(length(pt[pt$op=="=~" & pt$lhs == lvs[k],"rhs"]) == 1){
+          
+          lv_names_v <- lvs[k]
+          ov_names_v <- pt[pt$op=="=~" & pt$lhs == lvs[k],"rhs"]
+          
+          if(length(ov_names_v) > 1){
+            stop(paste0("gimme: internal error processing variable names."))
+          }
+        
+          colnames(ts_list_obs[[j]]) <- gsub(
+            ov_names_v, 
+            lv_names_v, 
+            colnames(ts_list_obs[[j]])
+          )
+          
+        }
+      }
+    }
+
     
     
     # # since these are observed variables every model should have
@@ -153,7 +185,7 @@ setup <- function (data,
         if (length(pt[pt$op=="=~" & pt$lhs == lvs[j],"rhs"]) == 1){
           
           # remove this error once the functionality is pushed through the final MIIV estimation.
-          stop(paste0("gimme ERROR: factors with only one indicator not currently supported."))
+          #stop(paste0("gimme ERROR: factors with only one indicator not currently supported."))
           
         } else if (length(pt[pt$op=="=~" & pt$lhs == lvs[j],"rhs"]) == 2){
           
@@ -207,11 +239,11 @@ setup <- function (data,
     
     # add back in any single indicator lvs
     # zf: uncomment once changes pushed through final MIIV estimation
-    # if(!all(unlist(lapply(single_indicator_lvs,function(x){is.null(x)})))){
-    #   ts_list <- lapply(seq_along(ts_list), function(i){
-    #     cbind(ts_list[[i]], single_indicator_lvs[[i]])
-    #   })   
-    # }
+    if(!all(unlist(lapply(single_indicator_lvs,function(x){is.null(x)})))){
+      ts_list <- lapply(seq_along(ts_list), function(i){
+        cbind(ts_list[[i]], single_indicator_lvs[[i]])
+      })
+    }
 
     names(ts_list) <- names(ts_list_obs)
     

@@ -237,7 +237,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_final_estimator = "miiv",
                               hybrid           = FALSE){          # c("miiv", "pml")
 
- # satisfy CRAN checks
+  # satisfy CRAN checks
   ind     = NULL
   varnames = NULL
   lvarnames = NULL
