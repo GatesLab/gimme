@@ -269,7 +269,7 @@ setup <- function (data,
   ### Distinguish between lagged and contemporaenous exogenous variables
   exog_con <- exogenous[regexpr("&lag", exogenous)<0]
   exog_lag <- sub("&lag", "", exogenous[regexpr("&lag", exogenous)>0])
-  exogenous <- c(exog_con, exog_lag)
+  exogenous <- c(exog_lag,exog_con)
   
   orig <- colnames(ts_list[[1]])
   uexo <- unique(exogenous)

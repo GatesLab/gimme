@@ -62,7 +62,10 @@
 #' @param exogenous Vector of variable names to be treated as exogenous (optional).
 #' That is, exogenous variable X can predict Y but cannot be predicted by Y.
 #' If no header is used, then variables should be referred to with V followed
-#' (with no separation) by the column number.  If a header is used, variables should be referred to using variable names. Defaults to NULL.
+#' (with no separation) by the column number.  If a header is used, variables should be referred 
+#' to using variable names. The default for exogenous variables is that lagged effects of the exogenous 
+#' variables are not included in the model search.  If lagged paths are wanted, "&lag" should be added to the end of the variable
+#' name with no separation. Defaults to NULL.
 #' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
 #' Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
 #' To treat conv_vars as exogenous use the exogenous argument. Variables listed in conv_vars 
@@ -454,6 +457,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
         dat,
         grp[[i]],
         confirm_subgroup,
+        elig_paths,
         sub_feature,
         sub_method,
         ms_tol   = ms_tol,
@@ -566,11 +570,15 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 fit             = final$fit,
                 path_se_est     = final$param_est,
                 plots           = store$plots,
-                group_plot      = final$samp_plot,
+                group_plot_paths      = final$samp_plot,
+                group_plot_cov  = final$samp_plot_corr,
                 sub_plots       = final$sub_plots,
+                sub_plots_cov   = final$sub_plots_cov,
                 subgroup        = subgroup,
                 path_counts     = final$sample_counts,
                 path_counts_sub = final$sub_counts,
+                cov_counts      = final$sample_counts_cov,
+                cov_counts_sub  = final$sub_counts_cov,
                 vcov            = store$vcov,
                 vcovfull        = store$vcovfull,
                 sim_matrix      = sub[[1]]$sim, 
