@@ -91,7 +91,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
           sub_s_summ$mem <- s
           
           regressions <- 
-            sub_s_summ[-(which(sub_s_summ$op == "~~")),]
+            sub_s_summ[which(sub_s_summ$op == "~"),]
           sub_s_mat_counts[cbind(regressions$row, regressions$col)] <- 
             as.numeric(as.character(regressions$count))
           sub_s_mat_counts <- sub_s_mat_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
@@ -103,7 +103,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
           sub_s_mat_colors <- sub_s_mat_colors[(dat$n_lagged+1):(dat$n_vars_total), ]
           
           cov <- 
-            sub_s_summ[-(which(sub_s_summ$op == "~")),]
+            sub_s_summ[(which(sub_s_summ$op == "~~")),]
           sub_s_mat_counts_cov[cbind(cov$row, cov$col)] <- 
             as.numeric(as.character(cov$count))
           sub_s_mat_counts_cov <- sub_s_mat_counts_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
