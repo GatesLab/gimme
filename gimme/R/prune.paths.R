@@ -51,57 +51,64 @@ prune.paths <- function(base_syntax,
     
     z_list <- list()
     
-    for (k in 1:n_subj){
+    # for (k in 1:n_subj){
       
       if (!is.null(prop_cutoff)){
         
         if (is.list(fixed_syntax)){
+          fit <- lapply(seq_along(data_list), function(i){fit.model(
+            syntax= c(base_syntax, fixed_syntax[[k]],add_syntax),
+            data_file = data_list[[i]])
+          })
           
-          fit <- fit.model(
-            syntax = c(base_syntax,fixed_syntax[[k]], add_syntax),
-            data_file = data_list[[k]]
-          )
+          # fit <- fit.model(
+          #   syntax = c(base_syntax,fixed_syntax[[k]], add_syntax),
+          #   data_file = data_list[[k]]
+          # )
           
         } else {
-          
-          fit <- fit.model(
-            syntax = c(base_syntax,fixed_syntax, add_syntax),
-            data_file = data_list[[k]]
-          )
+          fit <- lapply(seq_along(data_list), function(i){fit.model(
+            syntax= c(base_syntax, fixed_syntax,add_syntax),
+            data_file = data_list[[i]])
+          })
+          # fit <- fit.model(
+          #   syntax = c(base_syntax,fixed_syntax, add_syntax),
+          #   data_file = data_list[[k]]
+          # )
           
         }
         
         
         if (subgroup_stage){
           
-          writeLines(paste0("subgroup-level pruning, subject ", k))
+          writeLines(paste0("subgroup-level pruning"))
           
         } else {
           
           if(stage == "individual prune"){
             
-            writeLines(paste0("individual-level pruning, subject ", k, " (",names(data_list)[k],")"))
+            writeLines(paste0("individual-level pruning"))
             
           } else {
             
-            writeLines(paste0("group-level pruning, subject ", k, " (",names(data_list)[k],")"))
+            writeLines(paste0("group-level pruning"))
             
           }
         
         }
-        
+        for (k in 1:n_subj)
+        z_list[[k]] <- return.zs(fit[[k]])
       } else{
         
         fit <- fit.model(
           syntax = c(base_syntax, fixed_syntax, add_syntax),
           data_file = data_list
         ) 
-        
+        for (k in 1:n_subj)
+          z_list[[k]] <- return.zs(fit[[k]])
       }
-      
-      z_list[[k]] <- return.zs(fit)
-      
-    }
+    
+
     
     if(!all(is.na(z_list))){
       drop_param <- lowest.z(z_list,

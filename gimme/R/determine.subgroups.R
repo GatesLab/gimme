@@ -36,7 +36,7 @@ determine.subgroups <- function(data_list,
   # out_path     = dat$out
   # sub_feature  = sub_feature
   #######################
-  
+  writeLines(paste0("subgroup-level search"))
   sub_membership  = NULL # appease CRAN check
   
   sub     <- list()
@@ -44,13 +44,18 @@ determine.subgroups <- function(data_list,
   mi_list <- list()
   converge <- matrix(,n_subj,1)
 
+  
+  fit <- lapply(seq_along(data_list), function(i){fit.model(
+    syntax= c(base_syntax, fixed_syntax, obj[[1]]$add_syntax),
+    data_file = data_list[[i]])
+  })
   for (k in 1:n_subj){
-    writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
-    fit          <- fit.model(syntax    = base_syntax,
-                              data_file = data_list[[k]])
-    z_list[[k]]  <- return.zs(fit)
-    mi_list[[k]] <- return.mis(fit, elig_paths)
-    converge[k]  <- lavInspect(fit, "converged")
+    # writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
+    # fit          <- fit.model(syntax    = base_syntax,
+    #                           data_file = data_list[[k]])
+    z_list[[k]]  <- return.zs(fit[[k]])
+    mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
+    converge[k]  <- lavInspect(fit[[k]], "converged")
   }
   
   names(z_list) <- names(mi_list) <- names(data_list)

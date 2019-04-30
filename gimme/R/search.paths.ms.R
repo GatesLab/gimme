@@ -65,25 +65,32 @@ search.paths.ms <- function(obj,
         mi_list <- list() 
         
         indices <- NULL
-      
-        for (k in 1:n_subj){
-          
+    
+          # kmg 04.30.2019 remove for loop for individuals; use lapply 
+        
           if (!is.null(prop_cutoff)){
             
-            fit  <- fit.model(
-              syntax= c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
-              data_file = data_list[[k]]
-            )
-            
-            # zf 2018/07/13: added filenames to output 
             if(!subgroup_stage){
-              writeLines(paste0("group-level search, subject ", k, " (",names(data_list)[k],")"))
+              writeLines(paste0("group-level search"))
             } else {
-              writeLines(paste0("subgroup-level search, subject ", k))
+              writeLines(paste0("subgroup-level search"))
             }
-            
-            
+           
+            fit <- lapply(seq_along(data_list), function(i){fit.model(
+              syntax= c(base_syntax, fixed_syntax, obj[[1]]$add_syntax),
+              data_file = data_list[[i]])
+            })
+
+                        if(!subgroup_stage){
+              writeLines(paste0("group-level search"))
+            } else {
+              writeLines(paste0("subgroup-level search"))
+            }
+            for (k in 1:n_subj)
+            mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
           } else {
+            
+            for (k in 1:n_subj){
             
             # individual level search
             fit <- fit.model(
@@ -103,11 +110,10 @@ search.paths.ms <- function(obj,
                                                  "srmr", "nnfi", "cfi"))
               } else indices <- NULL
             } else indices <- NULL
+            mi_list[[k]] <- return.mis(fit, elig_paths)
+            
           }
-          
-          
-          mi_list[[k]] <- return.mis(fit, elig_paths)
-        }
+           }
         
         
         
