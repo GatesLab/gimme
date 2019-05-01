@@ -57,7 +57,7 @@ prune.paths <- function(base_syntax,
         
         if (is.list(fixed_syntax)){
           fit <- lapply(seq_along(data_list), function(i){fit.model(
-            syntax= c(base_syntax, fixed_syntax[[k]],add_syntax),
+            syntax= c(base_syntax, fixed_syntax[[i]],add_syntax),
             data_file = data_list[[i]])
           })
           
