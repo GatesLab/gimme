@@ -46,7 +46,7 @@ determine.subgroups <- function(data_list,
 
   
   fit <- lapply(seq_along(data_list), function(i){fit.model(
-    syntax= c(base_syntax, fixed_syntax, obj[[1]]$add_syntax),
+    syntax= base_syntax,
     data_file = data_list[[i]])
   })
   for (k in 1:n_subj){
