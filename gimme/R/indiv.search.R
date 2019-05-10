@@ -6,13 +6,19 @@
 #' information.
 #' @return Lists associated with coefficients, fit indices, etc.
 #' @keywords internal 
-indiv.search <- function(dat, grp, ind){
+indiv.search <- function(dat, grp, ind, hybrid){
   
   if (!dat$agg){
     ind$ind_paths   <-  vector("list", dat$n_subj)
     ind$n_ind_paths <- 0
   } else {
     ind <- NULL
+  }
+  
+  if(!hybrid){
+    elig_paths   = dat$candidate_paths
+  } else{
+    elig_paths   = c(dat$candidate_paths, dat$candidate_corr)
   }
   
   status   <- list()
@@ -43,13 +49,15 @@ indiv.search <- function(dat, grp, ind){
       writeLines(paste0("individual-level search, subject ", k, " (", names(dat$ts_list)[k],")"))
     }
     
+    
+    
     ind_spec <- search.paths(base_syntax  = dat$syntax, 
                              fixed_syntax = c(grp$group_paths, 
                                               ind$sub_paths[[k]]),
                              add_syntax   = character(),
                              n_paths      = 0,
                              data_list    = data_list,
-                             elig_paths   = dat$candidate_paths,
+                             elig_paths   = elig_paths,
                              prop_cutoff  = NULL,
                              n_subj       = 1,
                              chisq_cutoff = qchisq(.99, 1)
@@ -74,7 +82,7 @@ indiv.search <- function(dat, grp, ind){
                                add_syntax   = ind_spec$add_syntax,
                                n_paths      = ind_spec$n_paths,
                                data_list    = data_list,
-                               elig_paths   = dat$candidate_paths,
+                               elig_paths   = elig_paths,
                                prop_cutoff  = NULL,
                                n_subj       = 1,
                                chisq_cutoff = 0)

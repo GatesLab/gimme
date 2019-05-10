@@ -17,7 +17,8 @@
 #'        conv_interval    = 1,
 #'        mult_vars        = NULL,
 #'        mean_center_mult = FALSE,
-#'        standardize      = FALSE)
+#'        standardize      = FALSE, 
+#'        hybrid           = FALSE)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 
 #' or matrix must contain one matrix for each individual containing a 
@@ -120,7 +121,8 @@ indSEM <- function(data   = NULL,
                    conv_interval = 1, 
                    mult_vars      = NULL,
                    mean_center_mult = FALSE,
-                   standardize    = FALSE){
+                   standardize    = FALSE,
+                   hybrid         = FALSE){
   
 
   dat  <- setup(data        = data,
@@ -145,7 +147,8 @@ indSEM <- function(data   = NULL,
 
   store <- indiv.search(dat, 
                         grp = NULL, 
-                        ind = dat$file_order)
+                        ind = dat$file_order,
+                        hybrid)
 
   final <- final.org(dat, 
                      grp      = NULL, 
@@ -163,7 +166,9 @@ indSEM <- function(data   = NULL,
               path_se_est = final$param_est,
               plots = store$plots,
               group_plot = final$samp_plot,
+              group_plot_cov = final$samp_plot_cov,
               path_counts = final$sample_counts,
+              cov_counts      = final$sample_counts_cov,
               vcov = store$vcov,
               vcovfull = store$vcovfull)
   
