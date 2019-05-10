@@ -529,9 +529,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
   
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
-      store <- indiv.search(dat, grp[[1]], ind[[1]])
+      store <- indiv.search(dat, grp[[1]], ind[[1]], hybrid)
     } else {
-      store <- indiv.search(dat, grp[[1]], ind[1])
+      store <- indiv.search(dat, grp[[1]], ind[1], hybrid)
     }
     
     if(!is.null(lv_model)){
