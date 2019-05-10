@@ -4,7 +4,8 @@
 \alias{subgroupStage}
 \title{Create structure of group search solutions.}
 \usage{
-subgroupStage(dat, grp, confirm_subgroup, sub_feature, ms_tol, ms_allow)
+subgroupStage(dat, grp, confirm_subgroup, elig_paths, sub_feature,
+  sub_method, ms_tol, ms_allow)
 }
 \description{
 Create structure of group search solutions.

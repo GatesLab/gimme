@@ -4,7 +4,7 @@
 \alias{return.mis}
 \title{Returns MIs from lavaan fit object.}
 \usage{
-return.mis(fit)
+return.mis(fit, elig_paths)
 }
 \arguments{
 \item{fit}{An object from lavaan.}

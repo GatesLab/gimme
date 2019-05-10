@@ -126,17 +126,27 @@ setup <- function (data,
     # zf: uncomment once changes pushed through final MIIV estimation
     # first let's look for single indicator LVs and extract the raw data:
     single_indicator_lvs <- lapply(seq_along(lv_model_all), function(i){
+      
       pt  <- lavaan::lavParTable(lv_model_all[[i]])
       lvs <- unique(pt[pt$op=="=~","lhs"])
-      do.call( "cbind",lapply(lvs, function(l){
-        if(length(pt[pt$op=="=~" & pt$lhs == l,"rhs"]) == 1){
-          keep <- pt[pt$op=="=~" & pt$lhs == l,"rhs"]
-          tmp <- ts_list_obs[[i]][,keep, drop = F]
-          colnames(tmp) <- l
-          tmp
-        }
-      }))
+      
+      lv_list <- list(); cnt <- 1
+               
+       for(l in 1:length(lvs)){
+          if(length(pt[pt$op=="=~" & pt$lhs == lvs[l],"rhs"]) == 1){
+            
+            keep <- pt[pt$op=="=~" & pt$lhs == lvs[l],"rhs"]
+            tmp <- ts_list_obs[[i]][,keep, drop = F]
+            colnames(tmp) <- lvs[l]
+            lv_list[[cnt]] <- tmp
+            cnt <- cnt + 1
+          } 
+       }        
+      
+       do.call( "cbind", lv_list)
+
     })
+    
     
     lv_names <- list()
     ov_names <- list()

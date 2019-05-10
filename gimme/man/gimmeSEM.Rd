@@ -13,6 +13,7 @@ gimmeSEM(data        = "",
          plot        = TRUE,
          subgroup    = FALSE,
          sub_feature = "lag & contemp",
+         sub_method = "Walktrap",
          confirm_subgroup = NULL,
          paths       = NULL,
          exogenous   = NULL,
@@ -28,8 +29,8 @@ gimmeSEM(data        = "",
          ms_allow         = FALSE,
          ms_tol           = 1e-5,
          lv_model         = NULL, 
+         lv_estimator     = "miiv",     
          lv_scores        = "regression",       
-         lv_estimator     = "miiv",             
          lv_miiv_scaling  = "first.indicator", 
          lv_final_estimator = "miiv")
 }
@@ -78,6 +79,10 @@ should be set to FALSE.  Defaults to FALSE.}
 "lagged" or "contemp" to subgroup solely on features related to lagged and contemporaneous 
 relations, respectively.}
 
+\item{sub_method}{Community detection method used to cluster individuals into subgroups. Options align 
+with those available in the igraph package: "Walktrap" (default), "Infomap", "Louvain", "Edge Betweenness", 
+"Label Prop", "Fast Greedy", "Leading Eigen", and "Spinglass".}
+
 \item{confirm_subgroup}{Dataframe. Option only available when subgroup = TRUE. Dataframe should contain two columns. The first
 column should specify file labels (the name of the data files without file extension), 
 and the second should contain integer values (beginning at 1) 
@@ -96,8 +101,10 @@ name with no separation. Defaults to NULL. #### Need to explain mult_vars too. #
 \item{exogenous}{Vector of variable names to be treated as exogenous (optional).
 That is, exogenous variable X can predict Y but cannot be predicted by Y.
 If no header is used, then variables should be referred to with V followed
-(with no separation) by the column number. If a header is used, variables
-should be referred to using variable names. Defaults to NULL.}
+(with no separation) by the column number.  If a header is used, variables should be referred 
+to using variable names. The default for exogenous variables is that lagged effects of the exogenous 
+variables are not included in the model search.  If lagged paths are wanted, "&lag" should be added to the end of the variable
+name with no separation. Defaults to NULL.}
 
 \item{conv_vars}{Vector of variable names to be convolved via smoothed Finite Impulse 
 Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
@@ -147,12 +154,12 @@ that ms_tol not be greater than the default, especially when standardize=TRUE.
 Defaults to 1e-5.}
 
 \item{lv_model}{Invoke latent variable modeling by providing the measurement model syntax here. lavaan
-conventions are used for relating observed variables to factors. Defaults to NULL}
+conventions are used for relating observed variables to factors. Defaults to NULL.}
+
+\item{lv_estimator}{Estimator used for factor analysis. Options are "miiv" (default), "pml" (pseudo-ML) or "svd".}
 
 \item{lv_scores}{Method used for estimating latent variable scores from parameters obtained from the factor analysis 
 when lv_model is not NULL. Options are: "regression" (Default), "bartlett".}
-
-\item{lv_estimator}{Estimator used for factor analysis. Options are "miiv" (default), "pml" (pseudo-ML) or "SVD".}
 
 \item{lv_miiv_scaling}{Type of scaling indicator to use when "miiv" selected for lv_estimator. Options are
 "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 

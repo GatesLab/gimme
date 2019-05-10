@@ -116,6 +116,7 @@ get.params <- function(dat, grp, ind, k){
     
     # zf added 2019-01-23
     ind_psi <- round(lavInspect(fit, "std")$psi, digits = 4)
+    ind_psi_unstd <- round(lavInspect(fit, "estimates")$psi, digits = 4)
     
     #rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
     #colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
@@ -134,6 +135,7 @@ get.params <- function(dat, grp, ind, k){
       
       # zf added 2019-01-23
       write.csv(ind_psi, file.path(dat$out, "allPsi.csv"),row.names = TRUE)
+      write.csv(ind_psi_unstd, file.path(dat$out, "allPsiUnstd.csv"),row.names = TRUE)
       
     } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
       write.csv(ind_betas, file.path(dat$ind_dir, 
@@ -147,6 +149,9 @@ get.params <- function(dat, grp, ind, k){
       write.csv(ind_psi, file.path(dat$ind_dir, 
                                      paste0(dat$file_order[k,2], 
                                             "Psi.csv")), row.names = TRUE)
+      write.csv(ind_psi_unstd, file.path(dat$ind_dir, 
+                                     paste0(dat$file_order[k,2], 
+                                            "PsiUnstd.csv")), row.names = TRUE)
       write.csv(ind_ses, file.path(dat$ind_dir,
                                    paste0(dat$file_order[k,2], 
                                           "StdErrors.csv")), row.names = TRUE)

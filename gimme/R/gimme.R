@@ -28,8 +28,8 @@
 #'          ms_allow         = FALSE,
 #'          ms_tol           = 1e-5,
 #'          lv_model         = NULL, 
+#'          lv_estimator     = "miiv",     
 #'          lv_scores        = "regression",       
-#'          lv_estimator     = "miiv",             
 #'          lv_miiv_scaling  = "first.indicator", 
 #'          lv_final_estimator = "miiv")
 #' @param data The path to the directory where the data files are located,
@@ -128,10 +128,10 @@
 #' that ms_tol not be greater than the default, especially when standardize=TRUE.     
 #' Defaults to 1e-5.
 #' @param lv_model Invoke latent variable modeling by providing the measurement model syntax here. lavaan
-#' conventions are used for relating observed variables to factors. Defaults to NULL
+#' conventions are used for relating observed variables to factors. Defaults to NULL.
+#' @param lv_estimator Estimator used for factor analysis. Options are "miiv" (default), "pml" (pseudo-ML) or "svd".
 #' @param lv_scores Method used for estimating latent variable scores from parameters obtained from the factor analysis 
 #' when lv_model is not NULL. Options are: "regression" (Default), "bartlett".
-#' @param lv_estimator Estimator used for factor analysis. Options are "miiv" (default), "pml" (pseudo-ML) or "SVD".
 #' @param lv_miiv_scaling Type of scaling indicator to use when "miiv" selected for lv_estimator. Options are
 #' "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
 #' (best one for the group), or "individual" (each individual has the best one for them according to R2). 
@@ -234,8 +234,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               ms_allow         = FALSE,
                               ms_tol           = 1e-5,
                               lv_model         = NULL, 
-                              lv_scores        = "regression",       # c("regression", "bartlett")
                               lv_estimator     = "miiv",             # c("miiv", "pml")
+                              lv_scores        = "regression",       # c("regression", "bartlett")
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv",
                               hybrid           = FALSE){          # c("miiv", "pml")
@@ -539,12 +539,10 @@ gimmeSEM <- gimme <- function(data             = NULL,
           ts_list_obs = dat$lvgimme$ts_list_obs,
           meas_model  = dat$lvgimme$model_list_dfa,
           lv_model    = lapply(store$syntax, function(x){x[!grepl("0\\*", x)]}),
-          miiv.dir    = file.path(dat$out,"miiv"),
+          miiv.dir    = ifelse(is.null(dat$out), NULL, file.path(dat$out,"miiv")),
           lv_final_estimator = lv_final_estimator
       )
     }
-    
-     
   
     print.gimme(x = sub[[1]],
                 y = subgroup,
