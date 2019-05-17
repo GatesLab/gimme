@@ -197,6 +197,7 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         "coefs"  = s10$ind_coefs,
         "betas"  = s10$ind_betas,
         "psi"    = s10$ind_psi, 
+        "psiunstd"  = s10$ind_psi_unstd, 
         "vcov"   = s10$ind_vcov,
         "plots"  = s10$ind_plot,
         "syntax" = s10$ind_syntax

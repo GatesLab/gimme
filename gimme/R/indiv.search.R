@@ -29,6 +29,8 @@ indiv.search <- function(dat, grp, ind, hybrid){
   vcovfull <- list()
   plots    <- list()
   syntax   <- list()
+  psi      <- list()
+  psiunstd <- list()
   
   n_ind    <- ifelse(dat$agg, 1, dat$n_subj) 
   
@@ -110,23 +112,28 @@ indiv.search <- function(dat, grp, ind, hybrid){
     vcovfull[[k]]   <- s10$ind_vcov_full
     plots[[k]]  <- s10$ind_plot
     syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k]])
+    psi[[k]]      <- s10$ind_psi
+    psiunstd[[k]] <- s10$ind_psi_unstd
   }
   
   if (dat$agg){
     names(status) <- names(fits) <- names(coefs) <- 
-      names(betas) <- names(vcov) <- names(plots) <- "all"
+      names(betas) <- names(vcov) <- names(plots) <- names(psi) <- names(psiunstd) <-"all"
     # } else if (ind$n_ind_paths[k] > 0 & !dat$agg){
     #   names(status) <- names(fits) <- names(coefs) <- 
     #     names(betas) <- names(vcov) <- names(plots) <- names(dat$ts_list)
   } else {
     names(status) <- names(fits) <- names(coefs) <- 
-      names(betas) <- names(vcov) <- names(vcovfull) <- names(plots) <- names(dat$ts_list)
+      names(betas) <- names(vcov) <- names(vcovfull) <- names(plots) <- 
+      names(psi) <- names(psiunstd) <- names(dat$ts_list)
   }
   
   res <- list("status" = status,
               "fits"   = fits,
               "coefs"  = coefs,
               "betas"  = betas,
+              "psi"     = psi,
+              "psiunstd" = psiunstd,
               "vcov"   = vcov,
               "vcovfull"   = vcovfull,
               "plots"  = plots,

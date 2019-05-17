@@ -1,3 +1,4 @@
+#' @keywords internal
 setup <- function (data,
                    sep,
                    header,
@@ -251,6 +252,7 @@ setup <- function (data,
     # zf: uncomment once changes pushed through final MIIV estimation
     if(!all(unlist(lapply(single_indicator_lvs,function(x){is.null(x)})))){
       ts_list <- lapply(seq_along(ts_list), function(i){
+        print(i)
         cbind(ts_list[[i]], single_indicator_lvs[[i]])
       })
     }

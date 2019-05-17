@@ -221,6 +221,7 @@ get.params <- function(dat, grp, ind, k){
     ind_vcov  <- NA
     ind_plot  <- NA
     ind_psi   <- NA
+    ind_psi_unstd   <- NA
     ind_vcov_full <- NA
   }
   
@@ -232,6 +233,7 @@ get.params <- function(dat, grp, ind, k){
               "ind_coefs" = ind_coefs, 
               "ind_betas" = ind_betas, 
               "ind_psi"   = ind_psi, 
+              "ind_psi_unstd" = ind_psi_unstd, 
               "ind_vcov"  = ind_vcov,
               "ind_vcov_full"  = ind_vcov_full,
               "ind_plot"  = ind_plot,

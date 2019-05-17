@@ -17,7 +17,8 @@ aggSEM(data   = "",
        conv_interval    = 1, 
        mult_vars        = NULL,
        mean_center_mult = FALSE,
-       standardize      = FALSE)
+       standardize      = FALSE, 
+       hybrid           = FALSE)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located, 
