@@ -556,9 +556,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        diagnos = diagnos,
                        store)
   
-    # these objects are used in print.gimmep
+    # these objects are used in both the print.gimmep and
+    # plot.gimmep convenience functions. 
     # if you change an object name here, 
-    # you need to change it in the print.gimmep.R
+    # please check plot.gimmep and print.gimmep
+    # to ensure compatibility
+    
     res <- list(data            = dat$ts_list,
                 path_est_mats   = store$betas,
                 varnames        = dat$varnames,
@@ -568,6 +571,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 fit             = final$fit,
                 path_se_est     = final$param_est,
                 plots           = store$plots,
+                group_plot      = final$samp_plot,
                 group_plot_paths      = final$samp_plot,
                 group_plot_cov  = final$samp_plot_corr,
                 sub_plots       = final$sub_plots,
