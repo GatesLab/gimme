@@ -4,10 +4,10 @@
 #' @description This function identifies structural equation models for each
 #' individual that consist of both group-level and individual-level paths.
 #' @usage
-#' gimmeSEM(data        = "",
-#'          out         = "",
-#'          sep         = "",
-#'          header      = ,
+#' gimmeSEM(data        = NULL,
+#'          out         = NULL,
+#'          sep         = NULL,
+#'          header      = NULL,
 #'          ar          = TRUE,
 #'          plot        = TRUE,
 #'          subgroup    = FALSE,
@@ -31,7 +31,8 @@
 #'          lv_estimator     = "miiv",     
 #'          lv_scores        = "regression",       
 #'          lv_miiv_scaling  = "first.indicator", 
-#'          lv_final_estimator = "miiv")
+#'          lv_final_estimator = "miiv", 
+#'          hybrid = FALSE)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -136,6 +137,8 @@
 #' "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
 #' (best one for the group), or "individual" (each individual has the best one for them according to R2). 
 #' @param lv_final_estimator Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML). 
+#' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
+#' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -571,10 +574,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 fit             = final$fit,
                 path_se_est     = final$param_est,
                 plots           = store$plots,
-                group_plot      = final$samp_plot,
-                group_plot_paths      = final$samp_plot,
-                group_plot_cov  = final$samp_plot_corr,
-                sub_plots       = final$sub_plots,
+                group_plot_paths= final$samp_plot,
+                group_plot_cov  = final$samp_plot_cov,
+                sub_plots_paths = final$sub_plots,
                 sub_plots_cov   = final$sub_plots_cov,
                 subgroup        = subgroup,
                 path_counts     = final$sample_counts,

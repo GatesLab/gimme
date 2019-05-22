@@ -42,7 +42,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     samp_plot <- NULL
     samp_plot_cov <- NULL
     sample_counts <- NULL
-    sample_counts_cov <- NULL
+    sample_counts_corr <- NULL
     # if (length(coefs[,1])>0){ # commented out stl 11.20.17
     if (dat$subgroup) {
       if (sub$n_subgroups != dat$n_subj){ # ensure everyone isn't in their own subgroup
@@ -338,13 +338,13 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
         dev.off()
         if(sum(sample_paths_corr)>0){
         pdf(file.path(dat$out, "summaryCovPlot.pdf"))
-        plot(samp_plot_corr)
+        plot(samp_plot_cov)
         dev.off()}
       }
       
     } else {
       samp_plot <- NULL
-      samp_plot_corr <- NULL
+      samp_plot_cov <- NULL
       }
     indiv_paths     <- coefs[, c("id", "lhs", "op", "rhs", "est.std", 
                                  "se", "z", "pvalue", "level")]
@@ -405,6 +405,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     }
     
     sample_counts <- NULL
+    sample_counts_corr <- NULL
+    samp_plot_cov <- NULL
     samp_plot     <- NULL
   }
   
@@ -424,7 +426,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
               sub_plots     = sub_plots,
               sub_plots_cov  = sub_plots_cov, 
               sample_counts = sample_counts,
-              sample_counts_cov = sample_counts_cov,
+              sample_counts_cov =    sample_counts_corr,
               sub_counts    = sub_counts,
               sub_counts_cov = sub_counts_cov,
               dx)  

@@ -72,6 +72,8 @@
 #' before being multiplied together. Defaults to FALSE. 
 #' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 #' standard deviation of one. Defaults to FALSE. 
+#' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
+#' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #'  @details
 #'  In main output directory:
 #'  \itemize{
