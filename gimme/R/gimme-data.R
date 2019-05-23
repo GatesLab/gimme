@@ -45,3 +45,16 @@ NULL
 #' @usage simDataLV
 #' @format A list of data frames with 20 individuals, who each have 500 observations on 9 variables.
 NULL
+
+#' Convolution with sFIR example, direct and modulatory effect
+#' 
+#' This object contains a list of simulated time series data designed to be used for HRF-GIMME 
+#' and has twenty-five individuals with 500 time points and 4 variables, or brain regions of interest, and
+#' one task vector i.e, exogenous variable. 
+#'
+#' @docType data
+#' @keywords datasets
+#' @name HRFsim
+#' @usage HRFsim
+#' @format A list of data frames with 25 individuals, who each have 500 observations on 5 variables.
+NULL
