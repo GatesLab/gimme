@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.5-1
-Date: 2019-02-18
+Version: 0.6-0
+Date: 2019-05-22
 Author: Stephanie Lane [aut, cre, trl],
     Kathleen Gates [aut],
     Zachary Fisher [aut], 
@@ -10,7 +10,8 @@ Author: Stephanie Lane [aut, cre, trl],
     Hallie Pike [ctb], 
     Cara Arizmendi [ctb],
     Teague Henry [ctb], 
-    Kelly Duffy [ctb]
+    Kelly Duffy [ctb], 
+    Lan Luo [ctb]
 Maintainer: KM Gates <gateskm@email.unc.edu>
 Depends: R (>= 3.0.2)
 Imports: lavaan (>= 0.5-19), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS

@@ -5,10 +5,10 @@
 \alias{gimme}
 \title{Group iterative multiple model estimation.}
 \usage{
-gimmeSEM(data        = "",
-         out         = "",
-         sep         = "",
-         header      = ,
+gimmeSEM(data        = NULL,
+         out         = NULL,
+         sep         = NULL,
+         header      = NULL,
          ar          = TRUE,
          plot        = TRUE,
          subgroup    = FALSE,
@@ -32,7 +32,8 @@ gimmeSEM(data        = "",
          lv_estimator     = "miiv",     
          lv_scores        = "regression",       
          lv_miiv_scaling  = "first.indicator", 
-         lv_final_estimator = "miiv")
+         lv_final_estimator = "miiv", 
+         hybrid = FALSE)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
@@ -166,6 +167,9 @@ when lv_model is not NULL. Options are: "regression" (Default), "bartlett".}
 (best one for the group), or "individual" (each individual has the best one for them according to R2).}
 
 \item{lv_final_estimator}{Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML).}
+
+\item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
+covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
 }
 \description{
 This function identifies structural equation models for each

@@ -3,15 +3,15 @@
 plot.gimmep <- function(x, file = NULL, subgroup = NULL, ...){
   if (is.null(file) & is.null(subgroup)) {
     cat("Please specify a file id for individual plots. Otherwise, summary plot is presented.")
-    plot(x$group_plot)
-    invisible(x$group_plot)
+    plot(x$group_plot_paths)
+    invisible(x$group_plot_paths)
   } else if (is.null(subgroup)){
     a <- x$plots[[file]]
     plot(a)
     invisible(a)
   } else if (is.null(file)){
     ## insert code here to grab subgroup plot
-    a <- x$sub_plots[[subgroup]]
+    a <- x$sub_plots_paths[[subgroup]]
     if (!is.list(a)){
       cat("Subgroup", subgroup, "contains one individual. No subgroup plot provided.") 
     } else {

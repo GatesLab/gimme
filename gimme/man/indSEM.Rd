@@ -84,6 +84,9 @@ before being multiplied together. Defaults to FALSE.}
 
 \item{standardize}{Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 standard deviation of one. Defaults to FALSE.}
+
+\item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
+covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
 }
 \description{
 This function identifies structural equation models for each
