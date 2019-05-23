@@ -542,7 +542,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
           ts_list_obs = dat$lvgimme$ts_list_obs,
           meas_model  = dat$lvgimme$model_list_dfa,
           lv_model    = lapply(store$syntax, function(x){x[!grepl("0\\*", x)]}),
-          miiv.dir    = ifelse(is.null(dat$out), NULL, file.path(dat$out,"miiv")),
+          miiv.dir    =  if(is.null(dat$out)) NULL else {file.path(dat$out,"miiv")},
           lv_final_estimator = lv_final_estimator
       )
     }
