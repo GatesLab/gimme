@@ -37,6 +37,8 @@ setup <- function (data,
   # Make print method for ctrlOpts class, similar to varLabels.
   #-------------------------------------------------------------#
   
+  
+  
   #-------------------------------------------------------------#
   # Assemble static control options.
   #
@@ -87,8 +89,6 @@ setup <- function (data,
   
   ts_list <- setupDataLists(data = data, ctrlOpts = ctrlOpts, lv_model = lv_model)
   
-  #-------------------------------------------------------------#
-  
   
   #-------------------------------------------------------------#
   # lv_gimme
@@ -99,6 +99,8 @@ setup <- function (data,
      lvgimme <- NULL
     
   } else {
+    
+    ts_list <- setupPrelimDataChecks(ts_list)
     
     ts_list_obs <- ts_list
     
