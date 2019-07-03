@@ -20,7 +20,7 @@ setupConvolve <- function(ts_list = NULL, varLabels = NULL, conv_length = 16, co
     
     if(any(apply(conv_use, 2, function(x) any(is.na(x) | is.infinite(x))))){
       
-      conv_use[]  <- apply(conv_use, 2, function(x) { imputeTS::na.kalman(stats::ts(x)) })
+      conv_use[]  <- apply(conv_use, 2, function(x) { imputeTS::na_kalman(stats::ts(x)) })
       
     }
     
