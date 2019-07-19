@@ -29,10 +29,13 @@ sFIR <- function(data,
   
   ### estimate beta 
   # get R2s to select which vector to use
+  if (dim(as.matrix(data))[2]> 1){
   R2 <- matrix(,length(data[1,]), 1)
   for (p in 1:length(data[1,]))
     R2[p]<- summary(lm(data[,p]~X_fir))$r.squared
   best <- which(R2 == max(R2))
+  } else 
+    best <- 1
   
   ### For smoothing
   C <- seq(1:length(t))%*%matrix(1, 1, length(t))
@@ -45,8 +48,11 @@ sFIR <- function(data,
   MRI[1:length(t),1:length(t)] = RI
   ## end smooth 
   
+  if (dim(as.matrix(data))[2]> 1){
   est_hrf <- solve(t(X_fir)%*%X_fir + 1^2*MRI)%*%t(X_fir)%*%data[,best]
-  #plot(ts(est_hrf))
+  } else
+    est_hrf <- solve(t(X_fir)%*%X_fir + 1^2*MRI)%*%t(X_fir)%*%data
+#plot(ts(est_hrf))
   conv_onsets <- convolve(as.numeric(stimuli), rev(est_hrf), type = c("open"))
   
   res <- list(est_rf = est_hrf, 

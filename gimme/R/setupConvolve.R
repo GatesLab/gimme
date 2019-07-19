@@ -1,13 +1,27 @@
-#' Convolve data.
+#' @name convolve
+#' @aliases  convolve setupConvolve
+#' @title Group iterative multiple model estimation.
+#' @description This function estimates the basis vectors related to responses following 
+#' a binary impulse and convolves that binary impulse vector. 
+#' @usage
+#' sFIR(ts_list = NULL, 
+#'      varLabels = NULL, 
+#'      conv_length = 16, 
+#'      conv_interval = 1)
 #'
 #' @param ts_list a list of dataframes.
-#' @param varLebels a list of variable sets.
+#' @param varLabels a list of variable sets. Contains varLabels$coln, all column names, varLabels$conv, 
+#' the names of variables to convolve, and varLabels$exog, a list of exogenous variables (if any).
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 #' for the hemodynamic response function. 
 #' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
 #' fMRI studies, this is the repetition time. Defaults to 1. 
-#' @keywords internal
-setupConvolve <- function(ts_list = NULL, varLabels = NULL, conv_length = 16, conv_interval = 1){
+#' @keywords setupConvolve
+#' @export convolve
+convolve <- setupConvolve <- function(ts_list = NULL, 
+                          varLabels = NULL, 
+                          conv_length = 16, 
+                          conv_interval = 1){
   
   # Satisfy CRAN checks
  ts = NULL
@@ -30,7 +44,7 @@ setupConvolve <- function(ts_list = NULL, varLabels = NULL, conv_length = 16, co
       
       if(any(is.na(stimuli))){
         stop(
-          "gimme ERROR: missing values in conv_vars not allowed"
+          "gimme ERROR: missing values in the binary impulse vector not allowed"
         )
       }
       
