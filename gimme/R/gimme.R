@@ -31,7 +31,8 @@
 #'          lv_estimator     = "miiv",     
 #'          lv_scores        = "regression",       
 #'          lv_miiv_scaling  = "first.indicator", 
-#'          lv_final_estimator = "miiv", 
+#'          lv_final_estimator = "miiv",
+#'          lasso_model_crit    = NULL,  
 #'          hybrid = FALSE)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
@@ -137,6 +138,8 @@
 #' "first.indicator" (Default; the first observed variable in the measurement equation is used), "group" 
 #' (best one for the group), or "individual" (each individual has the best one for them according to R2). 
 #' @param lv_final_estimator Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML). 
+#' @param lasso_model_crit When not null, invokes multiLASSO approach for the GIMME model search procedure. Arguments 
+#' indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation). 
 #' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @details
@@ -241,6 +244,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_scores        = "regression",       # c("regression", "bartlett")
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv",
+                              lasso_model_crit = NULL,
                               hybrid           = FALSE){          # c("miiv", "pml")
 
   # satisfy CRAN checks
@@ -261,8 +265,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
   if(ms_allow & ar){
-    writeLines("gimme WARNING: Multiple solutions not likely when ar=TRUE.",
-                " We recommend setting ar to FALSE.")
+    writeLines("gimme WARNING: Multiple solutions are not likely when ar=TRUE.",
+                " We recommend setting ar to FALSE if using ms_allow.")
   }
   
   #Error check for hybrid
@@ -272,6 +276,47 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
    sub_membership = NULL
+   
+   # if !is.null(lasso_model_crit)
+   # {
+   #   if(!is.null(mult_vars)){
+   #   ml <- strsplit(mult_vars, "*", fixed = TRUE)
+   #   
+   #   # identify which are exogenous and list those in 'interact_exogenous', then identify 'interact_with_exogneous'
+   #   
+   #   ## something like the below but not quite: 
+   #   #interact_exogenous <- exogenous[regexpr(ml, exogenous)<0]
+   #  # interact_with_exogenous <- ml[regexpr(ml, exogenous)<0]
+   #   
+   #   } else{
+   #     interatct_exogenous <- NULL
+   #     interact_with_exogenous <- NULL
+   #     }
+   #    
+   #   multiLASSO(data                       = data,
+   #              out                        = out,
+   #              sep                        = sep,
+   #              header                     = header,
+   #              ar                         = ar,
+   #              plot                       = plot,
+   #              conv_vars                  = conv_vars,
+   #              conv_length                = conv_length,
+   #              conv_interval              = conv_interval,
+   #              #mult_vars                  = mult_vars,
+   #              # mean_center_mult          = FALSE,
+   #              # standardize               = FALSE,
+   #              groupcutoff                = groupcutoff,
+   #              alpha                      = .5,
+   #              model_crit                 = lasso_model_crit,
+   #              penalties                  = NULL,
+   #              test_penalties             = FALSE,
+   #              exogenous                  = exogenous,
+   #              lag_exogenous              = FALSE,
+   #              interact_exogenous         = interact_exogenous, 
+   #              interact_with_exogenous    = interact_with_exogenous,
+   #              predict_with_interactions  = NULL)
+   #   
+   # } else {
 
   dat         <- setup(data                 = data,
                        sep                  = sep,
@@ -652,3 +697,4 @@ print.gimme <- function(x, y, z){
     writeLines(paste("Modularity =", round(x$modularity, digits = 5)))
   }
 }
+
