@@ -597,7 +597,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 z = dat)
   
     # wrap-up and create output
-    final <- final.org2(dat,
+    final <- final.org(dat,
                        grp,
                        sub,
                        sub_spec,
