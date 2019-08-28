@@ -66,8 +66,6 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                      ncol = (dat$n_vars_total))
           
           sub_s_coefs <- coefs[coefs$id %in% sub_spec[[s]]$sub_s_subjids, ]
-          sub_s_coefs$level[sub_s_coefs$param %in% unique(
-            unlist(ind[ind$sub_membership == s,]$ind_paths))] <- "ind"
           sub_s_coefs$level[sub_s_coefs$param %in% sub_spec[[s]]$sub_paths] <- "sub"
           sub_s_coefs$level[sub_s_coefs$param %in% sub_to_group] <- "group"
           sub_s_coefs$color[sub_s_coefs$level == "group"] <- "black"
@@ -118,9 +116,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
             lagged     <- sub_s_counts[1:(dat$n_lagged), ]
-            if (dat$n_exog_total>0){
-              lagged[,(dat$n_lagged-dat$n_exog_lag+1):(dat$n_lagged+dat$n_exog_total-dat$n_exog_lag)] <-0
-            }
+
             contemp    <- sub_s_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
             plot_vals  <- rbind(w2e(lagged), w2e(contemp))
             is_lagged  <- c(rep(TRUE, sum(lagged != 0)), rep(FALSE, sum(contemp != 0)))
@@ -284,9 +280,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       sample_paths_corr <- t(sample_counts_corr)/dat$n_subj
       
       lagged     <- sample_paths[1:(dat$n_lagged), ]
-      if (dat$n_exog_total>0){
-        lagged[,(dat$n_lagged-dat$n_exog_lag+1):(dat$n_lagged+dat$n_exog_total-dat$n_exog_lag)] <-0
-      }
+     
       contemp    <- sample_paths[(dat$n_lagged+1):(dat$n_vars_total), ]
       plot_vals  <- rbind(w2e(lagged), w2e(contemp))
       is_lagged  <- c(rep(TRUE, sum(lagged != 0)),
