@@ -598,10 +598,10 @@ gimmeSEM <- gimme <- function(data             = NULL,
   
     # wrap-up and create output
     final <- final.org(dat,
-                       grp,
-                       sub,
-                       sub_spec,
-                       diagnos,
+                       grp = grp[[1]],
+                       sub = sub[[1]],
+                       sub_spec = sub_spec[[1]],
+                       diagnos = diagnos,
                        store)
   
     # plot.gimmep convenience functions. 
