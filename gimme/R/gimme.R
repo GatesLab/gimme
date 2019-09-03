@@ -32,8 +32,7 @@
 #'          lv_scores        = "regression",       
 #'          lv_miiv_scaling  = "first.indicator", 
 #'          lv_final_estimator = "miiv",
-#'          lasso_model_crit    = NULL,  
-#'          hybrid = FALSE)
+#'          lasso_model_crit    = NULL)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -140,8 +139,6 @@
 #' @param lv_final_estimator Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML). 
 #' @param lasso_model_crit When not null, invokes multiLASSO approach for the GIMME model search procedure. Arguments 
 #' indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation). 
-#' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
-#' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -244,8 +241,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_scores        = "regression",       # c("regression", "bartlett")
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv",
-                              lasso_model_crit = NULL,
-                              hybrid           = FALSE){          # c("miiv", "pml")
+                              lasso_model_crit = NULL){          # c("miiv", "pml")
 
   # satisfy CRAN checks
   ind     = NULL
@@ -317,7 +313,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
    #              predict_with_interactions  = NULL)
    #   
    # } else {
-
+   hybrid = FALSE
+   
   dat         <- setup(data                 = data,
                        sep                  = sep,
                        header               = header,
