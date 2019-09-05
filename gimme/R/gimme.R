@@ -242,6 +242,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv",
                               lasso_model_crit = NULL){          # c("miiv", "pml")
+  
+  # zf: horrible hack to get gimme working
+  hybrid <- FALSE
 
   # satisfy CRAN checks
   ind     = NULL
