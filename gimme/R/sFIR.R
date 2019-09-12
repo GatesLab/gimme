@@ -53,7 +53,7 @@ sFIR <- function(data,
   } else
     est_hrf <- solve(t(X_fir)%*%X_fir + 1^2*MRI)%*%t(X_fir)%*%data
 #plot(ts(est_hrf))
-  conv_onsets <- convolve(as.numeric(stimuli), rev(est_hrf), type = c("open"))
+  conv_onsets <- stats::convolve(as.numeric(stimuli), rev(est_hrf), type = c("open"))
   
   res <- list(est_rf = est_hrf, 
               conv_stim_onsets = conv_onsets)

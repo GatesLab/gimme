@@ -4,7 +4,7 @@
 #' @description This function estimates the basis vectors related to responses following 
 #' a binary impulse and convolves that binary impulse vector. 
 #' @usage
-#' sFIR(ts_list = NULL, 
+#' convolveFIR(ts_list = NULL, 
 #'      varLabels = NULL, 
 #'      conv_length = 16, 
 #'      conv_interval = 1)
@@ -17,8 +17,8 @@
 #' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
 #' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @keywords setupConvolve
-#' @export convolve
-convolve <- setupConvolve <- function(ts_list = NULL, 
+#' @export convolveFIR
+convolveFIR <- setupConvolve <- function(ts_list = NULL, 
                           varLabels = NULL, 
                           conv_length = 16, 
                           conv_interval = 1){

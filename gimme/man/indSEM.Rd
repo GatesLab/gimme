@@ -17,8 +17,7 @@ indSEM(data   = NULL,
        conv_interval    = 1,
        mult_vars        = NULL,
        mean_center_mult = FALSE,
-       standardize      = FALSE, 
-       hybrid           = FALSE)
+       standardize      = FALSE)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located, 
@@ -84,9 +83,6 @@ before being multiplied together. Defaults to FALSE.}
 
 \item{standardize}{Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 standard deviation of one. Defaults to FALSE.}
-
-\item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
-covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
 }
 \description{
 This function identifies structural equation models for each

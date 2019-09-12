@@ -23,16 +23,18 @@ These functions include \code{\link{gimmeSEM}}, which provides both group-
 }
 \author{
 {
-   Stephanie Lane [aut, cre, trl],\cr 
-   Kathleen Gates [aut], \cr
+   Stephanie Lane [aut, trl],\cr 
+   Kathleen Gates [aut, cre], \cr
    Zachary Fisher [aut],  \cr
+   Cara Arizmendi [aut], \cr
    Peter Molenaar [aut], \cr
    Michael Hallquist [ctb], \cr
    Hallie Pike [ctb],  \cr
    Cara Arizmendi [ctb], \cr
    Teague Henry [ctb], \cr
    Kelly Duffy [ctb], \cr
-   Lan Luo [ctb]
+   Lan Luo [ctb], \cr
+   Adriene Beltz [csp]
 }
 Maintainer: KM Gates \email{gateskm@email.unc.edu}
 }

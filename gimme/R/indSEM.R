@@ -17,7 +17,8 @@
 #'        conv_interval    = 1,
 #'        mult_vars        = NULL,
 #'        mean_center_mult = FALSE,
-#'        standardize      = FALSE)
+#'        standardize      = FALSE,
+#'        hybrid = FALSE)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 
 #' or matrix must contain one matrix for each individual containing a 
@@ -68,6 +69,8 @@
 #' before being multiplied together. Defaults to FALSE. 
 #' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 #' standard deviation of one. Defaults to FALSE. 
+#' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
+#' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -120,9 +123,8 @@ indSEM <- function(data   = NULL,
                    conv_interval = 1, 
                    mult_vars      = NULL,
                    mean_center_mult = FALSE,
-                   standardize    = FALSE){
-  
-  hybrid = FALSE
+                   standardize    = FALSE,
+                   hybrid = FALSE){
   
   dat  <- setup(data        = data,
                 sep         = sep,

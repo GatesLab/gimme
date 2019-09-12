@@ -15,7 +15,6 @@
 #'          sub_method = "Walktrap",
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
-#'          exogenous   = NULL,
 #'          conv_vars   = NULL,
 #'          conv_length = 16, 
 #'          conv_interval = 1,
@@ -32,7 +31,8 @@
 #'          lv_scores        = "regression",       
 #'          lv_miiv_scaling  = "first.indicator", 
 #'          lv_final_estimator = "miiv",
-#'          lasso_model_crit    = NULL)
+#'          lasso_model_crit    = NULL, 
+#'          hybrid = TRUE)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -59,7 +59,7 @@
 #' by the column number. If a
 #' header is used, variables should be referred to using variable names.
 #' To reference lag variables, "lag" should be added to the end of the variable
-#' name with no separation. Defaults to NULL. #### Need to explain mult_vars too. ####
+#' name with no separation. Defaults to NULL. 
 #' @param exogenous Vector of variable names to be treated as exogenous (optional).
 #' That is, exogenous variable X can predict Y but cannot be predicted by Y.
 #' If no header is used, then variables should be referred to with V followed
@@ -139,6 +139,8 @@
 #' @param lv_final_estimator Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML). 
 #' @param lasso_model_crit When not null, invokes multiLASSO approach for the GIMME model search procedure. Arguments 
 #' indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation). 
+#' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
+#' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -241,9 +243,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_scores        = "regression",       # c("regression", "bartlett")
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv",
-                              lasso_model_crit = NULL){          # c("miiv", "pml")
+                              lasso_model_crit = NULL, 
+                              hybrid = FALSE){          # c("miiv", "pml")
   
-  # zf: horrible hack to get gimme working
   hybrid <- FALSE
 
   # satisfy CRAN checks
@@ -316,8 +318,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
    #              predict_with_interactions  = NULL)
    #   
    # } else {
-   hybrid = FALSE
-   
+
   dat         <- setup(data                 = data,
                        sep                  = sep,
                        header               = header,

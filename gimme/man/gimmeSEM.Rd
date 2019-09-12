@@ -16,7 +16,6 @@ gimmeSEM(data        = NULL,
          sub_method = "Walktrap",
          confirm_subgroup = NULL,
          paths       = NULL,
-         exogenous   = NULL,
          conv_vars   = NULL,
          conv_length = 16, 
          conv_interval = 1,
@@ -32,8 +31,8 @@ gimmeSEM(data        = NULL,
          lv_estimator     = "miiv",     
          lv_scores        = "regression",       
          lv_miiv_scaling  = "first.indicator", 
-         lv_final_estimator = "miiv", 
-         hybrid = FALSE)
+         lv_final_estimator = "miiv",
+         lasso_model_crit    = NULL)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
@@ -97,14 +96,6 @@ then variables should be referred to with V followed (with no separation)
 by the column number. If a
 header is used, variables should be referred to using variable names.
 To reference lag variables, "lag" should be added to the end of the variable
-name with no separation. Defaults to NULL. #### Need to explain mult_vars too. ####}
-
-\item{exogenous}{Vector of variable names to be treated as exogenous (optional).
-That is, exogenous variable X can predict Y but cannot be predicted by Y.
-If no header is used, then variables should be referred to with V followed
-(with no separation) by the column number.  If a header is used, variables should be referred 
-to using variable names. The default for exogenous variables is that lagged effects of the exogenous 
-variables are not included in the model search.  If lagged paths are wanted, "&lag" should be added to the end of the variable
 name with no separation. Defaults to NULL.}
 
 \item{conv_vars}{Vector of variable names to be convolved via smoothed Finite Impulse 
@@ -168,8 +159,8 @@ when lv_model is not NULL. Options are: "regression" (Default), "bartlett".}
 
 \item{lv_final_estimator}{Estimator for final estimations. "miiv" (Default) or "pml" (pseudo-ML).}
 
-\item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 
-covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
+\item{lasso_model_crit}{When not null, invokes multiLASSO approach for the GIMME model search procedure. Arguments 
+indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation).}
 }
 \description{
 This function identifies structural equation models for each
