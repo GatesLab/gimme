@@ -24,7 +24,8 @@ determine.subgroups <- function(data_list,
                                 confirm_subgroup, 
                                 out_path = NULL,
                                 sub_feature,
-                                sub_method){
+                                sub_method,
+                                sub_sim_perc){
   #######################
   # base_syntax  = c(dat$syntax, grp[[i]]$group_paths)
   # data_list    = dat$ts_list
@@ -130,7 +131,13 @@ determine.subgroups <- function(data_list,
   }
   
   sim           <- sim_mi + sim_z
-  sim           <- sim - min(sim, na.rm = TRUE)
+  if (sub_sim_perc == 0){
+    sim           <- sim - min(sim, na.rm = TRUE)
+  } else {
+    toremove <- quantile(sim[upper.tri(tt, diag = FALSE)], (sub_sim_perc/100))
+    sim[which(sim <= toremove)] = 0
+    }
+      
   diag(sim)     <- 0
   colnames(sim) <- rownames(sim) <- names(mi_list)
   if(is.null(confirm_subgroup)){
