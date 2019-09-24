@@ -81,11 +81,6 @@ search.paths.ms <- function(obj,
               data_file = data_list[[i]])
             })
 
-                        if(!subgroup_stage){
-              writeLines(paste0("group-level search"))
-            } else {
-              writeLines(paste0("subgroup-level search"))
-            }
             for (k in 1:n_subj)
             mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
           } else {
