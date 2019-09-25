@@ -25,15 +25,13 @@ highest.mi <- function(mi_list,
                        allow.mult,
                        ms_tol){
   
-
-  
   mi  = NULL # appease CRAN check
   sig = NULL # appease CRAN check
   param  = NULL # appease CRAN check
   
-  mi_list       <- mi_list[!is.na(mi_list)]    
-  n_converge    <- length(mi_list)
-  mi_list       <- do.call("rbind", mi_list)
+  mi_list_na       <- mi_list[!is.na(mi_list)]    # retain list form for later use
+  n_converge    <- length(mi_list_na)
+  mi_list       <- do.call("rbind", mi_list_na)
   
   mi_list$param <- paste0(mi_list$lhs, mi_list$op, mi_list$rhs)
   
@@ -55,9 +53,7 @@ highest.mi <- function(mi_list,
   # Group search ongoing...
   #------------------------------------------------------#
   if (!is.null(prop_cutoff)){
-    
     if(allow.mult){
-      
       # if there are good solutions
       if (mi_list$count[1] > (prop_cutoff*n_converge)){
         
@@ -74,28 +70,57 @@ highest.mi <- function(mi_list,
         add_param <- NA
         
       }
-       
-  
+      
     } else {
-      
-      add_param <- ifelse(
-        mi_list$count[1] > (prop_cutoff*n_converge),
-        mi_list$param[1], 
-        NA
-      )
-      
-      if (n_converge <= (n_subj/2)) { 
+      whichone <- 1
+      go <- 0
+      while(go == 0) { # for directionality search implemented after convo w Peter, Sy-Miin, & Jonathon
         
-        add_param <- NA
+        mi_list_ms <- mi_list[order(-mi_list$count, -mi_list$mean), ]
+        red_mi     <- mi_list_ms[whichone,]
+        
+        # if the opposite direction is significant for > proportion, go indiv by indiv and ensure its preferred in one direction > groupcutoff in one direction
+        red_lhs <- strsplit(mi_list_ms$param[whichone], "~")[[1]][1]
+        red_rhs <- strsplit(mi_list_ms$param[whichone], "~")[[1]][2]
+        opposite <- paste0(red_rhs, "~", red_lhs)
+        count_red <- 0
+        count_opp <- 0 
+        if (length(which(mi_list_ms$param == opposite)>0)) {
+          if (!grepl("lag", mi_list_ms$param[whichone]) && mi_list[which(mi_list_ms$param == opposite), 6] >= (prop_cutoff*n_converge))
+          {
+            for (p in 1:length(mi_list_na)){
+              grab_red_mi  <- mi_list_na[[p]][which(mi_list_na[[p]]$lhs == red_lhs),]
+              red_mi_value <- grab_red_mi[which(grab_red_mi$rhs == red_rhs),]$mi
+              grab_opp_mi  <- mi_list_na[[p]][which(mi_list_na[[p]]$lhs == red_rhs),]
+              opp_mi_value <- grab_opp_mi[which(grab_opp_mi$rhs == red_lhs),]$mi
+              ifelse(red_mi_value>opp_mi_value, (count_red = count_red+1), (count_opp = count_opp+1))
+            }
+          }
+          if ((count_opp-count_red >=prop_cutoff)){ 
+            add_param<- opposite
+            go <- 1} else if ((count_red-count_opp) >= prop_cutoff){
+              add_param<- red_mi$param
+              go <- 1} else{
+                go <- 0 # directionality could not be determined for the group level, try next MI
+                whichone <- whichone + 1}
+        } else {
+          go <- 1
+          add_param <- ifelse(
+            mi_list$count[whichone] > (prop_cutoff*n_converge),
+            mi_list$param[whichone], 
+            NA)
+        }
         
       }
-      
     }
-
     
-  #------------------------------------------------------#
-  # Individual search ongoing...
-  #------------------------------------------------------#
+    if (n_converge <= (n_subj/2)) { 
+      
+      add_param <- NA
+    }
+    #------------------------------------------------------#
+    # Individual search ongoing...
+    #------------------------------------------------------#
   } else {
     
     
@@ -107,14 +132,14 @@ highest.mi <- function(mi_list,
       add_param  <- unlist(lapply(seq_along(1:nrow(red_mi)), function(i){
         red_mi$param[i]
       }))
-        
+      
     } else {
-        
-        add_param <- mi_list_ms$param[1L]
-        
+      
+      add_param <- mi_list_ms$param[1L]
+      
     }
-       
-
+    
+    
     if (count.excellent(indices) >= 2) {
       
       add_param <- NA

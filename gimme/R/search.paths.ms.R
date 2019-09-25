@@ -116,7 +116,7 @@ search.paths.ms <- function(obj,
         # Add the parameters with the largest MI
         #------------------------------------------------------#
         if (!all(is.na(mi_list))){
-          
+          if (ms_allow)
           add_p     <- highest.mi(mi_list      = mi_list,
                                   indices      = indices,
                                   elig_paths   = elig_paths,
@@ -125,6 +125,15 @@ search.paths.ms <- function(obj,
                                   chisq_cutoff = chisq_cutoff,
                                   allow.mult   = TRUE,
                                   ms_tol       = ms_tol)
+          if (!ms_allow)
+            add_p     <- highest.mi(mi_list      = mi_list,
+                                    indices      = indices,
+                                    elig_paths   = elig_paths,
+                                    prop_cutoff  = prop_cutoff, 
+                                    n_subj       = n_subj,
+                                    chisq_cutoff = chisq_cutoff,
+                                    allow.mult   = FALSE,
+                                    ms_tol       = ms_tol)
           
           add_param <- add_p$add_param
           mi_info   <- add_p$mi_list
