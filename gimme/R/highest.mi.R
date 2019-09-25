@@ -96,7 +96,7 @@ highest.mi <- function(mi_list,
               ifelse(red_mi_value>opp_mi_value, (count_red = count_red+1), (count_opp = count_opp+1))
             }
           }
-          if ((count_opp-count_red >=prop_cutoff)){ 
+          if ((count_opp-count_red) >=prop_cutoff){ 
             add_param<- opposite
             go <- 1} else if ((count_red-count_opp) >= prop_cutoff){
               add_param<- red_mi$param

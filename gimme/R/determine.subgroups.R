@@ -74,11 +74,26 @@ determine.subgroups <- function(data_list,
   
   mi_list_temp <- lapply(mi_list, 
                          function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
-                         x$sig   <- ifelse(x$mi > chisq_cutoff, 1, 0)
+                         x$sig <- x$dir <- ifelse(x$mi > chisq_cutoff, 1, 0)
                          return(x)})
   
   mi_list <- lapply(mi_list_temp, 
                     function(x){subset(x, x$param %in% elig_paths)})
+  
+  # consider which direction is better when adding contemporaneous similarity
+  for (p in 1:length(mi_list)) {
+    for (r in 1:length(mi_list[[p]][,1])) {
+      if (mi_list[[p]]$dir[r] == 1) {
+        grab_opp_mi  <- mi_list[[p]][which(mi_list[[p]]$lhs == mi_list[[p]][r,]$rhs),]
+        opp_mi_value <- grab_opp_mi[which(grab_opp_mi$rhs == mi_list[[p]][r,]$lhs),]$mi
+        if (length(opp_mi_value)>0) {
+          if(opp_mi_value>mi_list[[p]][r,]$mi) 
+            mi_list[[p]][r,]$dir <- 0
+        }
+      }
+    }
+  }
+
   
   # if no group-level paths added, don't consider z_list
   if (length(which(is.na(z_list)))==0)
@@ -122,10 +137,10 @@ determine.subgroups <- function(data_list,
   
   for (i in 1:length(mi_list)){
     for (j in 1:length(mi_list)){
-      sim_mi[i,j] <- sum(mi_list[[i]]$sig == 1 & mi_list[[j]]$sig == 1 & 
+      sim_mi[i,j] <- sum(mi_list[[i]]$dir == 1 & mi_list[[j]]$dir == 1 & 
                            sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc), na.rm = TRUE)
       if (length(which(is.na(z_list)))==0)
-      sim_z[i,j]  <- sum(z_list[[i]]$sig == 1 & z_list[[j]]$sig == 1 &
+      sim_z[i,j]  <- sum(z_list[[i]]$dir == 1 & z_list[[j]]$dir == 1 &
                            sign(z_list[[i]]$z) == sign(z_list[[j]]$z), na.rm = TRUE)
     }
   }
