@@ -106,13 +106,13 @@ get.params <- function(dat, grp, ind, k){
     # if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
     ind_betas <- round(lavInspect(fit, "std")$beta, digits = 4)
     ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
-    
-    ind_betas <- ind_betas[(dat$n_lagged+1):(dat$n_vars_total), ]
-    ind_ses   <- ind_ses[(dat$n_lagged+1):(dat$n_vars_total), ]
-    
+
     #added to ensure correct ordering in matrices
-    ind_betas <- ind_betas[dat$varLabels$endo,]
+    ind_betas <- ind_betas[dat$varLabels$orig,]
     ind_betas <- ind_betas[,dat$varLabels$coln]
+    
+    ind_ses <- ind_ses[dat$varLabels$orig,]
+    ind_ses <- ind_ses[,dat$varLabels$coln]
     
     # zf added 2019-01-23
     ind_psi <- round(lavInspect(fit, "std")$psi, digits = 4)
