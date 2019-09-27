@@ -48,6 +48,8 @@ highest.mi <- function(mi_list,
   mi_list   <- subset(mi_list, !duplicated(param))
   mi_list   <- mi_list[order(-mi_list$count, -mi_list$sum), ]
   
+  # we need to look at the means rather than the sum
+  mi_list_ms <- mi_list[order(-mi_list$count, -mi_list$mean), ]
   
   #------------------------------------------------------#
   # Group search ongoing...
@@ -57,8 +59,6 @@ highest.mi <- function(mi_list,
       # if there are good solutions
       if (mi_list$count[1] > (prop_cutoff*n_converge)){
         
-        # we need to look at the means rather than the sum
-        mi_list_ms <- mi_list[order(-mi_list$count, -mi_list$mean), ]
         red_mi     <- mi_list_ms[mi_list_ms$mean >= (mi_list_ms$mean[1]-ms_tol) & mi_list_ms$count == mi_list$count[1], , drop = FALSE]
         add_param  <- unlist(lapply(seq_along(1:nrow(red_mi)), function(i){
           red_mi$param[i]
