@@ -25,7 +25,8 @@ determine.subgroups <- function(data_list,
                                 out_path = NULL,
                                 sub_feature,
                                 sub_method,
-                                sub_sim_perc){
+                                sub_sim_perc,
+                                hybrid){
   #######################
   # base_syntax  = c(dat$syntax, grp[[i]]$group_paths)
   # data_list    = dat$ts_list

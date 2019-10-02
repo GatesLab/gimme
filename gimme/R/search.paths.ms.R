@@ -34,7 +34,8 @@ search.paths.ms <- function(obj,
                             chisq_cutoff,
                             subgroup_stage,
                             ms_allow,
-                            ms_tol){
+                            ms_tol,
+                            hybrid){
   
   
   #-----------------------------------------------#

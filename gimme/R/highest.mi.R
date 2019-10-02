@@ -23,7 +23,8 @@ highest.mi <- function(mi_list,
                        n_subj,
                        chisq_cutoff,
                        allow.mult,
-                       ms_tol){
+                       ms_tol,
+                       hybrid){
   
   mi  = NULL # appease CRAN check
   sig = NULL # appease CRAN check
