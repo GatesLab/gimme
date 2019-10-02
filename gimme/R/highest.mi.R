@@ -55,7 +55,7 @@ highest.mi <- function(mi_list,
   # Group search ongoing...
   #------------------------------------------------------#
   if (!is.null(prop_cutoff)){
-    if(allow.mult){
+    if(allow.mult | hybrid){
       # if there are good solutions
       if (mi_list$count[1] > (prop_cutoff*n_converge)){
         
@@ -124,7 +124,7 @@ highest.mi <- function(mi_list,
   } else {
     
     
-    if(allow.mult){
+    if(allow.mult | hybrid){
       
       # we need to look at the means rather than the sum
       mi_list_ms <- mi_list[order(-mi_list$count, -mi_list$mean), ]

@@ -249,8 +249,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lasso_model_crit = NULL, 
                               hybrid = FALSE){          # c("miiv", "pml")
   
-  hybrid <- FALSE
-
   # satisfy CRAN checks
   ind     = NULL
   varnames = NULL
