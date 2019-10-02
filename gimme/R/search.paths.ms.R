@@ -125,7 +125,8 @@ search.paths.ms <- function(obj,
                                   n_subj       = n_subj,
                                   chisq_cutoff = chisq_cutoff,
                                   allow.mult   = TRUE,
-                                  ms_tol       = ms_tol)
+                                  ms_tol       = ms_tol,
+                                  hybrid       = hybrid)
           if (!ms_allow)
             add_p     <- highest.mi(mi_list      = mi_list,
                                     indices      = indices,
@@ -134,7 +135,8 @@ search.paths.ms <- function(obj,
                                     n_subj       = n_subj,
                                     chisq_cutoff = chisq_cutoff,
                                     allow.mult   = FALSE,
-                                    ms_tol       = ms_tol)
+                                    ms_tol       = ms_tol,
+                                    hybrid       = hybrid)
           
           add_param <- add_p$add_param
           mi_info   <- add_p$mi_list

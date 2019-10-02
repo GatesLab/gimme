@@ -62,7 +62,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
       chisq_cutoff = qchisq(.99, 1),
       subgroup_stage = FALSE,
       ms_allow       = TRUE,
-      ms_tol         = ms_tol
+      ms_tol         = ms_tol,
+      hybrid         = hybrid
     )
     
     s1.ind <- lapply(seq_along(s1.ind), function(i){

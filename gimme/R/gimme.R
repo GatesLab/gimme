@@ -393,7 +393,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
     chisq_cutoff   = qchisq(1-.05/dat$n_subj, 1),
     subgroup_stage = FALSE,
     ms_allow       = ms_allow,
-    ms_tol         = ms_tol
+    ms_tol         = ms_tol, 
+    hybrid         = hybrid
   )
   
   
@@ -512,7 +513,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         sub_method,
         ms_tol   = ms_tol,
         ms_allow = FALSE,
-        sub_sim_perc = sub_sim_perc
+        sub_sim_perc = sub_sim_perc,
+        hybrid
       )
     })
 
