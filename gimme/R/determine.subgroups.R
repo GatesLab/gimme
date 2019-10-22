@@ -156,14 +156,30 @@ determine.subgroups <- function(data_list,
   
   sim           <- sim_mi + sim_z
   if (sub_sim_perc == 0){
-    sim           <- sim - min(sim, na.rm = TRUE)
+    res <- nloptr::nloptr(
+      x0=.5,  # starting value
+      m = sim,  # similarity matrix
+      sub_method = sub_method,
+      eval_f = modmax, # objective function
+      lb = .01, # upper bound
+      ub = .99, # lower bound
+      opts = list(
+        "algorithm"="NLOPT_LN_NELDERMEAD",
+        "xtol_rel"=1.0e-8,
+        maxeval = 500)
+    )
+    sim[which(sim <= quantile(sim[upper.tri(sim, diag = FALSE)], (res$solution)))] <- 0
   } else {
     toremove <- quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_perc/100))
     sim[which(sim <= toremove)] = 0
     }
       
   diag(sim)     <- 0
+  lay.sim = sim
+    colnames(lay.sim) = rownames(lay.sim) = NULL
+  # write.table(sim, file = paste(out_path, '/sim mat.csv', sep = ''), sep = ',')
   colnames(sim) <- rownames(sim) <- names(mi_list)
+  colnames(lay.sim) <- rownames(lay.sim) <- NULL
   if(is.null(confirm_subgroup)){
     g            <- graph.adjacency(sim, mode = "undirected", weighted = TRUE)
     weights      <- E(g)$weight
@@ -183,6 +199,17 @@ determine.subgroups <- function(data_list,
       res        <- cluster_louvain(g, weights = weights)
     if (sub_method == "Spinglass")
       res        <- cluster_spinglass(g, weights = weights)
+    
+    
+    e = igraph::get.edgelist(igraph::graph.adjacency(lay.sim, mode = "undirected", weighted = TRUE))
+    l = qgraph::qgraph.layout.fruchtermanreingold(e,
+                                                  vcount = vcount(g), weights = weights/5,
+                                                  area = 8*(vcount(g)^2),
+                                                  repulse.rad = (vcount(g)^3.1))
+    par(mfrow = c(1, 1), mar = c(0, 0, 0, 0))
+    pdf(file.path(paste(out_path,'/Subgroups Plot.pdf', sep = '')))
+    plot(res, g, layout = l)
+    dev.off() 
     
     sub_mem    <- data.frame(names      = names(membership(res)), 
                              sub_membership = as.numeric(membership(res)))
