@@ -269,9 +269,15 @@ create.tree <- function(history, subgroup, individual = FALSE, all.ind = FALSE){
       for(i in 1:length(hist_list)){ 
         for(j in 1:length(hist_list[[i]])){
           for(k in 1:length(hist_list[[i]][[j]])){
-            tmp_list <- hist_list[[i]][[j]][[k]]
-            names(tmp_list) <- paste0("V", 1:length(tmp_list))
-            new_list <- append(new_list, list(tmp_list))
+            if(!is.null(hist_list[[i]][[j]][[k]])){
+              tmp_list <- hist_list[[i]][[j]][[k]]
+              names(tmp_list) <- paste0("V", 1:length(tmp_list))
+              new_list <- append(new_list, list(tmp_list))
+            } else {
+              temp_vec <- c(NA)
+              names(temp_vec) <- "V1"
+              new_list <- append(new_list, list(temp_vec))
+            }
           }
         }
       }
