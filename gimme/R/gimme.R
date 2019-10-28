@@ -126,7 +126,8 @@
 #' @param ms_allow Logical. If TRUE provides multiple solutions when more than one path has identical 
 #' modification index values.  When ms_allow=TRUE, it is recommended
 #' to set ar=FALSE.  Multiple solutions are unlikely to be found when ar=TRUE.  Additionally,
-#' subgroup should be set to FALSE.
+#' subgroup should be set to FALSE.  Output files for individuals with multiple solutions will represent the last solution 
+#' found for the individual, not necessarily the best solution for the individual.
 #' @param ms_tol Precision used when evaluating similarity of modification indices when ms_allow = TRUE.  We recommend
 #' that ms_tol not be greater than the default, especially when standardize=TRUE.     
 #' Defaults to 1e-5.
