@@ -54,19 +54,25 @@ batch.create.tree <- function(hist, ind_hist, ind_fit, subgroup, names.ts_list, 
       tree_ind
     })
     
-    grp_hist_i <- lapply(seq_along(final_grp_hist), function(i){
-      list(
-        "subj"= NA,
-        "add_syntax" =  final_grp_hist[[i]]$add_syntax,
-        "grp_sol" = i,
-        "ind_sol" = NA,
-        "pruned" = final_grp_hist[[i]]$pruned,
-        "stage"  = "group",
-        "fit" = NA
-      )
-    })
+    
+    if(final_grp_hist[[1]]$n_paths == 0){
+      trees_grp <- NA
+    } else {
+      grp_hist_i <- lapply(seq_along(final_grp_hist), function(i){
+        list(
+          "subj"= NA,
+          "add_syntax" =  final_grp_hist[[i]]$add_syntax,
+          "grp_sol" = i,
+          "ind_sol" = NA,
+          "pruned" = final_grp_hist[[i]]$pruned,
+          "stage"  = "group",
+          "fit" = NA
+        )
+      })
+      trees_grp <- create.tree(grp_hist_i, subgroup, individual = FALSE)
+    }
       
-    trees_grp <- create.tree(grp_hist_i, subgroup, individual = FALSE)
+    
     
     
     # ind_all <- lapply(seq_along(ind_hist), function(i){

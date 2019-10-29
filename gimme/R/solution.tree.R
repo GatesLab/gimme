@@ -66,7 +66,8 @@ solution.tree <- function(x, level = c("group", "individual"), cols = NULL, ids 
       if(plot.tree){
         plot(ind_tree[[to_print]])
       } else {
-        do.call(print, c(ind_tree, cols))
+        #do.call(print, c(ind_tree, cols))
+        print(c(ind_tree[[to_print]],cols), pruneMethod=NULL)
       }
       
     } else {
