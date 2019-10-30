@@ -661,9 +661,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
       }
 
       if(subgroup){
-        indiv.search.ms(dat, grp[[j]], ind[[j]], ms_tol, ms_allow, j)
+        indiv.search.ms(dat, grp[[j]], ind[[j]], ms_tol, ms_allow, j, hybrid = FALSE)
       } else {
-        indiv.search.ms(dat, grp[[j]], ind, ms_tol, ms_allow, j)
+        indiv.search.ms(dat, grp[[j]], ind, ms_tol, ms_allow, j, hybrid = FALSE)
       }
 
     })

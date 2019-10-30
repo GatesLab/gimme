@@ -6,7 +6,7 @@
 #' information.
 #' @return Lists associated with coefficients, fit indices, etc.
 #' @keywords internal 
-indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
+indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num, hybrid){
   
   #-----------------------------------------------#
   # Prepare data depending on proc (agg vs gimme) #
@@ -139,7 +139,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         chisq_cutoff = 0,
         subgroup_stage = FALSE,
         ms_allow       = FALSE, # do not allow multiple solutions on cleanup
-        ms_tol         = ms_tol
+        ms_tol         = ms_tol,
+        hybrid         = hybrid
       )
       
     }, simplify = TRUE)
