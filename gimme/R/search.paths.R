@@ -36,7 +36,8 @@ search.paths <- function(base_syntax,
                          subgroup_stage = FALSE,
                          ms_allow = FALSE,
                          ms_tol   = 1e-6,
-                         hybrid = F){
+                         hybrid = F,
+                         dir_prop_cutoff = 0){
   
   ####################################
   # ind search
@@ -97,7 +98,8 @@ search.paths <- function(base_syntax,
       subgroup_stage,
       ms_allow,
       ms_tol, 
-      hybrid
+      hybrid,
+      dir_prop_cutoff
     )
     
     history[[cnt]] <- obj

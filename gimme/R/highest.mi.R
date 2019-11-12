@@ -24,7 +24,8 @@ highest.mi <- function(mi_list,
                        chisq_cutoff,
                        allow.mult,
                        ms_tol,
-                       hybrid){
+                       hybrid,
+                       dir_prop_cutoff){
   
   mi  = NULL # appease CRAN check
   sig = NULL # appease CRAN check
@@ -99,7 +100,7 @@ highest.mi <- function(mi_list,
           }
           if (((count_opp-count_red)/length(mi_list_na)) >=prop_cutoff){ 
             add_param<- opposite
-            go <- 1} else if (((count_red-count_opp)/length(mi_list_na)) >= prop_cutoff){
+            go <- 1} else if (((count_red-count_opp)/length(mi_list_na)) >= dir_prop_cutoff){
               add_param<- red_mi$param
               go <- 1} else{
                 go <- 0 # directionality could not be determined for the group level, try next MI

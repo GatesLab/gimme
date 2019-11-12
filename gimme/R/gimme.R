@@ -33,7 +33,8 @@
 #'          lv_miiv_scaling  = "first.indicator", 
 #'          lv_final_estimator = "miiv",
 #'          lasso_model_crit    = NULL, 
-#'          hybrid = TRUE)
+#'          hybrid = TRUE,
+#'          dir_prop_cutoff =0)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -248,7 +249,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
                               lv_final_estimator = "miiv",
                               lasso_model_crit = NULL, 
-                              hybrid = FALSE){          # c("miiv", "pml")
+                              hybrid = FALSE,
+                              dir_prop_cutoff = 0){          # c("miiv", "pml")
   
   # satisfy CRAN checks
   ind     = NULL
@@ -395,7 +397,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
     subgroup_stage = FALSE,
     ms_allow       = ms_allow,
     ms_tol         = ms_tol, 
-    hybrid         = hybrid
+    hybrid         = hybrid,
+    dir_prop_cutoff = dir_prop_cutoff
   )
   
   
