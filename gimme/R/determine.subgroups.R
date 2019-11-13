@@ -26,7 +26,8 @@ determine.subgroups <- function(data_list,
                                 sub_feature,
                                 sub_method,
                                 sub_sim_perc,
-                                hybrid){
+                                hybrid,
+                                dir_prop_cutoff){
   #######################
   # base_syntax  = c(dat$syntax, grp[[i]]$group_paths)
   # data_list    = dat$ts_list
@@ -82,7 +83,7 @@ determine.subgroups <- function(data_list,
                     function(x){subset(x, x$param %in% elig_paths)})
   
   # consider which direction is better when adding contemporaneous similarity; not used in hybrid for now
-  if(!hybrid){
+  if(!hybrid && dir_prop_cutoff>0){
   for (p in 1:length(mi_list)) {
     for (r in 1:length(mi_list[[p]][,1])) {
       if (mi_list[[p]]$dir[r] == 1) {
@@ -93,6 +94,7 @@ determine.subgroups <- function(data_list,
             mi_list[[p]][r,]$dir <- 0
         }
       }
+      opp_mi_value <- 0
     }
   }
 
