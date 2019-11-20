@@ -16,6 +16,7 @@
 #'          sub_sim_perc     = 0, 
 #'          confirm_subgroup = NULL,
 #'          paths       = NULL,
+#'          exogenous = NULL,
 #'          conv_vars   = NULL,
 #'          conv_length = 16, 
 #'          conv_interval = 1,
