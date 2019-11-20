@@ -1,5 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+NOTE: THIS GITHUB PAGE IS FOR DEVELOPMENT AND TESTING. TAKE ALL RESULTS AS CAUTIONARY AS THERE IS NO GAURANTEE THEY HAVE BEEN TESTED AND PERFORM WELL. 
+
+PLEASE USE CRAN VERION
+
 **Group Iterative Multiple Model Estimation (GIMME)**
 =====================================================
 
