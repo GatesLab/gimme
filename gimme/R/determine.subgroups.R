@@ -146,8 +146,7 @@ determine.subgroups <- function(data_list,
                            sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc), na.rm = TRUE)
       if (length(which(is.na(z_list)))==0)
       sim_z[i,j]  <- sum(z_list[[i]]$dir == 1 & z_list[[j]]$dir == 1 &
-                           sign(z_list[[i]]$z) == sign(z_list[[j]]$z), na.rm = TRUE)}
-      if(hybrid){
+                           sign(z_list[[i]]$z) == sign(z_list[[j]]$z), na.rm = TRUE)} else {
         sim_mi[i,j] <- sum(mi_list[[i]]$sig == 1 & mi_list[[j]]$sig == 1 & 
                              sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc), na.rm = TRUE)
         if (length(which(is.na(z_list)))==0)
