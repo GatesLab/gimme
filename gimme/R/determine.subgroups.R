@@ -25,7 +25,7 @@ determine.subgroups <- function(data_list,
                                 out_path = NULL,
                                 sub_feature,
                                 sub_method,
-                                sub_sim_perc,
+                                sub_sim_thresh,
                                 hybrid,
                                 dir_prop_cutoff){
   #######################
@@ -156,7 +156,7 @@ determine.subgroups <- function(data_list,
   }
   
   sim           <- sim_mi + sim_z
-  if (sub_sim_perc == "search"){ # conduct search across thresholds to find lowest modularity
+  if (sub_sim_thresh == "search"){ # conduct search across thresholds to find lowest modularity
     res <- nloptr::nloptr(
       x0=.5,  # starting value
       m = sim,  # similarity matrix
@@ -170,7 +170,7 @@ determine.subgroups <- function(data_list,
         maxeval = 500)
     )
     sim[which(sim <= quantile(sim[upper.tri(sim, diag = FALSE)], (res$solution)))] <- 0
-  } else if (sub_sim_perc == "lowest") { # original gimme
+  } else if (sub_sim_thresh == "lowest") { # original gimme
     sim - min(sim, na.rm = TRUE)} else{
     toremove <- quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_perc))
     sim[which(sim <= toremove)] = 0

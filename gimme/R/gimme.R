@@ -520,7 +520,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
         sub_method,
         ms_tol   = ms_tol,
         ms_allow = FALSE,
-        sub_sim_perc = sub_sim_perc,
+        sub_sim_thresh = sub_sim_thresh,
         hybrid, 
         dir_prop_cutoff = dir_prop_cutoff
       )

@@ -8,7 +8,7 @@ subgroupStage <- function(dat,
                           sub_method,
                           ms_tol,
                           ms_allow,
-                          sub_sim_perc, 
+                          sub_sim_thresh, 
                           hybrid,
                           dir_prop_cutoff){
 # Satisfy CRAN checks
@@ -24,7 +24,7 @@ subgroupStage <- function(dat,
                                out_path     = dat$out, 
                                sub_feature  = sub_feature,
                                sub_method   = sub_method, 
-                               sub_sim_perc = sub_sim_perc,
+                               sub_sim_thresh = sub_sim_thresh,
                                hybrid       = hybrid,
                                dir_prop_cutoff = dir_prop_cutoff)
 
