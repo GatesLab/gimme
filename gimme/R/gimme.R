@@ -117,7 +117,7 @@
 #' @param sub_method Community detection method used to cluster individuals into subgroups. Options align 
 #' with those available in the igraph package: "Walktrap" (default), "Infomap", "Louvain", "Edge Betweenness", 
 #' "Label Prop", "Fast Greedy", "Leading Eigen", and "Spinglass". 
-#' @param sub_sim_perc Number indicating the percent of edges in the similarity matrix to set to zero.  
+#' @param sub_sim_perc Percent indicating the percent of edges in the similarity matrix to set to zero.  
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
@@ -229,7 +229,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               subgroup         = FALSE,
                               sub_feature      = "lag & contemp",
                               sub_method       = "Walktrap",
-                              sub_sim_perc     = 0, 
+                              sub_sim_perc     = .25, 
                               confirm_subgroup = NULL,
                               paths            = NULL,
                               exogenous        = NULL,

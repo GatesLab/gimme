@@ -171,7 +171,7 @@ determine.subgroups <- function(data_list,
     )
     sim[which(sim <= quantile(sim[upper.tri(sim, diag = FALSE)], (res$solution)))] <- 0
   } else {
-    toremove <- quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_perc/100))
+    toremove <- quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_perc))
     sim[which(sim <= toremove)] = 0
     }
       
