@@ -141,7 +141,7 @@ determine.subgroups <- function(data_list,
   
   for (i in 1:length(mi_list)){
     for (j in 1:length(mi_list)){
-      if(!hybrid){
+      if(!hybrid && dir_prop_cutoff>0){
       sim_mi[i,j] <- sum(mi_list[[i]]$dir == 1 & mi_list[[j]]$dir == 1 & 
                            sign(mi_list[[i]]$epc) == sign(mi_list[[j]]$epc), na.rm = TRUE)
       if (length(which(is.na(z_list)))==0)
