@@ -57,7 +57,7 @@ highest.mi <- function(mi_list,
   # Group search ongoing...
   #------------------------------------------------------#
   if (!is.null(prop_cutoff)){
-    if(allow.mult | hybrid){
+    if(allow.mult){
       # if there are good solutions
       if (mi_list$count[1] > (prop_cutoff*n_converge)){
         
@@ -87,7 +87,7 @@ highest.mi <- function(mi_list,
         opposite <- paste0(red_rhs, "~", red_lhs)
         count_red <- 0
         count_opp <- 0 
-        if (length(which(mi_list_ms$param == opposite)>0)) {
+        if (length(which(mi_list_ms$param == opposite))>0 && dir_prop_cutoff>0 && hybrid==FALSE) {
           if (!grepl("lag", mi_list_ms$param[whichone]) && mi_list[which(mi_list_ms$param == opposite), 6] >= (prop_cutoff*n_converge))
           {
             for (p in 1:length(mi_list_na)){
@@ -98,7 +98,7 @@ highest.mi <- function(mi_list,
               ifelse(red_mi_value>opp_mi_value, (count_red = count_red+1), (count_opp = count_opp+1))
             }
           }
-          if (((count_opp-count_red)/length(mi_list_na)) >=prop_cutoff){ 
+          if (((count_opp-count_red)/length(mi_list_na)) > dir_prop_cutoff){ 
             add_param<- opposite
             go <- 1} else if (((count_red-count_opp)/length(mi_list_na)) >= dir_prop_cutoff){
               add_param<- red_mi$param
@@ -126,7 +126,7 @@ highest.mi <- function(mi_list,
   } else {
     
     
-    if(allow.mult | hybrid){
+    if(allow.mult){
       
       # we need to look at the means rather than the sum
       mi_list_ms <- mi_list[order(-mi_list$count, -mi_list$mean), ]
