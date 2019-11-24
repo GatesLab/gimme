@@ -171,7 +171,7 @@ determine.subgroups <- function(data_list,
     )
     sim[which(sim <= quantile(sim[upper.tri(sim, diag = FALSE)], (res$solution)))] <- 0
   } else if (sub_sim_thresh == "lowest") { # original gimme
-    sim - min(sim, na.rm = TRUE)} else{
+    sim <- sim - min(sim, na.rm = TRUE)} else{
     toremove <- quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_thresh))
     sim[which(sim <= toremove)] = 0
     }
