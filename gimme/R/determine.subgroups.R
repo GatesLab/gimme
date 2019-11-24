@@ -209,9 +209,9 @@ determine.subgroups <- function(data_list,
                                                   area = 8*(vcount(g)^2),
                                                   repulse.rad = (vcount(g)^3.1))
     par(mfrow = c(1, 1), mar = c(0, 0, 0, 0))
-    pdf(file.path(paste(out_path,'/Subgroups Plot.pdf', sep = '')))
+    if(length(out_path)>1) {pdf(file.path(paste(out_path,'/Subgroups Plot.pdf', sep = '')))
     plot(res, g, layout = l)
-    dev.off() 
+    dev.off() }
     
     sub_mem    <- data.frame(names      = names(membership(res)), 
                              sub_membership = as.numeric(membership(res)))
