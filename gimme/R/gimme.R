@@ -34,7 +34,7 @@
 #'          lv_miiv_scaling  = "first.indicator", 
 #'          lv_final_estimator = "miiv",
 #'          lasso_model_crit    = NULL, 
-#'          hybrid = TRUE,
+#'          hybrid = FALSE,
 #'          dir_prop_cutoff =0)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
@@ -148,6 +148,7 @@
 #' indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation). 
 #' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
+#' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @details
 #'  In main output directory:
 #'  \itemize{

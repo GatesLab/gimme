@@ -14,8 +14,10 @@ gimmeSEM(data        = NULL,
          subgroup    = FALSE,
          sub_feature = "lag & contemp",
          sub_method = "Walktrap",
+         sub_sim_thresh    = "lowest", 
          confirm_subgroup = NULL,
          paths       = NULL,
+         exogenous = NULL,
          conv_vars   = NULL,
          conv_length = 16, 
          conv_interval = 1,
@@ -32,7 +34,9 @@ gimmeSEM(data        = NULL,
          lv_scores        = "regression",       
          lv_miiv_scaling  = "first.indicator", 
          lv_final_estimator = "miiv",
-         lasso_model_crit    = NULL)
+         lasso_model_crit    = NULL, 
+         hybrid = FALSE,
+         dir_prop_cutoff =0)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
@@ -83,6 +87,10 @@ relations, respectively.}
 with those available in the igraph package: "Walktrap" (default), "Infomap", "Louvain", "Edge Betweenness", 
 "Label Prop", "Fast Greedy", "Leading Eigen", and "Spinglass".}
 
+\item{sub_sim_thresh}{Threshold for inducing sparsity in similarity matrix. Options are: the percent of edges 
+in the similarity matrix to set to zero (e.g., .25 would set the lower quartile), "lowest" (default) subtracts 
+the minimum value from all values, and "search" searches across thresholds to arrive at one providing highest modularity.}
+
 \item{confirm_subgroup}{Dataframe. Option only available when subgroup = TRUE. Dataframe should contain two columns. The first
 column should specify file labels (the name of the data files without file extension), 
 and the second should contain integer values (beginning at 1) 
@@ -96,6 +104,14 @@ then variables should be referred to with V followed (with no separation)
 by the column number. If a
 header is used, variables should be referred to using variable names.
 To reference lag variables, "lag" should be added to the end of the variable
+name with no separation. Defaults to NULL.}
+
+\item{exogenous}{Vector of variable names to be treated as exogenous (optional).
+That is, exogenous variable X can predict Y but cannot be predicted by Y.
+If no header is used, then variables should be referred to with V followed
+(with no separation) by the column number.  If a header is used, variables should be referred 
+to using variable names. The default for exogenous variables is that lagged effects of the exogenous 
+variables are not included in the model search.  If lagged paths are wanted, "&lag" should be added to the end of the variable
 name with no separation. Defaults to NULL.}
 
 \item{conv_vars}{Vector of variable names to be convolved via smoothed Finite Impulse 
@@ -139,7 +155,8 @@ individuals in a subgroup to be considered a subgroup-level path.}
 \item{ms_allow}{Logical. If TRUE provides multiple solutions when more than one path has identical 
 modification index values.  When ms_allow=TRUE, it is recommended
 to set ar=FALSE.  Multiple solutions are unlikely to be found when ar=TRUE.  Additionally,
-subgroup should be set to FALSE.}
+subgroup should be set to FALSE.  Output files for individuals with multiple solutions will represent the last solution 
+found for the individual, not necessarily the best solution for the individual.}
 
 \item{ms_tol}{Precision used when evaluating similarity of modification indices when ms_allow = TRUE.  We recommend
 that ms_tol not be greater than the default, especially when standardize=TRUE.     
@@ -161,6 +178,11 @@ when lv_model is not NULL. Options are: "regression" (Default), "bartlett".}
 
 \item{lasso_model_crit}{When not null, invokes multiLASSO approach for the GIMME model search procedure. Arguments 
 indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation).}
+
+\item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous
+covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
+
+\item{dir_prop_cutoff}{Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.}
 }
 \description{
 This function identifies structural equation models for each

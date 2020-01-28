@@ -6,7 +6,8 @@
 \usage{
 search.paths(base_syntax, fixed_syntax, add_syntax, n_paths, data_list,
   elig_paths, prop_cutoff, n_subj, chisq_cutoff, subgroup_stage = FALSE,
-  ms_allow = FALSE, ms_tol = 1e-06)
+  ms_allow = FALSE, ms_tol = 1e-06, hybrid = F,
+  dir_prop_cutoff = 0)
 }
 \arguments{
 \item{base_syntax}{A character vector containing syntax that never changes.}

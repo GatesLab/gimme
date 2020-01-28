@@ -5,7 +5,7 @@
 \title{Identifies highest MI from list of MIs.}
 \usage{
 highest.mi(mi_list, indices, elig_paths, prop_cutoff, n_subj, chisq_cutoff,
-  allow.mult, ms_tol)
+  allow.mult, ms_tol, hybrid, dir_prop_cutoff)
 }
 \arguments{
 \item{mi_list}{A list of MIs across individuals}

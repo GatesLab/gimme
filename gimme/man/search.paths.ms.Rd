@@ -5,7 +5,8 @@
 \title{Searches for paths. Ties together highest.mi and return.mis functions.}
 \usage{
 search.paths.ms(obj, data_list, base_syntax, fixed_syntax, elig_paths,
-  prop_cutoff, n_subj, chisq_cutoff, subgroup_stage, ms_allow, ms_tol)
+  prop_cutoff, n_subj, chisq_cutoff, subgroup_stage, ms_allow, ms_tol,
+  hybrid, dir_prop_cutoff)
 }
 \arguments{
 \item{data_list}{A list of datasets to be used in a given stage of the 

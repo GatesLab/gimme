@@ -5,7 +5,7 @@
 \title{Create structure of group search solutions.}
 \usage{
 subgroupStage(dat, grp, confirm_subgroup, elig_paths, sub_feature,
-  sub_method, ms_tol, ms_allow)
+  sub_method, ms_tol, ms_allow, sub_sim_thresh, hybrid, dir_prop_cutoff)
 }
 \description{
 Create structure of group search solutions.
