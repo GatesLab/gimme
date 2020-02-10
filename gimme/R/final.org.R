@@ -143,8 +143,10 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             contemp_cov    <- sub_s_counts_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
             plot_vals_cov  <- w2e(contemp_cov)
             sub_colors_cov <- t(sub_s_mat_colors_cov)
-            colors     <- c(sub_colors_cov[1:(dat$n_lagged), ],
-                            sub_colors_cov[(dat$n_lagged+1):(dat$n_vars_total), ])
+            #commented out by lan 2.10.2020
+            #colors     <- c(sub_colors_cov[1:(dat$n_lagged), ],
+            #sub_colors_cov[(dat$n_lagged+1):(dat$n_vars_total), ])
+            colors    <- sub_colors_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
             colors     <- colors[!is.na(colors)]
             sub_plot_cov <- tryCatch(qgraph(plot_vals_cov,
                                               layout       = "circle",
@@ -304,8 +306,10 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                    DoNotPlot    = TRUE), 
                             error = function(e) e)
       samp_colors_corr <- t(sample_colors_corr)
-      colors_corr      <- c(samp_colors_corr[1:(dat$n_lagged), ],
-                       samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total), ])
+      #commented out by lan 2.10.2020
+      # colors_corr      <- c(samp_colors_corr[1:(dat$n_lagged), ],
+      #                samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total), ])
+      colors_corr     <- samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total)]
       colors_corr      <- colors_corr[!is.na(colors_corr)]
       
       if (sum(sample_paths_corr)>0){
