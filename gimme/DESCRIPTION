@@ -15,7 +15,7 @@ Author: Stephanie Lane [aut, trl],
     Adriene Beltz [csp]
 Maintainer: KM Gates <gateskm@email.unc.edu>
 Depends: R (>= 3.0.2)
-Imports: lavaan (>= 0.5-19), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0)
+Imports: lavaan (>= 0.5-19), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0), nloptr, graphics, stats
 Description: Automated identification and estimation of group- and
     individual-level relations in time series data from within a structural
     equation modeling framework.

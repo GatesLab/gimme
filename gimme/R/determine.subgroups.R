@@ -169,10 +169,10 @@ determine.subgroups <- function(data_list,
         "xtol_rel"=1.0e-8,
         maxeval = 500)
     )
-    sim[which(sim <= quantile(sim[upper.tri(sim, diag = FALSE)], (res$solution)))] <- 0
+    sim[which(sim <= stats::quantile(sim[upper.tri(sim, diag = FALSE)], (res$solution)))] <- 0
   } else if (sub_sim_thresh == "lowest") { # original gimme
     sim <- sim - min(sim, na.rm = TRUE)} else{
-    toremove <- quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_thresh))
+    toremove <- stats::quantile(sim[upper.tri(sim, diag = FALSE)], (sub_sim_thresh))
     sim[which(sim <= toremove)] = 0
     }
       
@@ -208,7 +208,7 @@ determine.subgroups <- function(data_list,
                                                   vcount = vcount(g), weights = weights/5,
                                                   area = 8*(vcount(g)^2),
                                                   repulse.rad = (vcount(g)^3.1))
-    par(mfrow = c(1, 1), mar = c(0, 0, 0, 0))
+    graphics::par(mfrow = c(1, 1), mar = c(0, 0, 0, 0))
     if(length(out_path)>1) {pdf(file.path(paste(out_path,'/Subgroups Plot.pdf', sep = '')))
     plot(res, g, layout = l)
     dev.off() }
