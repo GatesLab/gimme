@@ -1,7 +1,7 @@
 #' @keywords internal 
 modmax <- function(x, m, sub_method){
       # sparsify m based on x
-      m[which(m <= quantile(m[upper.tri(m, diag = FALSE)], x))] <- 0
+      m[which(m <= stats::quantile(m[upper.tri(m, diag = FALSE)], x))] <- 0
       diag(m) <- 0
       m = graph_from_adjacency_matrix(m)
       weights      <- E(m)$weight
