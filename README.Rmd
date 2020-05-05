@@ -16,20 +16,22 @@ library(microbenchmark)
 
 # **Group Iterative Multiple Model Estimation (GIMME)**
 
-The GIMME algorithm is a continually maintained R package, gimme.
+The GIMME algorithm is a continually maintained R package, *gimme*.
 
-In addition to the [official documentation](https://cran.r-project.org/web/packages/gimme/index.html), a comprehensive tutorial can be found here: [GIMME tutorial](http://gimme.web.unc.edu/files/2014/12/Lane-Gates-2017-SEM-gimme.pdf).
+Continually updated tutorials can be found in the [GIMME Online Tutorials](http://gimme.web.unc.edu/63-2/).
+
+These papers also provide insights for researchers wishing to get started with the R version of *gimme*: [Automated Selection of Robust Individual-Level Structural Equation Models for Time Series Data](http://gimme.web.unc.edu/files/2014/12/Lane-Gates-2017-SEM-gimme.pdf) and [Network Mapping with GIMME](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6181449/pdf/nihms-1502668.pdf).
 
 Program developers are invited to submit changes here at the GitHub repository. 
 
 # **The Basics**
 
 
-+ GIMME can be used to estimate the unified SEM (uSEM; Kim et al., 2007; Gates et al., 2010).
++ GIMME can be used to estimate the unified SEM (uSEM; Kim et al., 2007; Gates et al., 2010) and hybrid-uSEM (Molenaar, 2019).
 
 + Missing data is not a problem. 
 
-+ Heterogeneous data is not a problem: 
++ Heterogeneity in processes across individuals is not a problem: 
   
     + No "group" or "common" structure will be forced unless it truly describes the majority. 
       
@@ -39,55 +41,39 @@ Program developers are invited to submit changes here at the GitHub repository.
  
 + Works well with as little as 3 or as many as 20 variables.
   
-+ Can be freely downloaded by installing the package "gimme" in R.
++ Can be freely downloaded by installing the package *gimme* in R.
 
  \newpage
  
 # **Running GIMME**
 
-__1. Create two new folders (i.e., directories)__
-
- + Create a source folder for your time series. This can be anywhere that you have permission to read and write. 
- 
- + Nothing can be in the source folder other than the time series data.
- 
- + Create an output folder for your results. This must be different from the above folder.
-
-__2. Extract the time series for your variables__
+__1. Create your data: Extract the time series for your variables__
 
   + Have each variable be a column, with the rows being the observation (e.g., scan in fMRI or a day in daily diary studies).
   
   + Substitute NA for missing values.
   
-  + Have a separate file for each individual/session.
+  + If storing the data in a directory, store each individual's data in a different file. Files must be either comma, space, or tab delimited. Ensure nothing else is in this directory except data files you wish to include in the analyses. 
   
-  + Put each file in the source folder you created in step 1. Do not put anything else in this folder.
+  + If storing your data as a list, store each individual's data frame in a different slice of this list. 
   
-  + Files must be either comma, space, or tab delimited.
-
-__3. Installing gimme with R__
+__2. Installing gimme with R__
 
   + Open an R script and enter into the console: `install.packages("gimme")`
   
   + Once gimme has been installed, you will need to load the package by entering: `library(gimme)`
 
-__4. Running gimme__
+__3. Running gimme__
 
-   The *gimme* (or equivalently, *gimmeSEM*) function requires that you input:
-   
-  + The path to the directory containing your data
-  
-  + How data are separated (e.g., comma-separated values)
-  
-  + Whether the data files contain a header row 
+   The *gimme()* (or equivalently, *gimmeSEM()*) function contains these base options (see online tutorial for updates):
    
    All other fields are optional and will go to defaults if no user input is provided. If no output directory is indicated, all information is stored as R objects (see tutorial linked above for details).
 ```{r, eval = FALSE}
 fit <- gimme(         # can use "gimme" or "gimmeSEM"
-  data = '',          # source directory where your data are 
-  out = '',           # output directory where you'd like your output to go
-  sep = "",           # how data are separated. "" for space; "," for comma, "/t" for tab-delimited
-  header = ,          # TRUE or FALSE, is there a header
+  data = '',          # source directory where your data are, or name of list
+  out = '',           # optinal output directory where you'd like your output to go
+  sep = "",           # how data files are separated. "" for space; "," for comma, "/t" for tab-delimited 
+  header = ,          # TRUE or FALSE, is there a header (if reading in from directory)
   ar = TRUE,          # TRUE (default) or FALSE, start with autoregressive paths open
   plot = TRUE,        # TRUE (default) or FALSE, generate plots
   subgroup = FALSE,   # TRUE or FALSE (default), cluster individuals based on similarities in effects
