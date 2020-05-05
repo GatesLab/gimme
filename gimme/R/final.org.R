@@ -281,7 +281,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       sample_colors_corr[cbind(c_corr$row, c_corr$col)] <- c_corr$color
       
       sample_paths  <- t(sample_counts)/dat$n_subj
-      sample_paths_corr <- t(sample_counts_corr)/dat$n_subj
+      sample_paths_corr <- t(sample_counts_corr)/(2*dat$n_subj)
       
       lagged     <- sample_paths[1:(dat$n_lagged), ]
      
