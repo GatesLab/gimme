@@ -16,7 +16,7 @@ library(microbenchmark)
 
 # **Group Iterative Multiple Model Estimation (GIMME)**
 
-The GIMME algorithm is a continually maintained R package, *gimme*.
+The GIMME algorithm can be implemented in the R package, *gimme*.
 
 Continually updated tutorials can be found in the [GIMME Online Tutorials](http://gimme.web.unc.edu/63-2/).
 
