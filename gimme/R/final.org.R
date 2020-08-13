@@ -139,6 +139,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                         DoNotPlot    = TRUE), 
                                  error = function(e) e)
             
+            sub_plot$graphAttributes$Edges$width <- (plot_vals[,3])*7.137138 
+            
             sub_s_counts_cov <- t(sub_s_mat_counts_cov/sub_spec[[s]]$n_sub_subj)
             contemp_cov    <- sub_s_counts_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
             plot_vals_cov  <- w2e(contemp_cov)
@@ -160,6 +162,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                               label.cex    = 2,
                                               DoNotPlot    = TRUE), 
                                        error = function(e) e)
+            
+            sub_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138 
             
             if (!is.null(dat$out) & !"error" %in% class(sub_plot)){
               pdf(file.path(dat$subgroup_dir, 
@@ -281,7 +285,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       sample_colors_corr[cbind(c_corr$row, c_corr$col)] <- c_corr$color
       
       sample_paths  <- t(sample_counts)/dat$n_subj
-      sample_paths_corr <- t(sample_counts_corr)/(2*dat$n_subj)
+      sample_paths_corr <- t(sample_counts_corr)/dat$n_subj
       
       lagged     <- sample_paths[1:(dat$n_lagged), ]
      
@@ -307,13 +311,16 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                    label.cex    = 2,
                                    DoNotPlot    = TRUE), 
                             error = function(e) e)
+     samp_plot$group_plot_paths$graphAttributes$Edges$width <- (plot_vals[,3])*7.137138  
+ 
+      
       samp_colors_corr <- t(sample_colors_corr)
       #commented out by lan 2.10.2020
       # colors_corr      <- c(samp_colors_corr[1:(dat$n_lagged), ],
       #                samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total), ])
       colors_corr     <- samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total)]
       colors_corr      <- colors_corr[!is.na(colors_corr)]
-      
+     
       if (sum(sample_paths_corr)>0){
         corr   <- sample_paths_corr[(dat$n_lagged+1):(dat$n_vars_total), ]
         plot_vals_corr  <- w2e(corr)
@@ -330,8 +337,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                           DoNotPlot    = TRUE), 
                                    error = function(e) e)
       }
+      samp_plot_cov$graphAttributes$Edges$width <- (plot_vals_corr[,3])*7.137138  
        
-      
       if (!is.null(dat$out)){
         pdf(file.path(dat$out, "summaryPathsPlot.pdf"))
         plot(samp_plot)
