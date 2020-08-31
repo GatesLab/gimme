@@ -349,7 +349,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        lv_model             = lv_model,
                        lv_estimator         = lv_estimator,
                        lv_scores            = lv_scores,
-                       lv_miiv_scaling      = lv_miiv_scaling)
+                       lv_miiv_scaling      = lv_miiv_scaling,
+                       ms_allow             = ms_allow)
 
   
   #Error Check for Confirm Subgroup Labels

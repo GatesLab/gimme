@@ -6,7 +6,8 @@
 #' @keywords internal
 setupTransformData <- function(ts_list       = NULL, 
                                varLabels     = NULL,
-                               ctrlOpts      = NULL ){
+                               ctrlOpts      = NULL,
+                               ms_allow){
   
   
   #-------------------------------------------------------------#
@@ -190,7 +191,7 @@ setupTransformData <- function(ts_list       = NULL,
     
   }
   
-  if (!ctrlOpts$agg & !is.null(ctrlOpts$out)) {
+  if (!ctrlOpts$agg & !is.null(ctrlOpts$out) & !ms_allow) {
     
     dir.create(individual, showWarnings = FALSE)
     

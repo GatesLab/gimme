@@ -7,7 +7,7 @@
 #' @param k The counter indicating the individual.
 #' @return Individual-level information on fit, coefficients, and plots.
 #' @keywords internal
-get.params <- function(dat, grp, ind, k){
+get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   
   op  = NULL # appease CRAN check
   ind_plot = NA
@@ -122,39 +122,41 @@ get.params <- function(dat, grp, ind, k){
     #colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
     #   } # stl comment out 11.20.17 
     
-    if (dat$agg & !is.null(dat$out)){
-      
-      write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
-                row.names = TRUE)
-      
-      # write.csv(ind_vcov_full, file.path(dat$out, "allvcov.csv"), 
-      #           row.names = TRUE)
-      
-      write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
-                row.names = TRUE)
-      
-      # zf added 2019-01-23
-      write.csv(ind_psi, file.path(dat$out, "allPsi.csv"),row.names = TRUE)
-      write.csv(ind_psi_unstd, file.path(dat$out, "allPsiUnstd.csv"),row.names = TRUE)
-      
-    } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
-      write.csv(ind_betas, file.path(dat$ind_dir, 
+    if(ms.print){
+      if (dat$agg & !is.null(dat$out)){
+        
+        write.csv(ind_betas, file.path(dat$out, "allBetas.csv"), 
+                  row.names = TRUE)
+        
+        # write.csv(ind_vcov_full, file.path(dat$out, "allvcov.csv"), 
+        #           row.names = TRUE)
+        
+        write.csv(ind_ses, file.path(dat$out, "allStdErrors.csv"), 
+                  row.names = TRUE)
+        
+        # zf added 2019-01-23
+        write.csv(ind_psi, file.path(dat$out, "allPsi.csv"),row.names = TRUE)
+        write.csv(ind_psi_unstd, file.path(dat$out, "allPsiUnstd.csv"),row.names = TRUE)
+        
+      } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
+        write.csv(ind_betas, file.path(dat$ind_dir, 
+                                       paste0(dat$file_order[k,2], 
+                                              "Betas.csv")), row.names = TRUE)
+        
+        # write.csv(ind_vcov_full, file.path(dat$ind_dir, 
+        #                                paste0(dat$file_order[k,2], 
+        #                                       "vcov.csv")), row.names = TRUE)
+        # zf added 2019-01-23
+        write.csv(ind_psi, file.path(dat$ind_dir, 
+                                       paste0(dat$file_order[k,2], 
+                                              "Psi.csv")), row.names = TRUE)
+        write.csv(ind_psi_unstd, file.path(dat$ind_dir, 
+                                       paste0(dat$file_order[k,2], 
+                                              "PsiUnstd.csv")), row.names = TRUE)
+        write.csv(ind_ses, file.path(dat$ind_dir,
                                      paste0(dat$file_order[k,2], 
-                                            "Betas.csv")), row.names = TRUE)
-      
-      # write.csv(ind_vcov_full, file.path(dat$ind_dir, 
-      #                                paste0(dat$file_order[k,2], 
-      #                                       "vcov.csv")), row.names = TRUE)
-      # zf added 2019-01-23
-      write.csv(ind_psi, file.path(dat$ind_dir, 
-                                     paste0(dat$file_order[k,2], 
-                                            "Psi.csv")), row.names = TRUE)
-      write.csv(ind_psi_unstd, file.path(dat$ind_dir, 
-                                     paste0(dat$file_order[k,2], 
-                                            "PsiUnstd.csv")), row.names = TRUE)
-      write.csv(ind_ses, file.path(dat$ind_dir,
-                                   paste0(dat$file_order[k,2], 
-                                          "StdErrors.csv")), row.names = TRUE)
+                                            "StdErrors.csv")), row.names = TRUE)
+      }
     }
     
     ind_plot  <- NA
@@ -186,7 +188,7 @@ get.params <- function(dat, grp, ind, k){
                                   DoNotPlot    = TRUE), 
                            error = function(e) e)
       
-      if (!is.null(dat$out) & !"error" %in% class(ind_plot)){
+      if (!is.null(dat$out) & !"error" %in% class(ind_plot) & ms.print){
         pdf(plot_file)
         plot(ind_plot)
         dev.off()

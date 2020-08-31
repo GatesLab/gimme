@@ -4,7 +4,7 @@
 \alias{get.params}
 \title{Grabs final coefficients for each individual.}
 \usage{
-get.params(dat, grp, ind, k)
+get.params(dat, grp, ind, k, ms.print = TRUE)
 }
 \arguments{
 \item{dat}{A list containing information created in setup().}

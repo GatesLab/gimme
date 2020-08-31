@@ -190,7 +190,7 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num, hybrid){
       
   res <- lapply(seq_along(1:n_ind), function(k){
     lapply(seq_along(ind_all[[k]]), function(j){
-      s10 <- get.params(dat, grp, ind_all[[k]][[j]], k)
+      s10 <- get.params(dat, grp, ind_all[[k]][[j]], k, ms.print = FALSE)
       list(
         "subj"   = names(dat$ts_list)[k],
         "ind"    = ind_all[[k]][[j]],
