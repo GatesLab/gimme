@@ -323,8 +323,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
      
       if (sum(sample_paths_corr)>0){
         corr   <- sample_paths_corr[(dat$n_lagged+1):(dat$n_vars_total), ]
-        plot_vals_corr  <- w2e(corr)
-        samp_plot_cov <- tryCatch(qgraph(plot_vals_corr,
+        plot_vals_cov  <- w2e(corr)
+        samp_plot_cov <- tryCatch(qgraph(plot_vals_cov,
                                           layout       = "circle",
                                           edge.labels  = FALSE,
                                           edge.color   = colors_corr,
@@ -337,7 +337,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                           DoNotPlot    = TRUE), 
                                    error = function(e) e)
       }
-      samp_plot_cov$graphAttributes$Edges$width <- (plot_vals_corr[,3])*7.137138  
+      samp_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138  
        
       if (!is.null(dat$out)){
         pdf(file.path(dat$out, "summaryPathsPlot.pdf"))

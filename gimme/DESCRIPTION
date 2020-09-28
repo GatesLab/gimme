@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.7-2
-Date: 2020-09-02
+Version: 0.7-3
+Date: 2020-09-25
 Author: Stephanie Lane [aut, trl],
     Kathleen Gates [aut, cre],
     Zachary Fisher [aut], 
@@ -24,7 +24,7 @@ LazyData: true
 URL: https://github.com/GatesLab/gimme/
 BugReports: https://github.com/GatesLab/gimme/issues
 ByteCompile: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
 Suggests: knitr,
     rmarkdown
