@@ -146,7 +146,8 @@ aggSEM <- function(data,
                 subcutoff   = NULL,
                 subgroup    = FALSE,
                 ind         = FALSE,
-                agg         = TRUE)
+                agg         = TRUE,
+                ms_allow    = FALSE)
 
   
   store <- indiv.search(dat, 
