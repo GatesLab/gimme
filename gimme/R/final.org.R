@@ -208,7 +208,6 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
         sub_coefs <- NULL
         sub_plots <- NULL
         sub_paths <- NULL
-        sub_plots_cov <- NULL
         sub_counts_cov <- NULL
         summ <- transform(coefs, count = as.numeric(
           ave(param, param, FUN = length)))
