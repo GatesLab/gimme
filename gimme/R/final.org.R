@@ -115,6 +115,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
           if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ #plot subgroup plot if >1 nodes in subgroup
             
             sub_s_counts <- t(sub_s_mat_counts/sub_spec[[s]]$n_sub_subj)
+            sub_s_counts_cov <- t(sub_s_mat_counts_cov/sub_spec[[s]]$n_sub_subj)
+            contemp_cov    <- sub_s_counts_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
             lagged     <- sub_s_counts[1:(dat$n_lagged), ]
 
             contemp    <- sub_s_counts[(dat$n_lagged+1):(dat$n_vars_total), ]
@@ -141,8 +143,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             
             sub_plot$graphAttributes$Edges$width <- (plot_vals[,3])*7.137138 
             
-            sub_s_counts_cov <- t(sub_s_mat_counts_cov/sub_spec[[s]]$n_sub_subj)
-            contemp_cov    <- sub_s_counts_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
+            if (sum(contemp_cov)>0){
+
             plot_vals_cov  <- w2e(contemp_cov)
             sub_colors_cov <- t(sub_s_mat_colors_cov)
             #commented out by lan 2.10.2020
@@ -164,7 +166,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                        error = function(e) e)
             
             sub_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138 
-            
+            }
             if (!is.null(dat$out) & !"error" %in% class(sub_plot)){
               pdf(file.path(dat$subgroup_dir, 
                             paste0("subgroup", s, "Plot.pdf")))
@@ -193,9 +195,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
           sub_coefs[[s]] <- sub_s_coefs
           sub_summ[[s]]  <- sub_s_summ
           sub_plots[[s]] <- sub_plot
-          sub_plots_cov[[s]] <- sub_plot_cov
           sub_counts[[s]] <- sub_s_mat_counts
           sub_counts_cov[[s]] <- sub_s_mat_counts_cov
+            if (sum(contemp_cov)>0) sub_plots_cov[[s]] <- sub_plot_cov
           }
         }
         
@@ -336,9 +338,10 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                           label.cex    = 2,
                                           DoNotPlot    = TRUE), 
                                    error = function(e) e)
-      }
+      
       samp_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138  
-       
+      }
+      
       if (!is.null(dat$out)){
         pdf(file.path(dat$out, "summaryPathsPlot.pdf"))
         plot(samp_plot)
