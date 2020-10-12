@@ -167,7 +167,7 @@ determine.subgroups <- function(data_list,
       lb = .01, # upper bound
       ub = .99, # lower bound
       opts = list(
-        "algorithm"="NLOPT_LN_NELDERMEAD",
+        "algorithm"="NLOPT_GN_DIRECT_L", # Uses a global search rather than a local one
         "xtol_rel"=1.0e-8,
         maxeval = 500)
     )
@@ -211,7 +211,7 @@ determine.subgroups <- function(data_list,
                                                   area = 8*(vcount(g)^2),
                                                   repulse.rad = (vcount(g)^3.1))
     graphics::par(mfrow = c(1, 1), mar = c(0, 0, 0, 0))
-    if(length(out_path)>1) {pdf(file.path(paste(out_path,'/Subgroups Plot.pdf', sep = '')))
+    if(!is.null(out_path)) {pdf(file.path(paste(out_path,'/Subgroups Plot.pdf', sep = '')))
     plot(res, g, layout = l)
     dev.off() }
     
