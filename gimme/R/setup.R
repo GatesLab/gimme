@@ -285,7 +285,7 @@ setup <- function (data,
   exog_lag <- sub("&lag", "", exogenous[regexpr("&lag", exogenous)>0])
   exogenous <- c(exog_lag,exog_con)
   
-  orig <- colnames(ts_list[[1]])
+  # orig <- colnames(ts_list[[1]]) kmg: I don't think this is used ever. 
   uexo <- unique(exogenous)
   conv <- conv_vars
   lagg <- paste0(setdiff(orig,unique(exog_con, conv)), "lag")
@@ -295,7 +295,7 @@ setup <- function (data,
   catg <- NULL
   stnd <- if(standardize) setdiff(c(endo,exog), c(catg, conv_vars)) else NULL
   #coln <- c(endo,exog) # future column names of data
-  coln <- unique(c(lagg, orig, mult))
+  coln <- unique(c(lagg, endo, exog_con, mult)) 
   
 
   varLabels <- list(

@@ -58,9 +58,9 @@ determine.subgroups <- function(data_list,
     #                           data_file = data_list[[k]])
     z_list[[k]]  <- return.zs(fit[[k]])
     mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
-    converge[k]  <- lavInspect(fit[[k]], "converged")
-    if(is.na(mi_list[[k]]))
-      converge[k] <- FALSE 
+    if(is.na(mi_list[[k]])){
+      converge[k] <- FALSE } else
+        converge[k]  <- lavInspect(fit[[k]], "converged")
   }
   
   names(z_list) <- names(mi_list) <- names(data_list)
