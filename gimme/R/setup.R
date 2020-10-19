@@ -285,7 +285,7 @@ setup <- function (data,
   exog_lag <- sub("&lag", "", exogenous[regexpr("&lag", exogenous)>0])
   exogenous <- c(exog_lag,exog_con)
   
-  # orig <- colnames(ts_list[[1]]) kmg: I don't think this is used ever. 
+  orig <- colnames(ts_list[[1]]) 
   uexo <- unique(exogenous)
   conv <- conv_vars
   lagg <- paste0(setdiff(orig,unique(exog_con, conv)), "lag")
