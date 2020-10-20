@@ -386,7 +386,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                 row.names = FALSE)
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
       if (dat$subgroup)
-      write.csv(sub$sim, file.path(dat$out, "similarityMatrix.csv"), row.names = FALSE)
+      write.table(sub$sim, file.path(dat$out, "similarityMatrix.csv"), sep = ",", col.names = FALSE, row.names = FALSE)
     }
     
   } else {
