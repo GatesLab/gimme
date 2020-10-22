@@ -108,10 +108,10 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     ind_ses   <- round(lavInspect(fit, "se")$beta, digits = 4)
 
     #added to ensure correct ordering in matrices
-    ind_betas <- ind_betas[dat$varLabels$orig,]
+    ind_betas <- ind_betas[dat$varLabels$cont_endog,]
     ind_betas <- ind_betas[,dat$varLabels$coln]
     
-    ind_ses <- ind_ses[dat$varLabels$orig,]
+    ind_ses <- ind_ses[dat$varLabels$cont_endog,]
     ind_ses <- ind_ses[,dat$varLabels$coln]
     
     # zf added 2019-01-23
