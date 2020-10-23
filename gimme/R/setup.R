@@ -296,7 +296,7 @@ setup <- function (data,
   stnd <- if(standardize) setdiff(c(endo,exog), c(catg, conv_vars)) else NULL
   #coln <- c(endo,exog) # future column names of data
   coln <- unique(c(lagg, endo, exog_con, mult)) 
-  cont_endog <- c(endo, exog_con)
+  # cont_endog <- c(endo, exog_con)
   
 
   varLabels <- list(
