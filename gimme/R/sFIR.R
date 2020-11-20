@@ -33,7 +33,8 @@ sFIR <- function(data,
   R2 <- matrix(,length(data[1,]), 1)
   for (p in 1:length(data[1,]))
     R2[p]<- summary(lm(data[,p]~X_fir))$r.squared
-  best <- which(R2 == max(R2))
+  R2 <- R2[-which(R2 == max(R2))] # delete max
+  best <- which(R2 == max(R2)) # take second best
   } else 
     best <- 1
   

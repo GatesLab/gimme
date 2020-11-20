@@ -7,7 +7,7 @@
 setupTransformData <- function(ts_list       = NULL, 
                                varLabels     = NULL,
                                ctrlOpts      = NULL,
-                               ms_allow){
+                               ms_allow      = FALSE){
   
   
   #-------------------------------------------------------------#
