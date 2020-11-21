@@ -46,10 +46,10 @@ setupFinalDataChecks <- function(data){
                   paste0(names(ts_list)[numericCols == TRUE], collapse = "\n")))
     }
   } 
-  if (n_subjects == 1 & !ind) {
-    stop(paste0('gimme ERROR: only one subject detected in data directory. ',
-                'Please use indSEM function instead.'))
-  }
+  # if (n_subjects == 1 & !ind) {
+  #   stop(paste0('gimme ERROR: only one subject detected in data directory. ',
+  #               'Please use indSEM function instead.'))
+  # }
   
   return(data)
   

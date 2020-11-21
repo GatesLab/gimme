@@ -258,10 +258,10 @@ setupTransformData <- function(ts_list       = NULL,
                   paste0(names(ts_list)[numericCols == TRUE], collapse = "\n")))
     }
   } 
-  if (n_subjects == 1 & !ctrlOpts$ind) {
-    stop(paste0('gimme ERROR: only one subject detected in data directory. ',
-                'Please use indSEM function instead.'))
-  }
+  # if (n_subjects == 1 & !ctrlOpts$ind) {
+  #   stop(paste0('gimme ERROR: only one subject detected in data directory. ',
+  #               'Please use indSEM function instead.'))
+  # }
   
   
   return(ts_list)
