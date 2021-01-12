@@ -23,7 +23,7 @@ setup <- function (data,
                    lv_estimator = "miiv",            
                    lv_miiv_scaling  = "first.indicator", 
                    lv_final_estimator = "miiv",
-                   ms_allow) {
+                   ms_allow = FALSE) {
   
 
     
