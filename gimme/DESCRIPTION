@@ -1,20 +1,23 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.7-4
-Date: 2020-10-14
+Version: 0.7-5
+Date: 2021-03-23
 Author: Stephanie Lane [aut, trl],
-    Kathleen Gates [aut, cre],
+    Kathleen Gates [aut, cre, ccp],
     Zachary Fisher [aut], 
     Cara Arizmendi [aut],
-    Peter Molenaar [aut],
+    Peter Molenaar [aut, ccp],
     Michael Hallquist [ctb],
     Hallie Pike [ctb], 
     Teague Henry [ctb], 
     Kelly Duffy [ctb], 
     Lan Luo [ctb], 
-    Adriene Beltz [csp]
+    Adriene Beltz [csp], 
+    Aidan Wright [csp],
+    Jonathan Park [ctb],
+    Sebastian Castro Alvarez [ctb]
 Maintainer: KM Gates <gateskm@email.unc.edu>
-Depends: R (>= 3.0.2)
+Depends: R (>= 3.5.0)
 Imports: lavaan (>= 0.5-19), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0), nloptr, graphics, stats
 Description: Automated identification and estimation of group- and
     individual-level relations in time series data.

@@ -45,3 +45,16 @@ NULL
 #' @usage simDataLV
 #' @format A list of data frames with 20 individuals, who each have 500 observations on 9 variables.
 NULL
+
+#' Hemodynamic Response Function (HRF) GIMME example. 
+#'
+#' This object contains a list of simulated time series data for twenty-five individuals.
+#' Each data set has 500 time points and five variables. The fifth variable represents an onset 
+#' vector for stimulation. 
+#'
+#' @docType data
+#' @keywords datasets
+#' @name HRFsim
+#' @usage HRFsim
+#' @format A list of data frames with 25 individuals, who each have 500 observations on 5 variables.
+NULL
