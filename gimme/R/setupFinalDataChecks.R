@@ -10,6 +10,7 @@ setupFinalDataChecks <- function(data){
   missingCols  <- numeric()
   constantCols <- logical()
   numericCols  <- logical()
+  largeVar <- logical()
   
   # check for obvious errors in data
   for (k in 1:length(data)){
@@ -17,6 +18,7 @@ setupFinalDataChecks <- function(data){
     cols[k]   <- ncol(data.file)
     missingCols[k] <- sum(colSums(is.na(data.file)) < nrow(data.file))
     constantCols[k] <- any(apply(data.file, 2, sd, na.rm = TRUE) == 0)
+    largeVar[k] <- max(apply(data.file, 2, var, na.rm = TRUE))/min(apply(data.file, 2, var, na.rm = TRUE)) >10
     numericCols[k]  <- any(apply(data.file, 2, is.numeric) == FALSE)
   }
   
@@ -40,6 +42,14 @@ setupFinalDataChecks <- function(data){
                   'Please fix or remove files listed below before continuing. \n', 
                   paste0(names(ts_list)[constantCols == TRUE], collapse = "\n")))
     }
+    
+    if (any(largeVar == TRUE)){
+      cat('gimme WARNING: at least one data file contains variables where the variance of one variable
+              is greater than 50 times the variance of another variable. \n',
+                  'We recommend rescaling data. \n')
+             
+    }
+    
     if (any(numericCols == TRUE)){
       stop(paste0('gimme ERROR: at least one data file contains a column with non-numeric values. ',
                   'Please fix or remove files listed below before continuing. \n', 
