@@ -19,7 +19,7 @@ return.zs <- function(fit){
   
   if (!error & !zero_se & converge){
     zs <- tryCatch(subset(standardizedSolution(fit), 
-                          op == "~"),
+                          op == "~" | op == "~~"),
                    error = function(e) e)
     error <- any(grepl("error", class(zs)))
     if (error) zs <- NA 
