@@ -384,6 +384,14 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       write.csv(sample_counts, file.path(dat$out,
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
+      
+      ### If hybrid is true, create output for covariance counts
+      if(dat$hybrid){
+      write.csv(sample_counts_corr, file.path(dat$out,
+                                         "summaryCovCountsMatrix.csv"),
+                row.names = FALSE)
+      }
+      
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
       if (dat$subgroup)
       write.table(sub$sim, file.path(dat$out, "similarityMatrix.csv"), sep = ",", col.names = FALSE, row.names = FALSE)
