@@ -184,12 +184,22 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             sub_s_mat_counts <- NULL
           }
           
+          ### Write subgroup path counts matrix to output
           if (sub_spec[[s]]$n_sub_subj != 1 & !is.null(dat$out)){
             write.csv(sub_s_mat_counts, 
                       file = file.path(dat$subgroup_dir, 
                                        paste0("subgroup", s, 
                                               "PathCountsMatrix.csv")), 
                       row.names = TRUE)
+            
+            ### If hybrid=TRUE, also output covariance counts matrix
+            if(dat$hybrid){
+              write.csv(sub_s_mat_counts_cov, 
+                        file = file.path(dat$subgroup_dir, 
+                                         paste0("subgroup", s, 
+                                                "CovCountsMatrix.csv")), 
+                        row.names = TRUE)
+            }
           }
           if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ ##add by lan 021220: store the sub_plot & sub_plot_cov to the plots when n>1
           sub_coefs[[s]] <- sub_s_coefs
@@ -378,6 +388,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                            by.x = "file", by.y = "names")
     }
     
+    # Write path counts matrix to output
     if (!is.null(dat$out)){ #& length(coefs[,1]) > 0){ # commented out stl 11.20.17
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
@@ -385,7 +396,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
       
-      ### If hybrid is true, create output for covariance counts
+      ### If hybrid is true, also write output for covariance counts
       if(dat$hybrid){
       write.csv(sample_counts_corr, file.path(dat$out,
                                          "summaryCovCountsMatrix.csv"),
