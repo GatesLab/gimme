@@ -24,7 +24,8 @@ setup <- function (data,
                    lv_miiv_scaling  = "first.indicator", 
                    lv_final_estimator = "miiv",
                    ms_allow = FALSE,
-                   hybrid) {
+                   hybrid,
+                   var) {
   
 
     
@@ -422,7 +423,8 @@ setup <- function (data,
               "varLabels" = varLabels,
               "ctrlOpts"  = ctrlOpts,
               "lvgimme"   = lvgimme,
-              "hybrid"    = hybrid
+              "hybrid"    = hybrid,
+              "var"       = var
     )
   return(dat)
 }
