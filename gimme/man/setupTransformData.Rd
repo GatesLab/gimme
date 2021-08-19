@@ -4,8 +4,12 @@
 \alias{setupTransformData}
 \title{Transform raw data as required.}
 \usage{
-setupTransformData(ts_list = NULL, varLabels = NULL, ctrlOpts = NULL,
-  ms_allow = FALSE)
+setupTransformData(
+  ts_list = NULL,
+  varLabels = NULL,
+  ctrlOpts = NULL,
+  ms_allow = FALSE
+)
 }
 \arguments{
 \item{ts_list}{a list or directory}

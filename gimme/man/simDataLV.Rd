@@ -4,7 +4,9 @@
 \name{simDataLV}
 \alias{simDataLV}
 \title{Latent variable example, heterogeneous data, group, subgroup level effects.}
-\format{A list of data frames with 20 individuals, who each have 500 observations on 9 variables.}
+\format{
+A list of data frames with 20 individuals, who each have 500 observations on 9 variables.
+}
 \usage{
 simDataLV
 }

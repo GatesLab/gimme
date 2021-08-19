@@ -4,7 +4,9 @@
 \name{simData}
 \alias{simData}
 \title{Large example, heterogeneous data, group, subgroup, and individual level effects.}
-\format{A list of data frames with 25 individuals, who each have 200 observations on 10 variables.}
+\format{
+A list of data frames with 25 individuals, who each have 200 observations on 10 variables.
+}
 \usage{
 simData
 }

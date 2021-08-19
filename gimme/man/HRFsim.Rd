@@ -4,7 +4,9 @@
 \name{HRFsim}
 \alias{HRFsim}
 \title{Hemodynamic Response Function (HRF) GIMME example.}
-\format{A list of data frames with 25 individuals, who each have 500 observations on 5 variables.}
+\format{
+A list of data frames with 25 individuals, who each have 500 observations on 5 variables.
+}
 \usage{
 HRFsim
 }

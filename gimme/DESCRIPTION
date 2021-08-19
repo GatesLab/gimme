@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.7-5
-Date: 2021-03-23
+Version: 0.7-6
+Date: 2021-08-20
 Author: Stephanie Lane [aut, trl],
     Kathleen Gates [aut, cre, ccp],
     Zachary Fisher [aut], 

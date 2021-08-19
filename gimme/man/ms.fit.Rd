@@ -4,7 +4,9 @@
 \name{ms.fit}
 \alias{ms.fit}
 \title{Fitted gimme object with multiple solutions}
-\format{A fitted gimme object, where multiple solutions gimme was used.}
+\format{
+A fitted gimme object, where multiple solutions gimme was used.
+}
 \usage{
 ms.fit
 }

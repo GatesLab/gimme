@@ -4,7 +4,9 @@
 \name{ts}
 \alias{ts}
 \title{Small example, heterogeneous data, group and individual level effects}
-\format{A list of data frames with 5 individuals, who each have 50 observations on 3 variables.}
+\format{
+A list of data frames with 5 individuals, who each have 50 observations on 3 variables.
+}
 \usage{
 ts
 }

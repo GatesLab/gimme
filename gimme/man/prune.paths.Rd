@@ -4,8 +4,17 @@
 \alias{prune.paths}
 \title{Prunes paths. Ties together lowest.z and return.zs functions.}
 \usage{
-prune.paths(base_syntax, fixed_syntax, add_syntax, data_list, n_paths,
-  n_subj, prop_cutoff, elig_paths, subgroup_stage = FALSE)
+prune.paths(
+  base_syntax,
+  fixed_syntax,
+  add_syntax,
+  data_list,
+  n_paths,
+  n_subj,
+  prop_cutoff,
+  elig_paths,
+  subgroup_stage = FALSE
+)
 }
 \arguments{
 \item{base_syntax}{A character vector containing syntax that never changes.}
