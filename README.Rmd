@@ -18,11 +18,13 @@ library(microbenchmark)
 
 The GIMME algorithm can be implemented in the R package, *gimme*.
 
-Continually updated tutorials can be found in the [GIMME Online Tutorials](http://gimme.web.unc.edu/63-2/).
+Continually updated tutorials can be found in the [GIMME Online Tutorials](https://tarheels.live/gimme/tutorials/).
 
 These papers also provide insights for researchers wishing to get started with the R version of *gimme*: [Automated Selection of Robust Individual-Level Structural Equation Models for Time Series Data](http://gimme.web.unc.edu/files/2014/12/Lane-Gates-2017-SEM-gimme.pdf) and [Network Mapping with GIMME](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6181449/pdf/nihms-1502668.pdf).
 
 Program developers are invited to submit changes here at the GitHub repository. 
+
+Please email here with bugs and questions: [gimme@unc.edu](mail.to:gimme@unc.edu). 
 
 # **The Basics**
 
