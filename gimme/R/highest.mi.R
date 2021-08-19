@@ -25,6 +25,7 @@ highest.mi <- function(mi_list,
                        allow.mult,
                        ms_tol,
                        hybrid,
+                       VAR,
                        dir_prop_cutoff){
   
   mi  = NULL # appease CRAN check
@@ -87,7 +88,7 @@ highest.mi <- function(mi_list,
         opposite <- paste0(red_rhs, "~", red_lhs)
         count_red <- 0
         count_opp <- 0 
-        if (length(which(mi_list_ms$param == opposite))>0 && dir_prop_cutoff>0 && hybrid==FALSE) {
+        if (length(which(mi_list_ms$param == opposite))>0 && dir_prop_cutoff>0 && hybrid==FALSE && VAR==FALSE) {
           if (!grepl("lag", mi_list_ms$param[whichone]) && mi_list[which(mi_list_ms$param == opposite), 6] >= (prop_cutoff*n_converge))
           {
             for (p in 1:length(mi_list_na)){

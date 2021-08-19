@@ -294,6 +294,10 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 " Please ensure that ar=TRUE if var=TRUE."))
   }
   
+  # so all hybrid-related rules apply, as we are looking at covs of residuals
+  if(VAR)
+    hybrid = TRUE
+  
    sub_membership = NULL
    
    # if !is.null(lasso_model_crit)
@@ -395,16 +399,16 @@ gimmeSEM <- gimme <- function(data             = NULL,
     "group_paths"   = c()
   )
 
+  if(VAR){
+    dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
+  }
+  
   if(!hybrid){
     elig_paths = dat$candidate_paths
   }else{
     elig_paths = c(dat$candidate_paths, dat$candidate_corr)
   }
   
-  if(VAR){
-    dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
-    elig_paths = c(dat$candidate_paths, dat$candidate_corr)
-  }
   
 
 
