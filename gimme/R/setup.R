@@ -25,7 +25,7 @@ setup <- function (data,
                    lv_final_estimator = "miiv",
                    ms_allow = FALSE,
                    hybrid,
-                   var) {
+                   VAR) {
   
 
     
@@ -424,7 +424,7 @@ setup <- function (data,
               "ctrlOpts"  = ctrlOpts,
               "lvgimme"   = lvgimme,
               "hybrid"    = hybrid,
-              "var"       = var
+              "VAR"       = VAR
     )
   return(dat)
 }

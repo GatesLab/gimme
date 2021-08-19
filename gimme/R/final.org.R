@@ -192,8 +192,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                               "PathCountsMatrix.csv")), 
                       row.names = TRUE)
             
-            ### If hybrid=TRUE or var=TRUE, also output covariance counts matrix
-            if(dat$hybrid|dat$var){
+            ### If hybrid=TRUE or VAR=TRUE, also output covariance counts matrix
+            if(dat$hybrid|dat$VAR){
               write.csv(sub_s_mat_counts_cov, 
                         file = file.path(dat$subgroup_dir, 
                                          paste0("subgroup", s, 
@@ -396,8 +396,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                          "summaryPathCountsMatrix.csv"),
                 row.names = FALSE)
       
-      ### If hybrid is true or var is true, also write output for covariance counts
-      if(dat$hybrid|dat$var){
+      ### If hybrid is true or VAR is true, also write output for covariance counts
+      if(dat$hybrid|dat$VAR){
       write.csv(sample_counts_corr, file.path(dat$out,
                                          "summaryCovCountsMatrix.csv"),
                 row.names = FALSE)

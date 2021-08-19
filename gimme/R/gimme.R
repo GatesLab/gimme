@@ -35,7 +35,7 @@
 #'          lv_final_estimator = "miiv",
 #'          lasso_model_crit    = NULL, 
 #'          hybrid = FALSE,
-#'          var = FALSE,
+#'          VAR = FALSE,
 #'          dir_prop_cutoff =0)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
@@ -149,7 +149,7 @@
 #' indicate the model selection criterion to use for model selection: 'bic' (select on BIC), 'aic', 'aicc', 'hqc', 'cv' (cross-validation). 
 #' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
-#' @param var Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
+#' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @details
@@ -257,7 +257,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_final_estimator = "miiv",
                               lasso_model_crit = NULL, 
                               hybrid = FALSE,
-                              var = FALSE,
+                              VAR = FALSE,
                               dir_prop_cutoff = 0){          # c("miiv", "pml")
   
   # satisfy CRAN checks
@@ -289,7 +289,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
   #Error check for var
-  if(var & !ar){
+  if(VAR & !ar){
     stop(paste0("gimme ERROR: Autoregressive paths have to be open for var-gimme.",
                 " Please ensure that ar=TRUE if var=TRUE."))
   }
@@ -362,7 +362,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        lv_miiv_scaling      = lv_miiv_scaling,
                        ms_allow             = ms_allow,
                        hybrid               = hybrid,
-                       var                  = var)
+                       VAR                  = VAR)
 
   
   #Error Check for Confirm Subgroup Labels
@@ -401,7 +401,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     elig_paths = c(dat$candidate_paths, dat$candidate_corr)
   }
   
-  if(var){
+  if(VAR){
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
     elig_paths = c(dat$candidate_paths, dat$candidate_corr)
   }
