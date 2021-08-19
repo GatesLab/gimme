@@ -29,7 +29,7 @@ Please email here with bugs and questions: [gimme@unc.edu](mail.to:gimme@unc.edu
 # **The Basics**
 
 
-+ GIMME can be used to estimate the unified SEM (uSEM; Kim et al., 2007; Gates et al., 2010) and hybrid-uSEM (Molenaar, 2019).
++ GIMME can be used to estimate the unified SEM (uSEM; Kim et al., 2007; Gates et al., 2010), extended unified SEM (euSEM; Duffy et al., 2021; Gates et al., 2011); hybrid-uSEM (Luo et al., under review; Molenaar, 2019), and the standard VAR with correlated errors.
 
 + Missing data is not a problem. 
 

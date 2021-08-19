@@ -36,7 +36,7 @@ gimmeSEM(data        = NULL,
          lv_final_estimator = "miiv",
          lasso_model_crit    = NULL, 
          hybrid = FALSE,
-         var = FALSE,
+         VAR = FALSE,
          dir_prop_cutoff =0)
 }
 \arguments{
@@ -183,7 +183,7 @@ indicate the model selection criterion to use for model selection: 'bic' (select
 \item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous
 covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
 
-\item{var}{Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
+\item{VAR}{Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
 search space.  Defaults to FALSE.}
 
 \item{dir_prop_cutoff}{Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.}

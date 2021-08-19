@@ -230,7 +230,7 @@ setupTransformData <- function(ts_list       = NULL,
     cols[k]   <- ncol(data.file)
     missingCols[k] <- sum(colSums(is.na(data.file)) < nrow(data.file))
     constantCols[k] <- any(apply(data.file, 2, sd, na.rm = TRUE) == 0)
-    largeVar[k] <- max(apply(data.file, 2, var, na.rm = TRUE))/min(apply(data.file, 2, var, na.rm = TRUE)) >50
+    largeVar[k] <- max(apply(data.file, 2, stats::var, na.rm = TRUE))/min(apply(data.file, 2, stats::var, na.rm = TRUE)) >50
     numericCols[k]  <- any(apply(data.file, 2, is.numeric) == FALSE)
   }
   
