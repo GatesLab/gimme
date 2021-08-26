@@ -118,7 +118,7 @@ search.paths.ms <- function(obj,
         # Add the parameters with the largest MI
         #------------------------------------------------------#
         if (!all(is.na(mi_list))){
-          if (ms_allow | hybrid)
+          if (ms_allow)
           add_p     <- highest.mi(mi_list      = mi_list,
                                   indices      = indices,
                                   elig_paths   = elig_paths,
