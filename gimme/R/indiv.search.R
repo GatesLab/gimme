@@ -6,7 +6,7 @@
 #' information.
 #' @return Lists associated with coefficients, fit indices, etc.
 #' @keywords internal 
-indiv.search <- function(dat, grp, ind, hybrid){
+indiv.search <- function(dat, grp, ind){
   
   if (!dat$agg){
     ind$ind_paths   <-  vector("list", dat$n_subj)
@@ -15,7 +15,7 @@ indiv.search <- function(dat, grp, ind, hybrid){
     ind <- NULL
   }
   
-  if(!hybrid){
+  if(!dat$hybrid){
     elig_paths   = dat$candidate_paths
   } else{
     elig_paths   = c(dat$candidate_paths, dat$candidate_corr)

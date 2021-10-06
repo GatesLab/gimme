@@ -206,7 +206,7 @@
 #' @references Adriene M. Beltz & Peter C. M. Molenaar (2016) Dealing 
 #' with Multiple Solutions in Structural Vector Autoregressive Models, 
 #' Multivariate Behavioral Research, 51:2-3, 357-373.
-#' @author Stephanie Lane and Zachary Fisher
+#' @author Stephanie Lane, Zachary Fisher, & Kathleen Gates
 #' @examples
 #'  \dontrun{
 #' paths <- 'V2 ~ V1
@@ -615,9 +615,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
   
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
-      store <- indiv.search(dat, grp[[1]], ind[[1]], hybrid)
+      store <- indiv.search(dat, grp[[1]], ind[[1]])
     } else {
-      store <- indiv.search(dat, grp[[1]], ind[1], hybrid)
+      store <- indiv.search(dat, grp[[1]], ind[1])
     }
     
     if(!is.null(lv_model)){
@@ -693,9 +693,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
       }
 
       if(subgroup){
-        indiv.search.ms(dat, grp[[j]], ind[[j]], ms_tol, ms_allow, j, hybrid = FALSE)
+        indiv.search.ms(dat, grp[[j]], ind[[j]], ms_tol, ms_allow, j)
       } else {
-        indiv.search.ms(dat, grp[[j]], ind, ms_tol, ms_allow, j, hybrid = FALSE)
+        indiv.search.ms(dat, grp[[j]], ind, ms_tol, ms_allow, j)
       }
 
     })

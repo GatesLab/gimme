@@ -7,7 +7,7 @@
 #' aggSEM(data   = "",
 #'        out    = "",
 #'        sep    = "",
-#'        header = ,
+#'        header = "",
 #'        ar     = TRUE,
 #'        plot   = TRUE,
 #'        paths  = NULL,
@@ -18,7 +18,8 @@
 #'        mult_vars        = NULL,
 #'        mean_center_mult = FALSE,
 #'        standardize      = FALSE,
-#'        hybrid = FALSE)
+#'        hybrid = FALSE,
+#'        VAR    = FALSE)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. 
 #' Each file or matrix must contain one matrix 
@@ -32,7 +33,7 @@
 #' @param sep The spacing of the data files when data are in a directory. "" indicates space-delimited, 
 #' "/t" indicates tab-delimited, "," indicates comma delimited. 
 #' Only necessary to specify if reading data in from physical directory.
-#' @param header Logical. Indicate TRUE for data files with a header. 
+#' @param header Logical. Indicate TRUE for data files with a header, FALSE otherwise. 
 #' Only necessary to specify if reading data in from physical directory.
 #' @param ar Logical. If TRUE, begins search for group model with 
 #' autoregressive (AR) paths open. Defaults to TRUE.
@@ -74,6 +75,8 @@
 #' standard deviation of one. Defaults to FALSE. 
 #' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
+#' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
+#' search space.  Defaults to FALSE.
 #'  @details
 #'  In main output directory:
 #'  \itemize{
@@ -115,7 +118,8 @@ aggSEM <- function(data,
                    mult_vars        = NULL,
                    mean_center_mult = FALSE,
                    standardize      = FALSE,
-                   hybrid = FALSE){
+                   hybrid = FALSE, 
+                   VAR    = FALSE){
   
   ind      = NULL # appease CRAN check
   grp      = NULL # appease CRAN check
@@ -127,6 +131,10 @@ aggSEM <- function(data,
     stop(paste0("gimme ERROR: Autoregressive paths have to be open for hybrid-gimme.",
                 " Please ensure that ar=TRUE if hybrid=TRUE."))
   }
+  
+  # so all hybrid-related rules apply, as we are looking at covs of residuals
+  if(VAR)
+    hybrid = TRUE
   
   dat  <- setup(data        = data,
                 sep         = sep,
@@ -147,13 +155,17 @@ aggSEM <- function(data,
                 subgroup    = FALSE,
                 ind         = FALSE,
                 agg         = TRUE,
-                ms_allow    = FALSE)
+                ms_allow    = FALSE,
+                hybrid      = hybrid,
+                VAR         = VAR)
 
+  if(VAR){
+    dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
+  }
   
   store <- indiv.search(dat, 
                         grp = NULL, 
-                        ind,
-                        hybrid)
+                        ind)
 
   final <- final.org(dat, 
                      grp, 

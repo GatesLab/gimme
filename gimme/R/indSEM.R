@@ -18,7 +18,8 @@
 #'        mult_vars        = NULL,
 #'        mean_center_mult = FALSE,
 #'        standardize      = FALSE,
-#'        hybrid = FALSE)
+#'        hybrid = FALSE,
+#'        VAR    = FALSE)
 #' @param data The path to the directory where the data files are located, 
 #' or the name of the list containing each individual's time series. Each file 
 #' or matrix must contain one matrix for each individual containing a 
@@ -71,6 +72,8 @@
 #' standard deviation of one. Defaults to FALSE. 
 #' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
+#' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
+#' search space.  Defaults to FALSE.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -124,7 +127,18 @@ indSEM <- function(data   = NULL,
                    mult_vars      = NULL,
                    mean_center_mult = FALSE,
                    standardize    = FALSE,
-                   hybrid = FALSE){
+                   hybrid = FALSE,
+                   VAR    = FALSE){
+  
+  #Error check for hybrid
+  if(hybrid & !ar){
+    stop(paste0("gimme ERROR: Autoregressive paths have to be open for hybrid-gimme.",
+                " Please ensure that ar=TRUE if hybrid=TRUE."))
+  }
+  
+  # so all hybrid-related rules apply, as we are looking at covs of residuals
+  if(VAR)
+    hybrid = TRUE
   
   dat  <- setup(data        = data,
                 sep         = sep,
@@ -144,12 +158,17 @@ indSEM <- function(data   = NULL,
                 subcutoff   = NULL,
                 subgroup    = FALSE,
                 ind         = TRUE,
-                agg         = FALSE)
+                agg         = FALSE,
+                hybrid      = hybrid,
+                VAR         = VAR)
+  
+  if(VAR){
+    dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
+  }
 
   store <- indiv.search(dat, 
                         grp = NULL, 
-                        ind = dat$file_order,
-                        hybrid)
+                        ind = dat$file_order)
 
   final <- final.org(dat, 
                      grp      = NULL, 

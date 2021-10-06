@@ -269,6 +269,6 @@ with Multiple Solutions in Structural Vector Autoregressive Models,
 Multivariate Behavioral Research, 51:2-3, 357-373.
 }
 \author{
-Stephanie Lane and Zachary Fisher
+Stephanie Lane, Zachary Fisher, & Kathleen Gates
 }
 \keyword{gimmeSEM}

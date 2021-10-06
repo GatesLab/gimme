@@ -4,7 +4,7 @@
 \alias{indiv.search}
 \title{Individual-level search. Used in gimmeSEM, aggSEM, indSEM.}
 \usage{
-indiv.search(dat, grp, ind, hybrid)
+indiv.search(dat, grp, ind)
 }
 \arguments{
 \item{dat}{A list containing information created in setup().}
