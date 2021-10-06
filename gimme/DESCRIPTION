@@ -16,10 +16,10 @@ Author: Stephanie Lane [aut, trl],
     Aidan Wright [csp],
     Jonathan Park [ctb],
     Sebastian Castro Alvarez [ctb]
-Maintainer: KM Gates <gateskm@email.unc.edu>
+Maintainer: Kathleen M Gates <gateskm@email.unc.edu>
 Depends: R (>= 3.5.0)
 Imports: lavaan (>= 0.6-9), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0), nloptr, graphics, stats
-Description: Data-driven approach for arriving at person-specific time series models. The method first identifies which relations replicate across the majority of individuals to detect signal from noise. These group-level relations are then used as a foundation for starting the search for person-specific (or individual-level) relations. See Gates & Molenaar (2012) doi.org/10.1016/j.neuroimage.2012.06.026 . 
+Description: Data-driven approach for arriving at person-specific time series models. The method first identifies which relations replicate across the majority of individuals to detect signal from noise. These group-level relations are then used as a foundation for starting the search for person-specific (or individual-level) relations. See Gates & Molenaar (2012) <doi.org/10.1016/j.neuroimage.2012.06.026>. 
 License: GPL-2
 LazyData: true
 URL: https://github.com/GatesLab/gimme/
