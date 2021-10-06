@@ -77,7 +77,7 @@ All other fields are optional and will go to defaults if no user input is provid
 fit <- gimme(         # can use "gimme" or "gimmeSEM"
   data = '',          # source directory where your data are 
   out = '',           # output directory where you'd like your output to go
-  sep = "",           # how data are separated. "" for space; "," for comma, "/t" for tab-delimited
+  sep = "",           # how data are separated. "" for space; "," for comma, "\t" for tab-delimited
   header = ,          # TRUE or FALSE, is there a header
   ar = TRUE,          # TRUE (default) or FALSE, start with autoregressive paths open
   plot = TRUE,        # TRUE (default) or FALSE, generate plots
