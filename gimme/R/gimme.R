@@ -36,7 +36,8 @@
 #'          lasso_model_crit    = NULL, 
 #'          hybrid = FALSE,
 #'          VAR = FALSE,
-#'          dir_prop_cutoff =0)
+#'          dir_prop_cutoff =0,
+#'          ordered = NULL)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -152,6 +153,7 @@
 #' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
+#' @param ordered A character vector containing the names of all ordered categorical variables in the model.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -251,14 +253,15 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               ms_allow         = FALSE,
                               ms_tol           = 1e-5,
                               lv_model         = NULL, 
-                              lv_estimator     = "miiv",             # c("miiv", "pml")
-                              lv_scores        = "regression",       # c("regression", "bartlett")
-                              lv_miiv_scaling  = "first.indicator",  # c("group", "individual")
+                              lv_estimator     = "miiv",             
+                              lv_scores        = "regression",       
+                              lv_miiv_scaling  = "first.indicator",  
                               lv_final_estimator = "miiv",
                               lasso_model_crit = NULL, 
                               hybrid = FALSE,
                               VAR = FALSE,
-                              dir_prop_cutoff = 0){          # c("miiv", "pml")
+                              dir_prop_cutoff = 0,
+                              ordered = NULL){          
   
   # satisfy CRAN checks
   ind     = NULL
