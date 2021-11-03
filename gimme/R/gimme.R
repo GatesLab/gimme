@@ -154,6 +154,7 @@
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
+#' @param estimator Default is "FIML" for continuous variables and "WLSMV" for ordered categorical variables.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -258,10 +259,11 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               lv_miiv_scaling  = "first.indicator",  
                               lv_final_estimator = "miiv",
                               lasso_model_crit = NULL, 
-                              hybrid = FALSE,
-                              VAR = FALSE,
-                              dir_prop_cutoff = 0,
-                              ordered = NULL){          
+                              hybrid           = FALSE,
+                              VAR              = FALSE,
+                              dir_prop_cutoff  = 0,
+                              ordered          = NULL,
+                              estimator        = "FIML" ){          
   
   # satisfy CRAN checks
   ind     = NULL
@@ -369,7 +371,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        lv_miiv_scaling      = lv_miiv_scaling,
                        ms_allow             = ms_allow,
                        hybrid               = hybrid,
-                       VAR                  = VAR)
+                       VAR                  = VAR,
+                       ordered              = ordered)
 
   
   #Error Check for Confirm Subgroup Labels

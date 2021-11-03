@@ -25,7 +25,8 @@ setup <- function (data,
                    lv_final_estimator = "miiv",
                    ms_allow = FALSE,
                    hybrid,
-                   VAR) {
+                   VAR,
+                   ordered) {
   
 
     
@@ -299,7 +300,6 @@ setup <- function (data,
   #coln <- c(endo,exog) # future column names of data
   coln <- unique(c(lagg, endo, exog_con, mult)) 
   # cont_endog <- c(endo, exog_con)
-  
 
   varLabels <- list(
     orig = orig,
@@ -313,7 +313,8 @@ setup <- function (data,
     stnd = stnd,
     coln = coln,
     exog_lag = exog_lag,
-    exog_con = exog_con
+    exog_con = exog_con,
+    ordered = ordered
   )
   
   class(varLabels) <- "varLabels"
