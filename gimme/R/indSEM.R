@@ -160,7 +160,9 @@ indSEM <- function(data   = NULL,
                 ind         = TRUE,
                 agg         = FALSE,
                 hybrid      = hybrid,
-                VAR         = VAR)
+                VAR         = VAR,
+                ##added ordered = ordered here to reflect the changes made in other code. lan 3.4.2022
+                ordered     = ordered)
   
   if(VAR){
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
@@ -190,7 +192,12 @@ indSEM <- function(data   = NULL,
               path_counts = final$sample_counts,
               cov_counts      = final$sample_counts_cov,
               vcov = store$vcov,
-              vcovfull = store$vcovfull)
+              vcovfull = store$vcovfull,
+              ##added by lan 3.4.2022: include psi matrices for indSEM output
+              vcov            = store$vcov,
+              vcovfull        = store$vcovfull,
+              psi             = store$psi,
+              psi_unstd       = store$psiunstd)
   
   class(res) <-  "indSEMp"
   
