@@ -37,7 +37,8 @@ gimmeSEM(data        = NULL,
          lasso_model_crit    = NULL, 
          hybrid = FALSE,
          VAR = FALSE,
-         dir_prop_cutoff =0)
+         dir_prop_cutoff =0,
+         ordered = NULL)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
@@ -187,6 +188,10 @@ covariances among residuals are candidate relations in the search space. Default
 search space.  Defaults to FALSE.}
 
 \item{dir_prop_cutoff}{Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.}
+
+\item{ordered}{A character vector containing the names of all ordered categorical variables in the model.}
+
+\item{estimator}{Default is "FIML" for continuous variables and "WLSMV" for ordered categorical variables.}
 }
 \description{
 This function identifies structural equation models for each
@@ -269,6 +274,6 @@ with Multiple Solutions in Structural Vector Autoregressive Models,
 Multivariate Behavioral Research, 51:2-3, 357-373.
 }
 \author{
-Stephanie Lane, Zachary Fisher, & Kathleen Gates
+Zachary Fisher, Kathleen Gates, & Stephanie Lane
 }
 \keyword{gimmeSEM}

@@ -209,7 +209,7 @@
 #' @references Adriene M. Beltz & Peter C. M. Molenaar (2016) Dealing 
 #' with Multiple Solutions in Structural Vector Autoregressive Models, 
 #' Multivariate Behavioral Research, 51:2-3, 357-373.
-#' @author Stephanie Lane, Zachary Fisher, & Kathleen Gates
+#' @author Zachary Fisher, Kathleen Gates, & Stephanie Lane
 #' @examples
 #'  \dontrun{
 #' paths <- 'V2 ~ V1
