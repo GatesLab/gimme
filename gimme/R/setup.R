@@ -330,7 +330,7 @@ setup <- function (data,
   # Final data manipulation.
   #-------------------------------------------------------------#
   # (1) early data checks
-  # (2) convolve contemporaneous 
+  # (2) convolve contemporaneous and return HRF est (6.19.22 kad)
   # (3) standardize (including conv_vars post convolution)
   # (4) lag data (creating any lagged conv_vars)
   # (5) remove lagged conv_vars (if neccessary)
@@ -338,12 +338,16 @@ setup <- function (data,
   # (7) late data checks
   #-------------------------------------------------------------#
   
-  ts_list <- setupTransformData(
+  # 6.19.22 kad: using now modified setupTransformData function, return 
+  # both data (ts_list) and HRF estimates (which may be null) and separate 
+  ts_est_list <- setupTransformData( 
     ts_list   = ts_list,
     varLabels = varLabels,
     ctrlOpts  = ctrlOpts,
     ms_allow  = ms_allow
   )
+  ts_list <- ts_est_list$ts_list
+  hrf_est <- ts_est_list$hrf_est
 
   #-------------------------------------------------------------#
   
@@ -425,7 +429,8 @@ setup <- function (data,
               "ctrlOpts"  = ctrlOpts,
               "lvgimme"   = lvgimme,
               "hybrid"    = hybrid,
-              "VAR"       = VAR
+              "VAR"       = VAR,
+              "hrf_est" = hrf_est # 6.19.22 kad: return HRF estimates
     )
   return(dat)
 }

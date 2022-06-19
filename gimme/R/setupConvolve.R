@@ -28,7 +28,8 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
   # We only convolve contemporaneous (lagged contemporaneous created afterwards). 
   to_convolve <- setdiff(varLabels$coln, c(varLabels$conv, varLabels$exog))
   
-  ts_list <- lapply(ts_list, function(df){
+  # 6.19.21 kad: modify ts_list to ts_est_list, which now also returns a list of the HRF estimates
+  ts_est_list <- lapply(ts_list, function(df){
     
     conv_use  <- df[,to_convolve, drop = FALSE]
     
@@ -37,6 +38,10 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
       conv_use[]  <- apply(conv_use, 2, function(x) { imputeTS::na_kalman(stats::ts(x)) })
       
     }
+    
+    # 6.19.21 kad: initialize a matrix of HRF estimates, with each convolved variable as a column
+    est <- matrix(NA, nrow = conv_length, ncol = length(varLabels$conv))
+    colnames(est) <- varLabels$conv
     
     for (cv in varLabels$conv){
       
@@ -51,13 +56,17 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
       convolved <- sFIR(data = conv_use, stimuli = stimuli, response_length = conv_length, interval = conv_interval)
       
       df[,cv]   <- convolved$conv_stim_onsets[1:nrow(df)]
+      # 6.19.21 kad: now store estimate for each convolved variable
+      est[,cv] <- convolved$est_rf
 
     }
     
-    df
+    # 6.19.21 kad: now return data (ts_list) and HRF estimates 
+    ts_est_list <- list(data = df, estimates = est)
 
   })
-    
-  return(ts_list)
+  
+  # 6.19.21 kad: now return ts_est_list
+  return(ts_est_list)
   
 }
