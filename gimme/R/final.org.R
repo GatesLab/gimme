@@ -403,6 +403,17 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                 row.names = FALSE)
       }
       
+      # 6.19.21 kad: if HRF estimates have been calculated from convolved vars,
+      # output these as individual files in the individual directory
+      if(!is.null(dat$hrf_est)){
+        for(k in 1:dat$n_subj){
+          hrf_indiv <- dat$hrf_est[[k]]
+          write.csv(hrf_indiv, file.path(dat$ind_dir, 
+                                         paste0(dat$file_order[k,2], 
+                                                "EstHRF.csv")), row.names = TRUE)
+        }
+      }
+      
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
       if (dat$subgroup)
       write.table(sub$sim, file.path(dat$out, "similarityMatrix.csv"), sep = ",", col.names = FALSE, row.names = FALSE)

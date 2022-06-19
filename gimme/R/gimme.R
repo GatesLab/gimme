@@ -677,7 +677,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 psi_unstd       = store$psiunstd,
                 sim_matrix      = sub[[1]]$sim, 
                 syntax          = dat$syntax,
-                lvgimme         = dat$lvgimme
+                lvgimme         = dat$lvgimme,
+                hrf_est         = dat$hrf_est # 6.19.22 kad: added HRF estimates 
                 )
     class(res) <- "gimmep"
     
