@@ -197,7 +197,9 @@ indSEM <- function(data   = NULL,
               vcov            = store$vcov,
               vcovfull        = store$vcovfull,
               psi             = store$psi,
-              psi_unstd       = store$psiunstd)
+              psi_unstd       = store$psiunstd,
+              hrf_est         = dat$hrf_est # 7.02.22 kad: added HRF estimates 
+              )
   
   class(res) <-  "indSEMp"
   
