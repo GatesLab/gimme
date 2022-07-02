@@ -157,7 +157,9 @@ aggSEM <- function(data,
                 agg         = TRUE,
                 ms_allow    = FALSE,
                 hybrid      = hybrid,
-                VAR         = VAR)
+                VAR         = VAR,
+                # 7.02.22 kad: added to 'ordered' below resolve error now that this is an input to setup 
+                ordered    = ordered) 
 
   if(VAR){
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
