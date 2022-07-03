@@ -70,7 +70,7 @@ Response (sFIR). Defaults to NULL.}
 \item{conv_length}{Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 for the hemodynamic response function.}
 
-\item{conv_interval}{Interval between data acquisition. Currently must be a constant. For 
+\item{conv_interval}{Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
 fMRI studies, this is the repetition time. Defaults to 1.}
 
 \item{mult_vars}{Vector of variable names to be multiplied to explore bilinear/modulatory
@@ -93,9 +93,14 @@ standard deviation of one. Defaults to FALSE.}
 covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
 
 \item{VAR}{Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
-search space.  Defaults to FALSE.
- @details
- In main output directory:
+search space.  Defaults to FALSE.}
+}
+\description{
+Concatenates all individual-level data files and 
+fits a group model to the data.
+}
+\details{
+In main output directory:
  \itemize{
  \item{\strong{allBetas}} Matrix. Contains estimates for each path in the
  aggregate-level model. The row variable is the outcome and the column 
@@ -109,11 +114,7 @@ search space.  Defaults to FALSE.
  aggregate-level model.}
  \item{\strong{summaryPathsPlot}} Contains aggregate-level plot. Red paths 
  represent positive weights and blue paths represent negative weights.
-}}
 }
-\description{
-Concatenates all individual-level data files and 
-fits a group model to the data.
 }
 \examples{
 \dontrun{
