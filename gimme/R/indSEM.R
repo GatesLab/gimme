@@ -55,7 +55,7 @@
 #' Response (sFIR). Defaults to NULL.
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 #' for the hemodynamic response function. 
-#' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
+#' @param conv_interval Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
 #' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
 #' effects (optional). All multiplied variables will be treated as exogenous (X can predict
@@ -97,6 +97,9 @@
 #'  path for each individual.
 #'  \item{\strong{\emph{id}StdErrors}} Contains individual-level standard errors 
 #'  for each path for each individual.
+#'  \item{\strong{\emph{id}EstHRF}} Produced if conv_vars is not NULL. 
+#'  Contains individual-level estimated hemodynamic response function (HRF) (or relevant response function).
+#'  One column for each convolved variable, output length is equal to conv_length input.
 #'  \item{\strong{\emph{id}Plot}} Contains individual-level plots. Red paths 
 #'  represent positive weights and blue paths represent negative weights.
 #' }

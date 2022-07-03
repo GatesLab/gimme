@@ -58,7 +58,7 @@
 #' Response (sFIR). Defaults to NULL.
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 #' for the hemodynamic response function. 
-#' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
+#' @param conv_interval Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
 #' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
 #' effects (optional). All multiplied variables will be treated as exogenous (X can predict
@@ -77,7 +77,7 @@
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
 #' search space.  Defaults to FALSE.
-#'  @details
+#' @details
 #'  In main output directory:
 #'  \itemize{
 #'  \item{\strong{allBetas}} Matrix. Contains estimates for each path in the
