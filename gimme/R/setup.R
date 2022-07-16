@@ -386,7 +386,7 @@ setup <- function (data,
   #-------------------------------------------------------------#
   # Prepare paths argument if semigimme is specified
   #-------------------------------------------------------------#
-  pathList <- setupBaseSyntax(paths, varLabels, ctrlOpts)
+  pathList <- setupBaseSyntax(paths, remove, varLabels, ctrlOpts) # 7.16.22 kad: added in "remove" arg so user can set specific path values
   
   #-------------------------------------------------------------#
   

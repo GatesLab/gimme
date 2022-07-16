@@ -1,6 +1,6 @@
 #' Set up base syntax file.
 #' @keywords internal
-setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
+setupBaseSyntax  <- function(paths, remove, varLabels, ctrlOpts){
   
     #-------------------------------------------------------------#
     # NULL MODEL CONTAINS
@@ -43,7 +43,7 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     # Nonsense paths (not fixed to zero)
     nons.paths <- c(t(outer(varLabels$exog, varLabels$endo, function(x, y) paste0(x, "~", y))))
     
-    # Any fixed paths
+    # Any fixed paths (kad note: now includes paths set to a specific (non-zero) value)
     fixed.paths <- paths
     
     if(ctrlOpts$ar) {
@@ -93,7 +93,8 @@ setupBaseSyntax  <- function(paths, varLabels, ctrlOpts){
     return(list(
       syntax = base.syntax,
       fixed.paths = fixed.paths,
-      candidate.paths = setdiff(all.poss, fixed.paths),
+      # 7.16.22 kad: now removing paths set to a fixed value (both zero and non-zero) from candidate paths
+      candidate.paths = setdiff(all.poss, c(fixed.paths,remove)), 
       candidate.corr = all.corr,
       nonsense.paths =  nons.paths 
     ))

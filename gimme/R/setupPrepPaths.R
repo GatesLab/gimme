@@ -74,6 +74,17 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
     
   }
   
+  # 7.16.22 kad: will also need to remove these paths from candidate paths
+  if (nrow(tableSpecific) != 0){
+    
+    vsSpecificRemove <- paste0(dvsSpecific, "~", ivsSpecific)
+    
+  } else {
+    
+    vsSpecificRemove <- NULL
+    
+  }
+  
   # 7.16.22 kad: table up the paths which are fixed to ZERO by the user (and thus will be removed)
   tableFixed   <- table[table$op == "~" & table$free == 0 & table$ustart == 0,]
   
@@ -104,7 +115,7 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   
   list = list(
     paths  = c(vsFree,vsSpecific), # 7.16.22 kad: now include free and specific (non-zero) value paths in base syntax
-    remove = vsFixed
+    remove = c(vsFixed,vsSpecificRemove) # 7.16.22 kad: also remove the specific value paths from candidate paths
   )
   
   return(list)
