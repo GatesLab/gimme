@@ -15,8 +15,8 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   
   table   <- lavaan::lavParTable(paths)
   
-  # only include paths in the syntax which are specified free by the user
-  # allows the possibility for the user to fix certain paths to zero
+  # include paths in the syntax which are specified free by the user
+  # allows the possibility for the user to fix certain paths to zero (or now specific values, done below)
   tableFree    <- table[table$op == "~" & table$free != 0, ]
   
   dvsFree      <- tableFree$lhs
@@ -44,16 +44,45 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
     
   }
   
+  # 7.16.22 kad: ALSO include paths in the syntax which are specified to a certain non-zero value by the user
+  # Paths fixed to zero are separated below, as they will be removed, whereas these should be included in base syntax
+  tableSpecific    <- table[table$op == "~" & table$free == 0 & table$ustart != 0, ]
   
-  # table up the paths which are fixed to a certain value by the user
-  tableFixed   <- table[table$op == "~" & table$free == 0,]
+  dvsSpecific      <- tableSpecific$lhs
+  ivsSpecific      <- tableSpecific$rhs
+  ustartSpecific   <- tableSpecific$ustart
+  
+  # check if any exogenous variables have been incorrectly specified
+  # for specified value paths
+  if(!is.null(varLabels$uexo)){
+    for (exog in varLabels$uexo){
+      if (exog %in% dvsSpecific){
+        stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
+                    specified paths.  Please remove variable from exogenous list or 
+                    correct path specification'))
+      }
+    }
+  }
+  
+  if (nrow(tableSpecific) != 0){
+    
+    vsSpecific <- paste0(dvsSpecific, "~", ustartSpecific, "*", ivsSpecific)
+    
+  } else {
+    
+    vsSpecific <- NULL
+    
+  }
+  
+  # 7.16.22 kad: table up the paths which are fixed to ZERO by the user (and thus will be removed)
+  tableFixed   <- table[table$op == "~" & table$free == 0 & table$ustart == 0,]
   
   if (nrow(tableFixed) > 0){
     
     dvsFixed     <- tableFixed$lhs
     
     # check if any exogenous variables have been incorrectly specified
-    # for fixed paths
+    # for fixed to zero paths
     if(!is.null(varLabels$uexo)){
       for (exog in varLabels$uexo){
         if (exog %in% dvsFixed){
@@ -74,7 +103,7 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   }
   
   list = list(
-    paths  = vsFree,
+    paths  = c(vsFree,vsSpecific), # 7.16.22 kad: now include free and specific (non-zero) value paths in base syntax
     remove = vsFixed
   )
   
