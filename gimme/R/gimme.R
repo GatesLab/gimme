@@ -50,7 +50,7 @@
 #' specified path does not exist, it will be created.
 #' @param sep The spacing of the data files. 
 #' "" indicates space-delimited,
-#' "/t" indicates tab-delimited, "," indicates comma delimited. Only necessary
+#' "\t" indicates tab-delimited, "," indicates comma delimited. Only necessary
 #' to specify if reading data in from physical directory.
 #' @param header Logical. Indicate TRUE for data files with a header. Only
 #' necessary to specify if reading data in from physical directory.
