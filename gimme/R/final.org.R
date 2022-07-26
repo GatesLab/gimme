@@ -39,10 +39,11 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       # Check if any paths set to a specific value exist in fixed_paths [note paths set to 0 are already removed]
       if(any(grepl("\\*",dat$fixed_paths))){
         # Separate at both "~" and "*", then paste together var names, skipping the specific multiplier value
+        specificPaths <- dat$fixed_paths[grep("\\*",dat$fixed_paths)]
         specificPathsSplit <- strsplit(specificPaths,"\\*|~")
         specificPathsList <- lapply(specificPathsSplit, function(x) paste0(x[1],"~",x[3]))
         # Return paths so they can be included in group-level "coefs$level" list
-        specificValuePaths <- unlist(specificPathsSplit2)
+        specificValuePaths <- unlist(specificPathsList)
       }
       
       coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax, specificValuePaths)] <- "group" # kad 7.26.22 added specificValuePaths created above
