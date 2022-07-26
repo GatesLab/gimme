@@ -32,7 +32,20 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
       coefs <- coefs[!coefs$param %in% dat$nonsense_paths,] # Removes non-sense paths that occur when ar = FALSE or mult_vars is not null from output 
       
-      coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
+      ### kad 7.26.22: make sure paths set to a specific value (e.g. V2 ~ 0.5*V1) are included in group output
+      ### with "level" specified as "group"
+      # Set default to null
+      specificValuePaths <- NULL
+      # Check if any paths set to a specific value exist in fixed_paths [note paths set to 0 are already removed]
+      if(any(grepl("\\*",dat$fixed_paths))){
+        # Separate at both "~" and "*", then paste together var names, skipping the specific multiplier value
+        specificPathsSplit <- strsplit(specificPaths,"\\*|~")
+        specificPathsList <- lapply(specificPathsSplit, function(x) paste0(x[1],"~",x[3]))
+        # Return paths so they can be included in group-level "coefs$level" list
+        specificValuePaths <- unlist(specificPathsSplit2)
+      }
+      
+      coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax, specificValuePaths)] <- "group" # kad 7.26.22 added specificValuePaths created above
       coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
       coefs$color[coefs$level == "group"] <- "black"
       coefs$color[coefs$level == "ind"]   <- "gray50"
