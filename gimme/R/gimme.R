@@ -496,7 +496,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
         n_paths        = grp[[i]]$n_group_paths,
         n_subj         = dat$n_subj,
         prop_cutoff    = dat$group_cutoff,
-        elig_paths     = grp$group_paths,
+        elig_paths     = grp[[i]]$group_paths,
         subgroup_stage = FALSE, 
         hybrid         = hybrid
       )
