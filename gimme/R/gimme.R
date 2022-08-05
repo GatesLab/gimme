@@ -497,7 +497,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         n_subj         = dat$n_subj,
         prop_cutoff    = dat$group_cutoff,
         elig_paths     = grp$group_paths,
-        subgroup_stage = FALSE
+        subgroup_stage = FALSE, 
+        hybrid         = hybrid
       )
       
     })

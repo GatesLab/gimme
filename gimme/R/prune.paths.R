@@ -29,7 +29,8 @@ prune.paths <- function(base_syntax,
                         n_subj, 
                         prop_cutoff, 
                         elig_paths, 
-                        subgroup_stage = FALSE){
+                        subgroup_stage = FALSE, 
+                        hybrid){
   
   #-----------------------------------------------#
   # Determine the stage                           #
@@ -99,7 +100,7 @@ prune.paths <- function(base_syntax,
         
       }
       
-      z_list[[k]] <- return.zs(fit)
+      z_list[[k]] <- return.zs(fit, hybrid)
       
     }
     
