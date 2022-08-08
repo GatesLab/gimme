@@ -77,8 +77,7 @@ subgroupStage <- function(dat,
                         n_subj       = sub_spec[[s]]$n_sub_subj,
                         prop_cutoff  = dat$sub_cutoff,
                         elig_paths   = sub_spec[[s]]$sub_paths,
-                        subgroup_stage = TRUE,
-                        hybrid       = hybrid)
+                        subgroup_stage = TRUE)
       
       #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s5
       sub_spec[[s]]$n_sub_paths <- s5$n_paths
@@ -104,8 +103,7 @@ subgroupStage <- function(dat,
                       n_subj       = dat$n_subj,
                       prop_cutoff  = dat$group_cutoff,
                       elig_paths   = grp$group_paths,
-                      subgroup_stage = FALSE,
-                      hybrid       = hybrid)
+                      subgroup_stage = FALSE)
 
     #grp[c("n_group_paths", "group_paths")] <- s6
     grp$n_group_paths <- s6$n_paths
@@ -148,8 +146,7 @@ subgroupStage <- function(dat,
                             n_subj       = sub_spec[[s]]$n_sub_subj,
                             prop_cutoff  = dat$sub_cutoff,
                             elig_paths   = sub_spec[[s]]$sub_paths,
-                            subgroup_stage = FALSE,
-                            hybrid       = hybrid)
+                            subgroup_stage = FALSE)
           #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s8
            sub_spec[[s]]$sub_paths   <- s8$add_syntax
            sub_spec[[s]]$n_sub_paths <- s8$n_paths

@@ -50,7 +50,7 @@
 #' specified path does not exist, it will be created.
 #' @param sep The spacing of the data files. 
 #' "" indicates space-delimited,
-#' "\t" indicates tab-delimited, "," indicates comma delimited. Only necessary
+#' "#\#t" indicates tab-delimited, "," indicates comma delimited. Only necessary
 #' to specify if reading data in from physical directory.
 #' @param header Logical. Indicate TRUE for data files with a header. Only
 #' necessary to specify if reading data in from physical directory.
@@ -154,7 +154,6 @@
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
-#' @param estimator Default is "FIML" for continuous variables and "WLSMV" for ordered categorical variables.
 #' @details
 #'  In main output directory:
 #'  \itemize{
@@ -262,8 +261,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               hybrid           = FALSE,
                               VAR              = FALSE,
                               dir_prop_cutoff  = 0,
-                              ordered          = NULL,
-                              estimator        = "FIML" ){          
+                              ordered          = NULL){          
   
   # satisfy CRAN checks
   ind     = NULL
@@ -497,8 +495,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
         n_subj         = dat$n_subj,
         prop_cutoff    = dat$group_cutoff,
         elig_paths     = grp[[i]]$group_paths,
-        subgroup_stage = FALSE, 
-        hybrid         = hybrid
+        subgroup_stage = FALSE
       )
       
     })

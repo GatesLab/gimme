@@ -1,6 +1,7 @@
 #' Returns z values from lavaan fit object.
 #' @param fit An object from lavaan.
-#' @param hybrid logical indicating if hybrid gimme rules apply 
+#' @param elig_paths eligable paths at this stage. For subgrouping, group and fixed paths. 
+#' For pruning, only group paths. 
 #' @return If successful, returns z values for an individual. If unsuccessful, 
 #' returns NA.
 #' @keywords internal 

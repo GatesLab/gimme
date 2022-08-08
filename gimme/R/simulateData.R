@@ -26,13 +26,12 @@
 #' @param indPsi Sparsity of individual-level Psi paths. 0 indicates no individual-level. Use decimals. Default is 
 #' 0, meaning that each path that is not in the group-level Psi matrix has a 0 chance of being added at the ind. level.
 #' Individual- level paths added at this rate per individual. 
-#' @param ASign Defaults to "random" for ind level paths, with 50% chance of positive and 50% negative, other option is either "neg" or "pos" 
-#' @param PhiSign Defaults to "random" for ind level paths, with 50% chance of positive and 50% negative, other option is either "neg" or "pos" 
+#' @param ASign Defaults to "random" for ind level paths, with 50 percent chance of positive and 50 percent negative, other option is either "neg" or "pos" which provides all negative or all positive relations, respectively.
+#' @param PhiSign Defaults to "random" for ind level paths, with 50 percent chance of positive and 50 percent negative, other option is either "neg" or "pos" which provides all negative or all positive relations, respectively. 
 #' @author KM Gates, Ai Ye, Ethan McCormick, & Zachary Fisher 
 #' @export simulateVAR
 
-
-simulateVAR <- function(A   = NULL, 
+simulateVAR <- function(A         = NULL, 
                         Phi       = NULL, 
                         Psi       = NULL, 
                         subAssign = NULL, 

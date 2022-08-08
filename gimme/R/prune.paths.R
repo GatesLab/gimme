@@ -29,8 +29,7 @@ prune.paths <- function(base_syntax,
                         n_subj, 
                         prop_cutoff, 
                         elig_paths, 
-                        subgroup_stage = FALSE, 
-                        hybrid){
+                        subgroup_stage = FALSE){
   
   #-----------------------------------------------#
   # Determine the stage                           #
