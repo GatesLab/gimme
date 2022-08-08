@@ -97,8 +97,7 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         n_subj         = 1,
         prop_cutoff    = NULL,
         elig_paths     = s1.ind[[length(s1.ind)]][[i]]$add_syntax,
-        subgroup_stage = FALSE,
-        hybrid         = dat$hybrid
+        subgroup_stage = FALSE
       )
       
     })
