@@ -419,12 +419,12 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       
       # 6.19.21 kad: if HRF estimates have been calculated from convolved vars,
       # output these as individual files in the individual directory
-      if(!is.null(dat$hrf_est)){
+      if(!is.null(dat$rf_est)){
         for(k in 1:dat$n_subj){
-          hrf_indiv <- dat$hrf_est[[k]]
-          write.csv(hrf_indiv, file.path(dat$ind_dir, 
+          rf_indiv <- dat$rf_est[[k]]
+          write.csv(rf_indiv, file.path(dat$ind_dir, 
                                          paste0(dat$file_order[k,2], 
-                                                "EstHRF.csv")), row.names = TRUE)
+                                                "EstRF.csv")), row.names = TRUE)
         }
       }
       

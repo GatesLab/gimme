@@ -53,11 +53,11 @@ setupTransformData <- function(ts_list       = NULL,
     
     # 6.19.21 kad: separate out data (ts_list) and HRF estimates
     ts_list <- lapply(ts_list_est, function(df){df$data})
-    hrf_est <- lapply(ts_list_est, function(df){df$estimates})
+    rf_est <- lapply(ts_list_est, function(df){df$estimates})
     
   }else{
-    # 6.19.21 kad: return NULL hrf_est if no convolved vars
-    hrf_est = NULL
+    # 6.19.21 kad: return NULL rf_est if no convolved vars
+    rf_est = NULL
   }
   #-------------------------------------------------------------#
   
@@ -282,7 +282,7 @@ setupTransformData <- function(ts_list       = NULL,
   # }
   
   # 6.19.22 kad: return now ts_est_list containing both ts_list and hrf estimates
-  ts_est_list <- list(ts_list = ts_list, hrf_est = hrf_est)
+  ts_est_list <- list(ts_list = ts_list, rf_est = rf_est)
   return(ts_est_list)
   
 }

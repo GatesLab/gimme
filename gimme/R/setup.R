@@ -347,7 +347,7 @@ setup <- function (data,
     ms_allow  = ms_allow
   )
   ts_list <- ts_est_list$ts_list
-  hrf_est <- ts_est_list$hrf_est
+  rf_est <- ts_est_list$rf_est
 
   #-------------------------------------------------------------#
   
@@ -430,7 +430,7 @@ setup <- function (data,
               "lvgimme"   = lvgimme,
               "hybrid"    = hybrid,
               "VAR"       = VAR,
-              "hrf_est" = hrf_est # 6.19.22 kad: return HRF estimates
+              "rf_est" = rf_est # 6.19.22 kad: return HRF estimates
     )
   return(dat)
 }
