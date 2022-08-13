@@ -115,7 +115,8 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   
   list = list(
     paths  = c(vsFree,vsSpecific), # 7.16.22 kad: now include free and specific (non-zero) value paths in base syntax
-    remove = c(vsFixed,vsSpecificRemove) # 7.16.22 kad: also remove the specific value paths from candidate paths
+    remove = c(vsFixed,vsSpecificRemove), # 7.16.22 kad: also remove the specific value paths from candidate paths
+    zero.paths = vsFixed # 8.13.22 kad: also return the paths set to 0 by user, so this info can be returned in output
   )
   
   return(list)

@@ -378,7 +378,32 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     } else {
       samp_plot <- NULL
       samp_plot_cov <- NULL
+    }
+    
+    # 8.13.22 kad: Create df for paths set to 0 by user if applicable
+    zero.paths.df <- NULL
+    if(!is.null(dat$zero.paths)){
+      for(path in dat$zero.paths){
+        # Set values for vars that exist in coefs table
+        path.split <- strsplit(path, "~")[[1]]
+        lhs <- path.split[1]; rhs <- path.split[2]; op <- "~"
+        est.std <- se <- ci.lower <- ci.upper <- 0
+        z <- pvalue <- id <- level <- color <- NA
+        param <- path
+        
+        # Combine, replicate for each person, set id names
+        row <- data.frame(lhs,op,rhs,est.std,se,z,pvalue,ci.lower,ci.upper,id,param,level,color)
+        df <- data.frame(lapply(row, rep, length(names(store$coefs))))
+        df$id <- names(store$coefs)
+        
+        # Update df
+        zero.paths.df <- rbind(zero.paths.df,df)
       }
+    }
+    
+    # 8.13.22 kad: Combine paths set to 0 with regular coefs for output
+    coefs <- rbind(coefs,zero.paths.df)
+    
     indiv_paths     <- coefs[, c("id", "lhs", "op", "rhs", "est.std", 
                                  "se", "z", "pvalue", "level")]
     indiv_paths$lhs <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
@@ -434,7 +459,24 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     }
     
   } else {
+    # 8.13.22 kad: Create df for paths set to 0 by user if applicable
+    zero.paths.df <- NULL
+    if(!is.null(dat$zero.paths)){
+      for(path in dat$zero.paths){
+        # Set values for vars that exist in coefs table
+        path.split <- strsplit(path, "~")[[1]]
+        lhs <- path.split[1]; rhs <- path.split[2]; op <- "~"
+        est.std <- se <- ci.lower <- ci.upper <- 0
+        z <- pvalue <- NA
+        
+        # Combine and update df
+        row <- data.frame(lhs,op,rhs,est.std,se,z,pvalue,ci.lower,ci.upper)
+        zero.paths.df <- rbind(zero.paths.df,row)
+      }
+    }
+    
     indiv_paths <- store$coefs[[1L]]
+    indiv_paths <- rbind(indiv_paths,zero.paths.df) # 8.13.22 kad: Combine paths set to 0 with regular coefs for output
     indiv_paths$file <- "all"
     indiv_paths$lhs  <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs  <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)

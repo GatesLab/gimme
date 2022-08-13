@@ -373,11 +373,13 @@ setup <- function (data,
     pathInfo <- setupPrepPaths(ctrlOpts$paths, varLabels, ctrlOpts)
     remove   <- pathInfo$remove  
     paths    <- pathInfo$paths
+    zero.paths <- pathInfo$zero.paths # 8.13.22 kad: return paths set to 0 by user as well
     
   } else {
     
     paths    <- ctrlOpts$paths
     remove   <- NULL
+    zero.paths <- NULL
     
   }
   #-------------------------------------------------------------#
@@ -430,7 +432,8 @@ setup <- function (data,
               "lvgimme"   = lvgimme,
               "hybrid"    = hybrid,
               "VAR"       = VAR,
-              "rf_est" = rf_est # 6.19.22 kad: return HRF estimates
+              "rf_est" = rf_est, # 6.19.22 kad: return HRF estimates
+              "zero.paths" = zero.paths # 8.13.22 kad: return paths set to 0 by the user
     )
   return(dat)
 }
