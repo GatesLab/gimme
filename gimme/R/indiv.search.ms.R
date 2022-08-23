@@ -139,9 +139,7 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         chisq_cutoff = 0,
         subgroup_stage = FALSE,
         ms_allow       = FALSE, # do not allow multiple solutions on cleanup
-        ms_tol         = ms_tol,
-        hybrid         = dat$hybrid
-      )
+        ms_tol         = ms_tol)
       
     }, simplify = TRUE)
     

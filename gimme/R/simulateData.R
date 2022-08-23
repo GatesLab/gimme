@@ -26,13 +26,12 @@
 #' @param indPsi Sparsity of individual-level Psi paths. 0 indicates no individual-level. Use decimals. Default is 
 #' 0, meaning that each path that is not in the group-level Psi matrix has a 0 chance of being added at the ind. level.
 #' Individual- level paths added at this rate per individual. 
-#' @param ASign Defaults to "random" for ind level paths, with 50% chance of positive and 50% negative, other option is either "neg" or "pos" 
-#' @param PhiSign Defaults to "random" for ind level paths, with 50% chance of positive and 50% negative, other option is either "neg" or "pos" 
+#' @param ASign Defaults to "random" for ind level paths, with 50 percent chance of positive and 50 percent negative, other option is either "neg" or "pos" which provides all negative or all positive relations, respectively.
+#' @param PhiSign Defaults to "random" for ind level paths, with 50 percent chance of positive and 50 percent negative, other option is either "neg" or "pos" which provides all negative or all positive relations, respectively. 
 #' @author KM Gates, Ai Ye, Ethan McCormick, & Zachary Fisher 
 #' @export simulateVAR
 
-
-simulateVAR <- function(A   = NULL, 
+simulateVAR <- function(A         = NULL, 
                         Phi       = NULL, 
                         Psi       = NULL, 
                         subAssign = NULL, 
@@ -114,35 +113,35 @@ simulateVAR <- function(A   = NULL,
       PsiMean <- mean(PsiTemp)
       
       if(indA>0){
-        ATemp[which(ATemp == 0)] <- rbinom(1,1,indA)
+        ATemp[which(ATemp == 0)] <- stats::rbinom(1,1,indA)
         if(ASign == "random"){
           random.sign <- sample(c(0,1), size=1)
-          if(random.sign==0) {ATemp[which(ATemp == 1)] <- -rnorm(1, AMean, 0.3)}
-          if(random.sign==1) {ATemp[which(ATemp == 1)] <- rnorm(1, AMean, 0.3)}
+          if(random.sign==0) {ATemp[which(ATemp == 1)] <- -stats::rnorm(1, AMean, 0.3)}
+          if(random.sign==1) {ATemp[which(ATemp == 1)] <- stats::rnorm(1, AMean, 0.3)}
         }
         if(ASign == "neg")
-          ATemp[which(ATemp == 1)] <- -rnorm(1, AMean, 0.3)
+          ATemp[which(ATemp == 1)] <- -stats::rnorm(1, AMean, 0.3)
         if(ASign == "pos")
-          ATemp[which(ATemp == 1)] <- rnorm(1, AMean, 0.3)
+          ATemp[which(ATemp == 1)] <- stats::rnorm(1, AMean, 0.3)
         diag(A) <- 0
       }
       
       if(indPhi>0){
-        PhiTemp[which(PhiTemp == 0)] <- rbinom(1,1,indPhi)
+        PhiTemp[which(PhiTemp == 0)] <- stats::rbinom(1,1,indPhi)
         if(PhiSign == "random"){
           random.sign <- sample(c(0,1), size=1)
-          if(random.sign==0) {PhiTemp[which(PhiTemp == 1)] <- -rnorm(1, PhiMean, 0.3)}
-          if(random.sign==1) {PhiTemp[which(PhiTemp == 1)] <- rnorm(1,PhiMean, 0.3)}
+          if(random.sign==0) {PhiTemp[which(PhiTemp == 1)] <- -stats::rnorm(1, PhiMean, 0.3)}
+          if(random.sign==1) {PhiTemp[which(PhiTemp == 1)] <- stats::rnorm(1,PhiMean, 0.3)}
         }
         if(PhiSign == "neg")
-          PhiTemp[which(PhiTemp == 1)] <- -rnorm(1, , 0.3)
+          PhiTemp[which(PhiTemp == 1)] <- -stats::rnorm(1, , 0.3)
         if(PhiSign == "pos")
-          PhiTemp[which(PhiTemp == 1)] <- rnorm(1, , 0.3)
+          PhiTemp[which(PhiTemp == 1)] <- stats::rnorm(1, , 0.3)
       }
       
       if(indPsi>0){
-        PsiTemp[which(PsiTemp == 0)] <- rbinom(1,1,indPsi)
-        PsiTemp[which(PsiTemp == 1)] <- rnorm(1, PsiMean, 0.3)
+        PsiTemp[which(PsiTemp == 0)] <- stats::rbinom(1,1,indPsi)
+        PsiTemp[which(PsiTemp == 1)] <- stats::rnorm(1, PsiMean, 0.3)
       }
       
       negA <- solve(diag(vars)-ATemp) 

@@ -99,7 +99,7 @@ prune.paths <- function(base_syntax,
         
       }
       
-      z_list[[k]] <- return.zs(fit)
+      z_list[[k]] <- return.zs(fit, elig_paths)
       
     }
     

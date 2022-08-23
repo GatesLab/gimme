@@ -53,9 +53,9 @@ but can have different lengths of observations (T).}
 a copy of output files will be replaced in directory. If directory at
 specified path does not exist, it will be created.}
 
-\item{sep}{The spacing of the data files. 
-"" indicates space-delimited,
-"/t" indicates tab-delimited, "," indicates comma delimited. Only necessary
+\item{sep}{The spacing of the data files. Follows R convention.
+"" indicates space-delimited, backslash 
+"t" indicates tab-delimited, "," indicates comma delimited. Only necessary
 to specify if reading data in from physical directory.}
 
 \item{header}{Logical. Indicate TRUE for data files with a header. Only
@@ -188,8 +188,6 @@ search space.  Defaults to FALSE.}
 \item{dir_prop_cutoff}{Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.}
 
 \item{ordered}{A character vector containing the names of all ordered categorical variables in the model.}
-
-\item{estimator}{Default is "FIML" for continuous variables and "WLSMV" for ordered categorical variables.}
 }
 \description{
 This function identifies structural equation models for each

@@ -26,7 +26,7 @@ setup <- function (data,
                    ms_allow = FALSE,
                    hybrid,
                    VAR,
-                   ordered) {
+                   ordered = NULL) {
   
 
     

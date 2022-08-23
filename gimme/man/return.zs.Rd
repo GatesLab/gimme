@@ -4,10 +4,13 @@
 \alias{return.zs}
 \title{Returns z values from lavaan fit object.}
 \usage{
-return.zs(fit)
+return.zs(fit, elig_paths)
 }
 \arguments{
 \item{fit}{An object from lavaan.}
+
+\item{elig_paths}{eligable paths at this stage. For subgrouping, group and fixed paths. 
+For pruning, only group paths.}
 }
 \value{
 If successful, returns z values for an individual. If unsuccessful, 

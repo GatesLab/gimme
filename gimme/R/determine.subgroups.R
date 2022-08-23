@@ -56,7 +56,7 @@ determine.subgroups <- function(data_list,
     # writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
     # fit          <- fit.model(syntax    = base_syntax,
     #                           data_file = data_list[[k]])
-    z_list[[k]]  <- return.zs(fit[[k]])
+    z_list[[k]]  <- return.zs(fit[[k]], elig_paths)
     mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
     if (inherits(fit[[k]], "simpleError"))
       converge[k] <- FALSE else

@@ -27,9 +27,9 @@ simulateVAR(A   = NULL,
 
 \item{N}{Number of indvidiuals.}
 
-\item{ASign}{Defaults to "random" for ind level paths, with 50% chance of positive and 50% negative, other option is either "neg" or "pos"}
+\item{ASign}{Defaults to "random" for ind level paths, with 50 percent chance of positive and 50 percent negative, other option is either "neg" or "pos" which provides all negative or all positive relations, respectively.}
 
-\item{PhiSign}{Defaults to "random" for ind level paths, with 50% chance of positive and 50% negative, other option is either "neg" or "pos"}
+\item{PhiSign}{Defaults to "random" for ind level paths, with 50 percent chance of positive and 50 percent negative, other option is either "neg" or "pos" which provides all negative or all positive relations, respectively.}
 
 \item{Obs}{Number of observations (T) per individual. Burn in of 400 is used to generate then discarded.}
 
