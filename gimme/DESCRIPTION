@@ -22,7 +22,7 @@ Imports: lavaan (>= 0.6-9), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5
 Description: Data-driven approach for arriving at person-specific time series models. The method first identifies which relations replicate across the majority of individuals to detect signal from noise. These group-level relations are then used as a foundation for starting the search for person-specific (or individual-level) relations. See Gates & Molenaar (2012) <doi:10.1016/j.neuroimage.2012.06.026>. 
 License: GPL-2
 LazyData: true
-URL: https://github.com/GatesLab/gimme/
+URL: https://github.com/GatesLab/gimme/, https://tarheels.live/gimme/tutorials/
 BugReports: https://github.com/GatesLab/gimme/issues
 ByteCompile: true
 RoxygenNote: 7.2.1
