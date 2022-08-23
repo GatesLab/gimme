@@ -48,9 +48,9 @@
 #' (optional). If specified,
 #' a copy of output files will be replaced in directory. If directory at
 #' specified path does not exist, it will be created.
-#' @param sep The spacing of the data files. 
-#' "" indicates space-delimited,
-#' "#\#t" indicates tab-delimited, "," indicates comma delimited. Only necessary
+#' @param sep The spacing of the data files. Follows R convention.
+#' "" indicates space-delimited, backslash 
+#' "t" indicates tab-delimited, "," indicates comma delimited. Only necessary
 #' to specify if reading data in from physical directory.
 #' @param header Logical. Indicate TRUE for data files with a header. Only
 #' necessary to specify if reading data in from physical directory.
