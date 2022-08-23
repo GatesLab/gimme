@@ -330,7 +330,7 @@ setup <- function (data,
   # Final data manipulation.
   #-------------------------------------------------------------#
   # (1) early data checks
-  # (2) convolve contemporaneous 
+  # (2) convolve contemporaneous and return HRF est (6.19.22 kad)
   # (3) standardize (including conv_vars post convolution)
   # (4) lag data (creating any lagged conv_vars)
   # (5) remove lagged conv_vars (if neccessary)
@@ -338,12 +338,16 @@ setup <- function (data,
   # (7) late data checks
   #-------------------------------------------------------------#
   
-  ts_list <- setupTransformData(
+  # 6.19.22 kad: using now modified setupTransformData function, return 
+  # both data (ts_list) and HRF estimates (which may be null) and separate 
+  ts_est_list <- setupTransformData( 
     ts_list   = ts_list,
     varLabels = varLabels,
     ctrlOpts  = ctrlOpts,
     ms_allow  = ms_allow
   )
+  ts_list <- ts_est_list$ts_list
+  rf_est <- ts_est_list$rf_est
 
   #-------------------------------------------------------------#
   
@@ -369,11 +373,13 @@ setup <- function (data,
     pathInfo <- setupPrepPaths(ctrlOpts$paths, varLabels, ctrlOpts)
     remove   <- pathInfo$remove  
     paths    <- pathInfo$paths
+    zero.paths <- pathInfo$zero.paths # 8.13.22 kad: return paths set to 0 by user as well
     
   } else {
     
     paths    <- ctrlOpts$paths
     remove   <- NULL
+    zero.paths <- NULL
     
   }
   #-------------------------------------------------------------#
@@ -382,7 +388,7 @@ setup <- function (data,
   #-------------------------------------------------------------#
   # Prepare paths argument if semigimme is specified
   #-------------------------------------------------------------#
-  pathList <- setupBaseSyntax(paths, varLabels, ctrlOpts)
+  pathList <- setupBaseSyntax(paths, remove, varLabels, ctrlOpts) # 7.16.22 kad: added in "remove" arg so user can set specific path values
   
   #-------------------------------------------------------------#
   
@@ -425,7 +431,9 @@ setup <- function (data,
               "ctrlOpts"  = ctrlOpts,
               "lvgimme"   = lvgimme,
               "hybrid"    = hybrid,
-              "VAR"       = VAR
+              "VAR"       = VAR,
+              "rf_est" = rf_est, # 6.19.22 kad: return HRF estimates
+              "zero.paths" = zero.paths # 8.13.22 kad: return paths set to 0 by the user
     )
   return(dat)
 }

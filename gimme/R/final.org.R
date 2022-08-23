@@ -32,7 +32,21 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
       coefs <- coefs[!coefs$param %in% dat$nonsense_paths,] # Removes non-sense paths that occur when ar = FALSE or mult_vars is not null from output 
       
-      coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax)] <- "group"
+      ### kad 7.26.22: make sure paths set to a specific value (e.g. V2 ~ 0.5*V1) are included in group output
+      ### with "level" specified as "group"
+      # Set default to null
+      specificValuePaths <- NULL
+      # Check if any paths set to a specific value exist in fixed_paths [note paths set to 0 are already removed]
+      if(any(grepl("\\*",dat$fixed_paths))){
+        # Separate at both "~" and "*", then paste together var names, skipping the specific multiplier value
+        specificPaths <- dat$fixed_paths[grep("\\*",dat$fixed_paths)]
+        specificPathsSplit <- strsplit(specificPaths,"\\*|~")
+        specificPathsList <- lapply(specificPathsSplit, function(x) paste0(x[1],"~",x[3]))
+        # Return paths so they can be included in group-level "coefs$level" list
+        specificValuePaths <- unlist(specificPathsList)
+      }
+      
+      coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax, specificValuePaths)] <- "group" # kad 7.26.22 added specificValuePaths created above
       coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
       coefs$color[coefs$level == "group"] <- "black"
       coefs$color[coefs$level == "ind"]   <- "gray50"
@@ -364,7 +378,32 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     } else {
       samp_plot <- NULL
       samp_plot_cov <- NULL
+    }
+    
+    # 8.13.22 kad: Create df for paths set to 0 by user if applicable
+    zero.paths.df <- NULL
+    if(!is.null(dat$zero.paths)){
+      for(path in dat$zero.paths){
+        # Set values for vars that exist in coefs table
+        path.split <- strsplit(path, "~")[[1]]
+        lhs <- path.split[1]; rhs <- path.split[2]; op <- "~"
+        est.std <- se <- ci.lower <- ci.upper <- 0
+        z <- pvalue <- id <- level <- color <- NA
+        param <- path
+        
+        # Combine, replicate for each person, set id names
+        row <- data.frame(lhs,op,rhs,est.std,se,z,pvalue,ci.lower,ci.upper,id,param,level,color)
+        df <- data.frame(lapply(row, rep, length(names(store$coefs))))
+        df$id <- names(store$coefs)
+        
+        # Update df
+        zero.paths.df <- rbind(zero.paths.df,df)
       }
+    }
+    
+    # 8.13.22 kad: Combine paths set to 0 with regular coefs for output
+    coefs <- rbind(coefs,zero.paths.df)
+    
     indiv_paths     <- coefs[, c("id", "lhs", "op", "rhs", "est.std", 
                                  "se", "z", "pvalue", "level")]
     indiv_paths$lhs <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
@@ -403,13 +442,41 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                 row.names = FALSE)
       }
       
+      # 6.19.21 kad: if HRF estimates have been calculated from convolved vars,
+      # output these as individual files in the individual directory
+      if(!is.null(dat$rf_est)){
+        for(k in 1:dat$n_subj){
+          rf_indiv <- dat$rf_est[[k]]
+          write.csv(rf_indiv, file.path(dat$ind_dir, 
+                                         paste0(dat$file_order[k,2], 
+                                                "EstRF.csv")), row.names = TRUE)
+        }
+      }
+      
       write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
       if (dat$subgroup)
       write.table(sub$sim, file.path(dat$out, "similarityMatrix.csv"), sep = ",", col.names = FALSE, row.names = FALSE)
     }
     
   } else {
+    # 8.13.22 kad: Create df for paths set to 0 by user if applicable
+    zero.paths.df <- NULL
+    if(!is.null(dat$zero.paths)){
+      for(path in dat$zero.paths){
+        # Set values for vars that exist in coefs table
+        path.split <- strsplit(path, "~")[[1]]
+        lhs <- path.split[1]; rhs <- path.split[2]; op <- "~"
+        est.std <- se <- ci.lower <- ci.upper <- 0
+        z <- pvalue <- NA
+        
+        # Combine and update df
+        row <- data.frame(lhs,op,rhs,est.std,se,z,pvalue,ci.lower,ci.upper)
+        zero.paths.df <- rbind(zero.paths.df,row)
+      }
+    }
+    
     indiv_paths <- store$coefs[[1L]]
+    indiv_paths <- rbind(indiv_paths,zero.paths.df) # 8.13.22 kad: Combine paths set to 0 with regular coefs for output
     indiv_paths$file <- "all"
     indiv_paths$lhs  <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs  <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)

@@ -101,10 +101,10 @@ function from the \code{igraph} package. Defaults to TRUE.}
 
 \item{paths}{\code{lavaan}-style syntax containing paths with which
 to begin model estimation (optional). That is, Y~X indicates that Y
-is regressed on X, or X predicts Y. If no header is used,
-then variables should be referred to with V followed (with no separation)
-by the column number. If a
-header is used, variables should be referred to using variable names.
+is regressed on X, or X predicts Y. Paths can also be set to a specific value for estimation using \code{lavaan}-style syntax 
+(e.g., 'V4 ~ 0.5*V3'), or set to 0 so that they will not be estimated 
+(e.g., 'V4 ~ 0*V3'). If no header is used, then variables should be referred to with V followed (with no separation)
+by the column number. If a header is used, variables should be referred to using variable names.
 To reference lag variables, "lag" should be added to the end of the variable
 name with no separation. Defaults to NULL.}
 
@@ -119,15 +119,13 @@ name with no separation. Defaults to NULL.}
 \item{conv_vars}{Vector of variable names to be convolved via smoothed Finite Impulse 
 Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
 To treat conv_vars as exogenous use the exogenous argument. Variables listed in conv_vars 
-must be binary variables. If there is missing data in the endogenous variables their values 
-will be imputed for the convolution operation only. Defaults to NULL. ### If there are multiple 
-variables listed in conv_vars they are not used in the convolution of additional conv_vars.## 
-You can't do lagged variables.}
+must be binary variables. You cannot do lagged variables. If there is missing data in the endogenous variables their values 
+will be imputed for the convolution operation only. Defaults to NULL.}
 
 \item{conv_length}{Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 for the hemodynamic response function.}
 
-\item{conv_interval}{Interval between data acquisition. Currently must be a constant. For 
+\item{conv_interval}{Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
 fMRI studies, this is the repetition time. Defaults to 1.}
 
 \item{mult_vars}{Vector of variable names to be multiplied to explore bilinear/modulatory
@@ -152,7 +150,7 @@ included as a group-level path.}
 indicating that a path must be significant across at least 50\% of the
 individuals in a subgroup to be considered a subgroup-level path.}
 
-\item{diagnos}{Logical.If TRUE provides internal output for diagnostic purposes. Defaults to FALSE.}
+\item{diagnos}{Logical. If TRUE provides internal output for diagnostic purposes. Defaults to FALSE.}
 
 \item{ms_allow}{Logical. If TRUE provides multiple solutions when more than one path has identical 
 modification index values.  When ms_allow=TRUE, it is recommended
@@ -237,6 +235,9 @@ In main output directory:
   of each path for each individual.
  \item{\strong{\emph{id}StdErrors}} Contains individual-level standard errors
  for each path for each individual.
+ \item{\strong{\emph{id}EstRF}} Produced if conv_vars is not NULL. 
+ Contains individual-level estimated response function (e.g., hemodynamic response function (HRF) or relevant response function).
+ One column for each convolved variable, output length is equal to conv_length input.
  \item{\strong{\emph{id}Plot}} Contains individual-level plots. Red paths
  represent positive weights and blue paths represent negative weights.
 }

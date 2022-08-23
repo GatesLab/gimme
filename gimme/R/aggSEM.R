@@ -44,7 +44,9 @@
 #' (lag 0). Defaults to TRUE.
 #' @param paths \code{lavaan}-style syntax containing paths with which to begin
 #' model estimation (optional). That is, Y~X indicates that Y is regressed on X, or X
-#' predicts Y. If no header is used, then variables should be referred to
+#' predicts Y. Paths can also be set to a specific value for estimation using \code{lavaan}-style syntax 
+#' (e.g., 'V4 ~ 0.5*V3'), or set to 0 so that they will not be estimated 
+#' (e.g., 'V4 ~ 0*V3'). If no header is used, then variables should be referred to
 #' with V followed (with no separation) by the column number. If a
 #' header is used, variables should be referred to using variable names. 
 #' To reference lag variables, "lag" should be added to the end of the variable 
@@ -58,7 +60,7 @@
 #' Response (sFIR). Defaults to NULL.
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 #' for the hemodynamic response function. 
-#' @param conv_interval Interval between data acquisition. Currently must be a constant. For 
+#' @param conv_interval Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
 #' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
 #' effects (optional). All multiplied variables will be treated as exogenous (X can predict
@@ -77,7 +79,7 @@
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
 #' search space.  Defaults to FALSE.
-#'  @details
+#' @details
 #'  In main output directory:
 #'  \itemize{
 #'  \item{\strong{allBetas}} Matrix. Contains estimates for each path in the
@@ -157,7 +159,9 @@ aggSEM <- function(data,
                 agg         = TRUE,
                 ms_allow    = FALSE,
                 hybrid      = hybrid,
-                VAR         = VAR)
+                VAR         = VAR,
+                # 7.02.22 kad: added to 'ordered' below resolve error now that this is an input to setup 
+                ordered    = ordered) 
 
   if(VAR){
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)

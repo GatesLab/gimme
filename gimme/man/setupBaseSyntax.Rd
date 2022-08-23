@@ -4,7 +4,7 @@
 \alias{setupBaseSyntax}
 \title{Set up base syntax file.}
 \usage{
-setupBaseSyntax(paths, varLabels, ctrlOpts)
+setupBaseSyntax(paths, remove, varLabels, ctrlOpts)
 }
 \description{
 Set up base syntax file.

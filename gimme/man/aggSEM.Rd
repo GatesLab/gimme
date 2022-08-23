@@ -52,7 +52,9 @@ Dashed lines denote lagged relations (lag 1) and solid lines are contemporaneous
 
 \item{paths}{\code{lavaan}-style syntax containing paths with which to begin
 model estimation (optional). That is, Y~X indicates that Y is regressed on X, or X
-predicts Y. If no header is used, then variables should be referred to
+predicts Y. Paths can also be set to a specific value for estimation using \code{lavaan}-style syntax 
+(e.g., 'V4 ~ 0.5*V3'), or set to 0 so that they will not be estimated 
+(e.g., 'V4 ~ 0*V3'). If no header is used, then variables should be referred to
 with V followed (with no separation) by the column number. If a
 header is used, variables should be referred to using variable names. 
 To reference lag variables, "lag" should be added to the end of the variable 
@@ -70,7 +72,7 @@ Response (sFIR). Defaults to NULL.}
 \item{conv_length}{Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 for the hemodynamic response function.}
 
-\item{conv_interval}{Interval between data acquisition. Currently must be a constant. For 
+\item{conv_interval}{Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
 fMRI studies, this is the repetition time. Defaults to 1.}
 
 \item{mult_vars}{Vector of variable names to be multiplied to explore bilinear/modulatory
@@ -93,9 +95,14 @@ standard deviation of one. Defaults to FALSE.}
 covariances among residuals are candidate relations in the search space. Defaults to FALSE.}
 
 \item{VAR}{Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
-search space.  Defaults to FALSE.
- @details
- In main output directory:
+search space.  Defaults to FALSE.}
+}
+\description{
+Concatenates all individual-level data files and 
+fits a group model to the data.
+}
+\details{
+In main output directory:
  \itemize{
  \item{\strong{allBetas}} Matrix. Contains estimates for each path in the
  aggregate-level model. The row variable is the outcome and the column 
@@ -109,11 +116,7 @@ search space.  Defaults to FALSE.
  aggregate-level model.}
  \item{\strong{summaryPathsPlot}} Contains aggregate-level plot. Red paths 
  represent positive weights and blue paths represent negative weights.
-}}
 }
-\description{
-Concatenates all individual-level data files and 
-fits a group model to the data.
 }
 \examples{
 \dontrun{
