@@ -79,7 +79,7 @@
 #' will be imputed for the convolution operation only. Defaults to NULL. 
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 #' for the hemodynamic response function. 
-#' @param conv_interval Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
+#' @param conv_interval Interval between data acquisition. Currently conv_length/conv_interval must be an integer. For 
 #' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @param mult_vars Vector of variable names to be multiplied to explore bilinear/modulatory
 #' effects (optional). All multiplied variables will be treated as exogenous (X can predict
