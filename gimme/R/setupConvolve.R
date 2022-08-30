@@ -40,7 +40,7 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
     }
     
     # 6.19.21 kad: initialize a matrix of HRF estimates, with each convolved variable as a column
-    est <- matrix(NA, nrow = conv_length, ncol = length(varLabels$conv))
+    est <- matrix(NA, nrow = (conv_length/conv_interval), ncol = length(varLabels$conv))
     colnames(est) <- varLabels$conv
     
     for (cv in varLabels$conv){
@@ -58,7 +58,7 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
       df[,cv]   <- convolved$conv_stim_onsets[1:nrow(df)]
       # 6.19.21 kad: now store estimate for each convolved variable
       est[,cv] <- convolved$est_rf
-
+      rownames(est) <- seq(from = interval, to = response_length, by =interval)
     }
     
     # 6.19.21 kad: now return data (ts_list) and HRF estimates 
