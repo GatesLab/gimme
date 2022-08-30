@@ -216,13 +216,13 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
             }
           }
           if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ ##add by lan 021220: store the sub_plot & sub_plot_cov to the plots when n>1
-          sub_coefs[[s]] <- sub_s_coefs
           sub_summ[[s]]  <- sub_s_summ
           sub_plots[[s]] <- sub_plot
           sub_counts[[s]] <- sub_s_mat_counts
           sub_counts_cov[[s]] <- sub_s_mat_counts_cov
             if (sum(contemp_cov)>0) sub_plots_cov[[s]] <- sub_plot_cov
           }
+          sub_coefs[[s]] <- sub_s_coefs
         }
         
         summ <- do.call("rbind", sub_summ)
@@ -237,8 +237,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
           ave(param, param, FUN = length)))
         summ <- subset(summ, !duplicated(param)) 
       }
-    }
-    else {
+    
+      } else {
       sub_coefs <- NULL
       sub_plots <- NULL
       sub_paths <- NULL
