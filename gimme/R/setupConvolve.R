@@ -58,7 +58,6 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
       df[,cv]   <- convolved$conv_stim_onsets[1:nrow(df)]
       # 6.19.21 kad: now store estimate for each convolved variable
       est[,cv] <- convolved$est_rf
-      rownames(est) <- seq(from = interval, to = response_length, by =interval)
     }
     
     # 6.19.21 kad: now return data (ts_list) and HRF estimates 
