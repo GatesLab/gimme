@@ -75,6 +75,9 @@ determine.subgroups <- function(data_list,
     mi_list <- mi_list[-drop]
     z_list  <- z_list[-drop]
   }
+   
+   if (length(drop)==n_subj)
+     stop(paste0("gimme ERROR: none of the participants' models converged."))
   
   mi_list_temp <- lapply(mi_list, 
                          function(x){x$param <- paste0(x$lhs, x$op, x$rhs)
