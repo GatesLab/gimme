@@ -24,7 +24,7 @@
 #'          mean_center_mult = FALSE,
 #'          standardize = FALSE,
 #'          groupcutoff = .75,
-#'          subcutoff   = .5,
+#'          subcutoff   = .75,
 #'          diagnos     = FALSE, 
 #'          ms_allow         = FALSE,
 #'          ms_tol           = 1e-5,
@@ -123,8 +123,8 @@
 #' @param groupcutoff Cutoff value for group-level paths. Defaults to .75,
 #' indicating that a path must be significant across 75\% of individuals to be
 #' included as a group-level path.
-#' @param subcutoff Cutoff value for subgroup- level paths. Defaults to .5,
-#' indicating that a path must be significant across at least 50\% of the
+#' @param subcutoff Cutoff value for subgroup- level paths. Defaults to .75,
+#' indicating that a path must be significant across at least 75\% of the
 #' individuals in a subgroup to be considered a subgroup-level path.
 #' @param diagnos Logical. If TRUE provides internal output for diagnostic purposes. Defaults to FALSE. 
 #' @param ms_allow Logical. If TRUE provides multiple solutions when more than one path has identical 
@@ -249,7 +249,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               mean_center_mult = FALSE,
                               standardize      = FALSE,
                               groupcutoff      = .75,
-                              subcutoff        = .5,
+                              subcutoff        = .75,
                               diagnos          = FALSE,
                               ms_allow         = FALSE,
                               ms_tol           = 1e-5,
