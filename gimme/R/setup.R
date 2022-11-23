@@ -7,6 +7,7 @@ setup <- function (data,
                    ar,
                    paths,
                    exogenous,
+                   outcome,
                    mult_vars,
                    mean_center_mult,
                    standardize,
@@ -291,12 +292,13 @@ setup <- function (data,
   orig <- colnames(ts_list[[1]]) 
   uexo <- unique(exogenous)
   conv <- conv_vars
-  lagg <- paste0(setdiff(orig,unique(exog_con, conv)), "lag")
+  lagg <- paste0(setdiff(orig,unique(exog_con,conv)), "lag")
   mult <- setupMultVarNames(mult_vars)
   exog <- unique(c(uexo, mult, lagg))
-  endo <- setdiff(orig, exog) # only true if ar = TRUE
+  outc <- unique(c(outcome, (paste0(outcome, "lag"))))
+  endo <- setdiff(orig, c(exog)) # only true if ar = TRUE
   catg <- NULL
-  stnd <- if(standardize) setdiff(c(endo,exog), c(catg, conv_vars)) else NULL
+  stnd <- if(standardize) setdiff(c(endo,outc, exog), c(catg, conv_vars)) else NULL
   #coln <- c(endo,exog) # future column names of data
   coln <- unique(c(lagg, endo, exog_con, mult)) 
   # cont_endog <- c(endo, exog_con)
@@ -308,13 +310,14 @@ setup <- function (data,
     conv = conv,
     mult = mult,
     exog = exog,
+    outc  = outc,
     endo = endo,
     catg = catg,
     stnd = stnd,
     coln = coln,
     exog_lag = exog_lag,
     exog_con = exog_con,
-    ordered = ordered
+    ordered  = ordered
   )
   
   class(varLabels) <- "varLabels"
@@ -402,6 +405,7 @@ setup <- function (data,
               "n_lagged" = length(varLabels$lagg),
               "n_exog_lag" = length(exog_lag),
               "n_exog" = length(varLabels$uexo),
+              "n_out"  = length(varLabels$uout),
               "n_bilinear" = length(varLabels$mult),
               "n_endog"  = length(varLabels$endo),
               "n_exog_total" = length(c(varLabels$uexo, varLabels$mult)),

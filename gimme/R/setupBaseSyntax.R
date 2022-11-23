@@ -13,9 +13,9 @@ setupBaseSyntax  <- function(paths, remove, varLabels, ctrlOpts){
       # Any fixed paths
     #-------------------------------------------------------------#
   
-    # Var among variables than can be predicted.
+    # Var among variables than can be predicted (reminder - endo includes outcome variables).
     var.endo <- paste0(varLabels$endo, "~~", varLabels$endo)
-  
+
     # Intercepts of endogenous variables
     int.endo  <- paste0(varLabels$endo, "~1")
   
@@ -55,10 +55,10 @@ setupBaseSyntax  <- function(paths, remove, varLabels, ctrlOpts){
     }
     
     # All Possible Paths
-    all.poss <- outer(varLabels$endo, c(varLabels$endo, varLabels$exog), function(x, y) paste0(x, "~", y))
+    all.poss <- outer(varLabels$endo, setdiff(c(varLabels$endo, varLabels$exog), varLabels$outc), function(x, y) paste0(x, "~", y))
     all.poss <- c(all.poss[lower.tri(all.poss, diag = FALSE)], all.poss[upper.tri(all.poss, diag = FALSE)])
-    
     # All Possible Contemporaneous Correlations
+    # KMG note: currently doesn't include outcome variables
     all.corr <- outer(varLabels$endo, varLabels$endo, function(x,y) paste0(x, "~~", y))
     all.corr <- c(all.corr[lower.tri(all.corr, diag = FALSE)], all.corr[upper.tri(all.corr, diag = FALSE)])
     # Both V1~~V2 and V2~~V1 are kept for now because we don't know which one lavaan produces

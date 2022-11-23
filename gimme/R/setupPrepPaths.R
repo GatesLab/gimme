@@ -34,6 +34,19 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
     }
   }
   
+  # check if any outcome variables have been incorrectly specified
+  # for free paths
+  if(!is.null(varLabels$outc)){
+    for (out in varLabels$outc){
+      if (out %in% ivsFree){
+        stop(paste0('gimme ERROR: an outcome variable was included as a predictor in 
+                    user-specified paths.  Please remove variable from outcome list or 
+                    correct path specification'))
+      }
+    }
+  }
+  
+  
   if (nrow(tableFree) != 0){
     
     vsFree <- paste0(dvsFree, "~", ivsFree)
@@ -59,6 +72,18 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
       if (exog %in% dvsSpecific){
         stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                     specified paths.  Please remove variable from exogenous list or 
+                    correct path specification'))
+      }
+    }
+  }
+  
+  # check if any outcome variables have been incorrectly specified
+  # for specified value paths
+  if(!is.null(varLabels$outc)){
+    for (out in varLabels$outc){
+      if (out %in% ivsSpecific){
+        stop(paste0('gimme ERROR: an outcome variable was treated as predictor in 
+                    specified paths.  Please remove variable from outcome list or 
                     correct path specification'))
       }
     }
@@ -103,6 +128,19 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
         }
       }
     }
+    
+    # check if any outcome variables have been incorrectly specified
+    # for fixed paths
+    if(!is.null(varLabels$outc)){
+      for (out in varLabels$outc){
+        if (out %in% ivsFixed){
+          stop(paste0('gimme ERROR: an outcome variable was included as a predictor in 
+                    user-specified paths.  Please remove variable from outcome list or 
+                    correct path specification'))
+        }
+      }
+    }
+    
     
     ivsFixed     <- recode.vars(tableFixed$rhs, varnames, lvarnames)
     vsFixed      <- paste0(dvsFixed, "~", ivsFixed)

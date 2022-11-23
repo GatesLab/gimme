@@ -26,6 +26,17 @@ setupTransformData <- function(ts_list       = NULL,
     
   }
   
+  if(!is.null(varLabels$out)){
+    
+    for(out in setdiff(varLabels$outc, c(varLabels$mult, varLabels$lagg))){
+      if (!out %in% colnames(ts_list[[1]])){
+        stop(paste0('gimme ERROR: Outcome variable name provided is not in data column names
+                    Please fix.'))
+      }
+    }
+    
+  }
+  
   if (ncol(ts_list[[1]]) == 1) {
     
     stop(paste0("gimme ERROR: only one column of data read in. ",
@@ -212,11 +223,7 @@ setupTransformData <- function(ts_list       = NULL,
   #-------------------------------------------------------------#
   # Final data checks
   #-------------------------------------------------------------#
-  
-  # todo
-  # reorder colnames?  <- Cara can you check if this still has to be done? 
-  # if so, could you do and make sure that column names matches the data it should at the end?
-  # throw warning if varLabels$coln does not equal colnames(ts_list[[1]])
+
   ts_list <- lapply(ts_list, function(x){x[,varLabels$coln]})
    
   
