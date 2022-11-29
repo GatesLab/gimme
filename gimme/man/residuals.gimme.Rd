@@ -4,16 +4,21 @@
 \alias{residuals.gimme}
 \title{GIMME Residuals.}
 \usage{
-residuals.gimme(x)
+residuals.gimme(x, lag)
 }
 \arguments{
 \item{x}{A fitted gimme object.}
+
+\item{lag}{The number of lags tested in the Box-Pierce and Ljung-Box tests of the residuals.
+If user does not specify a value, default is the smaller of 10 or the length of the time series divided by 5.}
 }
 \value{
-List of two lists of data frames. \describe{ \item{residuals}{List of
+List of four lists of data frames: \describe{ \item{residuals}{List of
   the unstandardized residuals per subject.}
   \item{standardized.residuals}{List of the standardized residuals per
-  subject.}}
+  subject.}
+  \item{Box.Pierce.test}{List of the results of the Box-Pierce test for each subject's residuals.}
+  \item{Ljung.Box.test}{List of the results of the Ljung-Box test for each subject's residuals.}}
 }
 \description{
 This function calculates the unstandardized and standardized
@@ -30,6 +35,7 @@ fit <- gimmeSEM(data     = simData,
                 paths    = paths)
 
 residuals <- residuals.gimme(fit)
+residuals <- residuals.gimme(fit, lag = 5)
  }
 }
 \author{

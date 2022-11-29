@@ -2,7 +2,7 @@
 #' @title GIMME Residuals.
 #' @description This function calculates the unstandardized and standardized
 #'   residuals of a fitted gimme model.
-#' @usage residuals.gimme(x)
+#' @usage residuals.gimme(x, lag)
 #' @param x A fitted gimme object.
 #' @param lag The number of lags tested in the Box-Pierce and Ljung-Box tests of the residuals.
 #' If user does not specify a value, default is the smaller of 10 or the length of the time series divided by 5.
@@ -87,7 +87,7 @@ residuals.gimme <- function(x, lag = NULL) {
     
     # Run test
     for(i in 1:ncol(x)){
-      test <- Box.test(x[,i], lag = lag, type = test.name, fitdf = fitdf)
+      test <- stats::Box.test(x[,i], lag = lag, type = test.name, fitdf = fitdf)
       out[i,'X-squared'] <- test$statistic
       out[i, 'df'] <- test$parameter
       out[i, 'p-value'] <- test$p.value

@@ -18,6 +18,7 @@ gimmeSEM(data        = NULL,
          confirm_subgroup = NULL,
          paths       = NULL,
          exogenous = NULL,
+         outcome   = NULL,
          conv_vars   = NULL,
          conv_length = 16, 
          conv_interval = 1,
@@ -25,7 +26,7 @@ gimmeSEM(data        = NULL,
          mean_center_mult = FALSE,
          standardize = FALSE,
          groupcutoff = .75,
-         subcutoff   = .5,
+         subcutoff   = .75,
          diagnos     = FALSE, 
          ms_allow         = FALSE,
          ms_tol           = 1e-5,
@@ -116,6 +117,11 @@ to using variable names. The default for exogenous variables is that lagged effe
 variables are not included in the model search.  If lagged paths are wanted, "&lag" should be added to the end of the variable
 name with no separation. Defaults to NULL.}
 
+\item{outcome}{Vector of variable names to be treated as outcome (optional). This is a variable
+that can be predicted by others but cannot predict. If no header is used, then variables should be referred to with V followed
+(with no separation) by the column number.  If a header is used, variables should be referred 
+to using variable names.}
+
 \item{conv_vars}{Vector of variable names to be convolved via smoothed Finite Impulse 
 Response (sFIR). Note, conv_vars are not not automatically considered exogenous variables.
 To treat conv_vars as exogenous use the exogenous argument. Variables listed in conv_vars 
@@ -125,7 +131,7 @@ will be imputed for the convolution operation only. Defaults to NULL.}
 \item{conv_length}{Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
 for the hemodynamic response function.}
 
-\item{conv_interval}{Interval between data acquisition. Currently conv_length/conv_interval must be a constant. For 
+\item{conv_interval}{Interval between data acquisition. Currently conv_length/conv_interval must be an integer. For 
 fMRI studies, this is the repetition time. Defaults to 1.}
 
 \item{mult_vars}{Vector of variable names to be multiplied to explore bilinear/modulatory
@@ -146,8 +152,8 @@ standard deviation of one. Defaults to FALSE.}
 indicating that a path must be significant across 75\% of individuals to be
 included as a group-level path.}
 
-\item{subcutoff}{Cutoff value for subgroup- level paths. Defaults to .5,
-indicating that a path must be significant across at least 50\% of the
+\item{subcutoff}{Cutoff value for subgroup- level paths. Defaults to .75,
+indicating that a path must be significant across at least 75\% of the
 individuals in a subgroup to be considered a subgroup-level path.}
 
 \item{diagnos}{Logical. If TRUE provides internal output for diagnostic purposes. Defaults to FALSE.}
