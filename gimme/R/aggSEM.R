@@ -12,6 +12,7 @@
 #'        plot   = TRUE,
 #'        paths  = NULL,
 #'        exogenous = NULL, 
+#'        outcome   = NULL, 
 #'        conv_vars        = NULL,
 #'        conv_length      = 16, 
 #'        conv_interval    = 1, 
@@ -56,6 +57,10 @@
 #' If no header is used, then variables should be referred to with V followed 
 #' (with no separation) by the column number. If a header is used, variables 
 #' should be referred to using variable names.  Defaults to NULL.
+#' @param outcome Vector of variable names to be treated as outcome (optional). This is a variable
+#' that can be predicted by others but cannot predict. If no header is used, then variables should be referred to with V followed
+#' (with no separation) by the column number.  If a header is used, variables should be referred 
+#' to using variable names.
 #' @param conv_vars Vector of variable names to be convolved via smoothed Finite Impulse 
 #' Response (sFIR). Defaults to NULL.
 #' @param conv_length Expected response length in seconds. For functional MRI BOLD, 16 seconds (default) is typical
@@ -114,6 +119,7 @@ aggSEM <- function(data,
                    plot   = TRUE,
                    paths  = NULL,
                    exogenous        = NULL,
+                   outcome          = NULL, 
                    conv_vars        = NULL,
                    conv_length      = 16, 
                    conv_interval    = 1, 

@@ -37,6 +37,9 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     zero_se  <- TRUE
   }
   
+  if (converge & !zero_se)#& (ind$n_ind_paths[k] >0) ){
+    status   <- "converged normally"
+    
   # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
     status <- "nonconvergence"
@@ -85,8 +88,6 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   }
   
   if (converge & !zero_se){#& (ind$n_ind_paths[k] >0) ){
-    status   <- "converged normally"
-    
     ind_fit    <- fitMeasures(fit, c("chisq", "df", "npar", "pvalue", "rmsea", 
                                      "srmr", "nnfi", "cfi", "bic", "aic", "logl"))
     ind_fit    <- round(ind_fit, digits = 4)
@@ -159,8 +160,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       }
     }
     
-    ind_plot  <- NA
-    if (dat$plot){
+        if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_lagged, ]
       contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_vars_total), ]
@@ -193,8 +193,41 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
         plot(ind_plot)
         dev.off()
       }
+      if(dat$hybrid){
+        covpsi     <- ind_psi[(dat$n_lagged+1):(dat$n_vars_total), (dat$n_lagged+1):(dat$n_vars_total)]
+        covpsi[lower.tri(covpsi)] <- 0 # so we don't get duplicates
+        plot_vals_psi   <- w2e(covpsi)
+        
+        plot_file_psi   <- ifelse(dat$agg, 
+                              file.path(dat$out, "summaryCovPlot.pdf"),
+                              file.path(dat$ind_dir, 
+                                        paste0(dat$file_order[k,2], "PlotCov.pdf")))
+        
+        ind_plot_psi <- tryCatch(qgraph(plot_vals_psi,
+                                    layout       = "circle",
+                                    lty          = 1,
+                                    edge.labels  = FALSE,
+                                    curve        = FALSE,
+                                    parallelEdge = TRUE,
+                                    fade         = FALSE,
+                                    posCol       = "red",
+                                    negCol       = "blue",
+                                    arrows       = FALSE,
+                                    labels       = 
+                                      dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                                    label.cex    = 2,
+                                    DoNotPlot    = TRUE), 
+                             error = function(e) e)
+        
+        if (!is.null(dat$out) & !"error" %in% class(ind_plot_psi) & ms.print){
+          pdf(plot_file_psi)
+          plot(ind_plot_psi)
+          dev.off()
+        }
+      }
     }
   } 
+  
   
   # commented out on 11.20.17 by stl 
   # if (ind$n_ind_paths[k] ==0 & converge) {
@@ -226,9 +259,6 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     ind_psi_unstd   <- NA
     ind_vcov_full <- NA
   }
-  
-  if (!dat$plot)
-    ind_plot  <- NA
   
   res <- list("status"    = status, 
               "ind_fit"   = ind_fit, 

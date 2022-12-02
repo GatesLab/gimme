@@ -295,8 +295,9 @@ setup <- function (data,
   lagg <- paste0(setdiff(orig,unique(exog_con,conv)), "lag")
   mult <- setupMultVarNames(mult_vars)
   exog <- unique(c(uexo, mult, lagg))
-  if(!is.null(outcome))
+  if(!is.null(outcome)){
   outc <- unique(c(outcome, (paste0(outcome, "lag"))))
+  } else {outc <- NULL}
   endo <- setdiff(orig, c(exog)) # only true if ar = TRUE
   catg <- NULL
   stnd <- if(standardize) setdiff(c(endo,outc, exog), c(catg, conv_vars)) else NULL

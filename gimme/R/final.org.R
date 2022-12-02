@@ -343,8 +343,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       #commented out by lan 2.10.2020
       # colors_corr      <- c(samp_colors_corr[1:(dat$n_lagged), ],
       #                samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total), ])
-      colors_corr     <- samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total)]
-      colors_corr      <- colors_corr[!is.na(colors_corr)]
+      #commented out by Katie 12.1.2022
+      # colors_corr     <- samp_colors_corr[(dat$n_lagged+1):(dat$n_vars_total)]
+      colors_corr      <- samp_colors_corr[!is.na(samp_colors_corr)]
      
       if (sum(sample_paths_corr)>0){
         corr   <- sample_paths_corr[(dat$n_lagged+1):(dat$n_vars_total), ]
