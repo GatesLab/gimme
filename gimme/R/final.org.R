@@ -9,7 +9,7 @@
 #' @param store A list containing output from indiv.search().
 #' @return Aggregated information, such as counts, levels, and plots.
 #' @keywords internal
-final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, ind){
+final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
   
   ind = store$ind
   sub_coefs  <- list()
@@ -25,7 +25,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, ind){
   
   if (!dat$agg){
     
-    summarize <- summaryPathsCounts(dat, grp, store, ind, sub, sub_spec)
+    summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
   
     ### If path now exists for >= groupcutoff, rerun individual search with it estimated for all
     if(any(summarize$a$count.ind/dat$n_subj >= groupcutoff)){
@@ -37,7 +37,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, ind){
         store <- indiv.search(dat, grp, ind[1])
       }
       
-      summarize <- summaryPathsCounts(dat, grp, store, ind, sub, sub_spec)
+      summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
     }
     
     if (!is.null(dat$out)){

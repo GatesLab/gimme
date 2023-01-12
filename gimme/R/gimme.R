@@ -648,8 +648,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        sub = sub[[1]],
                        sub_spec = sub_spec[[1]],
                        diagnos = diagnos,
-                       store, 
-                       ind)
+                       store)
     
     print.gimme(x = sub[[1]],
                 y = subgroup,

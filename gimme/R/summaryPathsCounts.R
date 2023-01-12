@@ -2,15 +2,13 @@
 #' @param dat A list containing information created in setup().
 #' @param grp A list containing group-level information. NULL in aggSEM and
 #' indSEM.
-#' @param ind A list containing individual- and (potentially) subgroup-level
-#' information.
 #' @param sub A list containing subgroup information.
 #' @param sub_spec A list containing information specific to each subgroup.
 #' @param store A list containing output from indiv.search().
 #' @return Aggregated information, such as counts, levels, and plots.
 #' @keywords internal
 #' 
-summaryPathsCounts <- function(dat, grp, store, ind, sub, sub_spec){
+summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
   
   coefs       <- do.call("rbind", store$coefs)
   
@@ -34,7 +32,7 @@ summaryPathsCounts <- function(dat, grp, store, ind, sub, sub_spec){
     }
     
     coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax, specificValuePaths)] <- "group" # kad 7.26.22 added specificValuePaths created above
-    coefs$level[coefs$param %in% unique(unlist(ind$ind_paths))]  <- "ind"
+    coefs$level[coefs$param %in% unique(unlist(store$ind$ind_paths))]  <- "ind"
     coefs$color[coefs$level == "group"] <- "black"
       coefs$color[coefs$level == "ind"]   <- "gray50"
   }
