@@ -160,7 +160,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       }
     }
     
-        if (dat$plot){
+    if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_lagged, ]
       contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_vars_total), ]
@@ -174,18 +174,18 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                                       paste0(dat$file_order[k,2], "Plot.pdf")))
       
       ind_plot <- try(qgraph(plot_vals,
-                                  layout       = "circle",
-                                  lty          = ifelse(is_lagged, 2, 1),
-                                  edge.labels  = FALSE,
-                                  curve        = FALSE,
-                                  parallelEdge = TRUE,
-                                  fade         = FALSE,
-                                  posCol       = "red",
-                                  negCol       = "blue",
-                                  labels       = 
-                                    dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                  label.cex    = 2,
-                                  DoNotPlot    = TRUE))
+                             layout       = "circle",
+                             lty          = ifelse(is_lagged, 2, 1),
+                             edge.labels  = FALSE,
+                             curve        = FALSE,
+                             parallelEdge = TRUE,
+                             fade         = FALSE,
+                             posCol       = "red",
+                             negCol       = "blue",
+                             labels       = 
+                               dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                             label.cex    = 2,
+                             DoNotPlot    = TRUE))
       
       if (!is.null(dat$out) & !"error" %in% class(ind_plot) & ms.print){
         pdf(plot_file)
