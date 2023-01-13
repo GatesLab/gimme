@@ -28,8 +28,8 @@ return.mis <- function(fit, elig_paths){
       return(mis)
     }
     
-    mis   <- tryCatch(lanMod(fit, elig_paths),
-                      error = function(e) e)
+    mis   <- try(lanMod(fit, elig_paths))
+
     error <- any(grepl("error", class(mis)))
     if (error) mis <- NA 
   } else {

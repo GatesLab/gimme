@@ -6,21 +6,21 @@
 #' @keywords internal 
 fit.model <- function (syntax, data_file) {
   
-  fit <- tryCatch(lavaan::lavaan(syntax,
-                                 data            = data_file,
-                                 model.type      = "sem",
-                                 missing         = "fiml",
-                                 estimator       = "ml",
-                                 int.ov.free     = FALSE,
-                                 int.lv.free     = TRUE,
-                                 auto.fix.first  = TRUE,
-                                 auto.var        = TRUE,
-                                 auto.cov.lv.x   = TRUE,
-                                 auto.th         = TRUE,
-                                 auto.delta      = TRUE,
-                                 auto.cov.y      = FALSE,
-                                 auto.fix.single = TRUE,
-                                 warn            = FALSE),
-                  error = function(e) e)
+  fit <- try(lavaan::lavaan(syntax,
+                            data            = data_file,
+                            model.type      = "sem",
+                            missing         = "fiml",
+                            estimator       = "ml",
+                            int.ov.free     = FALSE,
+                            int.lv.free     = TRUE,
+                            auto.fix.first  = TRUE,
+                            auto.var        = TRUE,
+                            auto.cov.lv.x   = TRUE,
+                            auto.th         = TRUE,
+                            auto.delta      = TRUE,
+                            auto.cov.y      = FALSE,
+                            auto.fix.single = TRUE,
+                            warn            = FALSE))
+
   return(fit)
 }

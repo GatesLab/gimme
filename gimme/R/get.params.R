@@ -173,7 +173,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                             file.path(dat$ind_dir, 
                                       paste0(dat$file_order[k,2], "Plot.pdf")))
       
-      ind_plot <- tryCatch(qgraph(plot_vals,
+      ind_plot <- try(qgraph(plot_vals,
                                   layout       = "circle",
                                   lty          = ifelse(is_lagged, 2, 1),
                                   edge.labels  = FALSE,
@@ -185,8 +185,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                                   labels       = 
                                     dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
                                   label.cex    = 2,
-                                  DoNotPlot    = TRUE), 
-                           error = function(e) e)
+                                  DoNotPlot    = TRUE))
       
       if (!is.null(dat$out) & !"error" %in% class(ind_plot) & ms.print){
         pdf(plot_file)
@@ -203,21 +202,20 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                               file.path(dat$ind_dir, 
                                         paste0(dat$file_order[k,2], "PlotCov.pdf")))
         
-        ind_plot_psi <- tryCatch(qgraph(plot_vals_psi,
-                                    layout       = "circle",
-                                    lty          = 1,
-                                    edge.labels  = FALSE,
-                                    curve        = FALSE,
-                                    parallelEdge = TRUE,
-                                    fade         = FALSE,
-                                    posCol       = "red",
-                                    negCol       = "blue",
-                                    arrows       = FALSE,
-                                    labels       = 
-                                      dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                    label.cex    = 2,
-                                    DoNotPlot    = TRUE), 
-                             error = function(e) e)
+        ind_plot_psi <- try(qgraph(plot_vals_psi,
+                                   layout       = "circle",
+                                   lty          = 1,
+                                   edge.labels  = FALSE,
+                                   curve        = FALSE,
+                                   parallelEdge = TRUE,
+                                   fade         = FALSE,
+                                   posCol       = "red",
+                                   negCol       = "blue",
+                                   arrows       = FALSE,
+                                   labels       = 
+                                     dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                                   label.cex    = 2,
+                                   DoNotPlot    = TRUE))
         
         if (!is.null(dat$out) & !"error" %in% class(ind_plot_psi) & ms.print){
           pdf(plot_file_psi)

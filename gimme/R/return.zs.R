@@ -21,8 +21,7 @@ return.zs <- function(fit, elig_paths){
   
 if (!error & !zero_se & converge){
 
-    zs0 <- tryCatch(standardizedSolution(fit),
-                    error = function(e) e)
+    zs0 <- try(standardizedSolution(fit))
     zs0_idx <- paste0(zs0$lhs,zs0$op,zs0$rhs)
     zs <- zs0[zs0_idx %in% elig_paths,]
 } else {

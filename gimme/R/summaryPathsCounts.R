@@ -127,18 +127,17 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
                               sub_colors[(dat$n_lagged+1):(dat$n_vars_total), ])
               colors     <- colors[!is.na(colors)]
               
-              sub_plot <- tryCatch(qgraph(plot_vals,
-                                          layout       = "circle",
-                                          lty          = ifelse(is_lagged, 2, 1),
-                                          edge.labels  = FALSE,
-                                          edge.color   = colors,
-                                          parallelEdge = TRUE,
-                                          fade         = FALSE,
-                                          labels       = 
-                                            dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                          label.cex    = 2,
-                                          DoNotPlot    = TRUE), 
-                                   error = function(e) e)
+              sub_plot <- try(qgraph(plot_vals,
+                                     layout       = "circle",
+                                     lty          = ifelse(is_lagged, 2, 1),
+                                     edge.labels  = FALSE,
+                                     edge.color   = colors,
+                                     parallelEdge = TRUE,
+                                     fade         = FALSE,
+                                     labels       = 
+                                       dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                                     label.cex    = 2,
+                                     DoNotPlot    = TRUE))
               
               sub_plot$graphAttributes$Edges$width <- (plot_vals[,3])*7.137138 
               
@@ -151,18 +150,17 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
                 #sub_colors_cov[(dat$n_lagged+1):(dat$n_vars_total), ])
                 colors    <- sub_colors_cov[(dat$n_lagged+1):(dat$n_vars_total), ]
                 colors     <- colors[!is.na(colors)]
-                sub_plot_cov <- tryCatch(qgraph(plot_vals_cov,
-                                                layout       = "circle",
-                                                edge.labels  = FALSE,
-                                                edge.color   = colors,
-                                                parallelEdge = TRUE,
-                                                fade         = FALSE,
-                                                arrows       = FALSE,
-                                                labels       = 
-                                                  dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                                label.cex    = 2,
-                                                DoNotPlot    = TRUE), 
-                                         error = function(e) e)
+                sub_plot_cov <- try(qgraph(plot_vals_cov,
+                                           layout       = "circle",
+                                           edge.labels  = FALSE,
+                                           edge.color   = colors,
+                                           parallelEdge = TRUE,
+                                           fade         = FALSE,
+                                           arrows       = FALSE,
+                                           labels       = 
+                                             dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                                           label.cex    = 2,
+                                           DoNotPlot    = TRUE))
                 
                 sub_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138 
               }
