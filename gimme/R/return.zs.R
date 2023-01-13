@@ -9,7 +9,7 @@ return.zs <- function(fit, elig_paths){
   
   op  = NULL # appease CRAN check
   
-  error   <- any(grepl("error", class(fit)))
+  error   <- inherits(fit, "try-error")
   
   if (!error) {
     converge <- lavInspect(fit, "converged")

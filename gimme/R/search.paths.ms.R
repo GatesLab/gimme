@@ -99,7 +99,7 @@ search.paths.ms <- function(obj,
             # Check to see if model converged.
             #------------------------------------------------------#
             
-            if (!"error" %in% class(fit)){
+            if (!inherits(fit, "try-error")){
               # stl 2018/08/16 separated convergence check from error check
               # can't inspect convergence of an error object
               if (lavaan::lavInspect(fit, "converged")){ 

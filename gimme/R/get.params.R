@@ -27,7 +27,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                             data_file = data_file)
   }
   
-  error   <- any(grepl("error", class(fit)))
+  error   <- inherits(fit, "try-error")
   
   if (!error) {
     converge <- lavInspect(fit, "converged")
@@ -61,7 +61,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       }
     }
     
-    error   <- any(grepl("error", class(fit)))
+    error   <- inherits(fit, "try-error")
     
     if (!error){
       converge  <- lavInspect(fit, "converged")
@@ -187,7 +187,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                              label.cex    = 2,
                              DoNotPlot    = TRUE))
       
-      if (!is.null(dat$out) & !"error" %in% class(ind_plot) & ms.print){
+      if (!is.null(dat$out) & !inherits(ind_plot, "try-error") & ms.print){
         pdf(plot_file)
         plot(ind_plot)
         dev.off()
@@ -217,7 +217,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                                    label.cex    = 2,
                                    DoNotPlot    = TRUE))
         
-        if (!is.null(dat$out) & !"error" %in% class(ind_plot_psi) & ms.print){
+        if (!is.null(dat$out) & !inherits(ind_plot_psi, "try-error") & ms.print){
           pdf(plot_file_psi)
           plot(ind_plot_psi)
           dev.off()

@@ -164,7 +164,7 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
                 
                 sub_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138 
               }
-              if (!is.null(dat$out) & !"error" %in% class(sub_plot)){
+              if (!is.null(dat$out) & !inherits(sub_plot, "try-error")){
                 pdf(file.path(dat$subgroup_dir, 
                               paste0("subgroup", s, "Plot.pdf")))
                 plot(sub_plot)
