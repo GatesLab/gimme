@@ -102,18 +102,18 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                        samp_colors[(dat$n_lagged+1):(dat$n_vars_total), ])
       colors      <- colors[!is.na(colors)]
       
-      samp_plot <- tryCatch(qgraph(plot_vals,
-                                   layout       = "circle",
-                                   lty          = ifelse(is_lagged, 2, 1),
-                                   edge.labels  = FALSE,
-                                   edge.color   = colors,
-                                   parallelEdge = TRUE,
-                                   fade         = FALSE,
-                                   labels       = 
-                                     dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                   label.cex    = 2,
-                                   DoNotPlot    = TRUE), 
-                            error = function(e) e)
+      samp_plot <- try(qgraph(plot_vals,
+                              layout       = "circle",
+                              lty          = ifelse(is_lagged, 2, 1),
+                              edge.labels  = FALSE,
+                              edge.color   = colors,
+                              parallelEdge = TRUE,
+                              fade         = FALSE,
+                              labels       = 
+                                dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                              label.cex    = 2,
+                              DoNotPlot    = TRUE))
+
      samp_plot$group_plot_paths$graphAttributes$Edges$width <- (plot_vals[,3])*7.137138  
  
       
@@ -128,18 +128,17 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       if (sum(sample_paths_corr)>0){
         corr   <- sample_paths_corr[(dat$n_lagged+1):(dat$n_vars_total), ]
         plot_vals_cov  <- w2e(corr)
-        samp_plot_cov <- tryCatch(qgraph(plot_vals_cov,
-                                          layout       = "circle",
-                                          edge.labels  = FALSE,
-                                          edge.color   = colors_corr,
-                                          parallelEdge = TRUE,
-                                          fade         = FALSE,
-                                          arrows       = FALSE,
-                                          labels       = 
-                                            dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                          label.cex    = 2,
-                                          DoNotPlot    = TRUE), 
-                                   error = function(e) e)
+        samp_plot_cov <- try(qgraph(plot_vals_cov,
+                                    layout       = "circle",
+                                    edge.labels  = FALSE,
+                                    edge.color   = colors_corr,
+                                    parallelEdge = TRUE,
+                                    fade         = FALSE,
+                                    arrows       = FALSE,
+                                    labels       = 
+                                      dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                                    label.cex    = 2,
+                                    DoNotPlot    = TRUE))
       
       samp_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138  
       }

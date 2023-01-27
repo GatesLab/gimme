@@ -27,7 +27,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                             data_file = data_file)
   }
   
-  error   <- any(grepl("error", class(fit)))
+  error   <- inherits(fit, "try-error")
   
   if (!error) {
     converge <- lavInspect(fit, "converged")
@@ -61,7 +61,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       }
     }
     
-    error   <- any(grepl("error", class(fit)))
+    error   <- inherits(fit, "try-error")
     
     if (!error){
       converge  <- lavInspect(fit, "converged")
@@ -160,7 +160,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       }
     }
     
-        if (dat$plot){
+    if (dat$plot){
       ind_betas_t <- t(ind_betas)
       lagged      <- ind_betas_t[1:dat$n_lagged, ]
       contemp     <- ind_betas_t[(dat$n_lagged+1):(dat$n_vars_total), ]
@@ -173,22 +173,21 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                             file.path(dat$ind_dir, 
                                       paste0(dat$file_order[k,2], "Plot.pdf")))
       
-      ind_plot <- tryCatch(qgraph(plot_vals,
-                                  layout       = "circle",
-                                  lty          = ifelse(is_lagged, 2, 1),
-                                  edge.labels  = FALSE,
-                                  curve        = FALSE,
-                                  parallelEdge = TRUE,
-                                  fade         = FALSE,
-                                  posCol       = "red",
-                                  negCol       = "blue",
-                                  labels       = 
-                                    dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                  label.cex    = 2,
-                                  DoNotPlot    = TRUE), 
-                           error = function(e) e)
+      ind_plot <- try(qgraph(plot_vals,
+                             layout       = "circle",
+                             lty          = ifelse(is_lagged, 2, 1),
+                             edge.labels  = FALSE,
+                             curve        = FALSE,
+                             parallelEdge = TRUE,
+                             fade         = FALSE,
+                             posCol       = "red",
+                             negCol       = "blue",
+                             labels       = 
+                               dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                             label.cex    = 2,
+                             DoNotPlot    = TRUE))
       
-      if (!is.null(dat$out) & !"error" %in% class(ind_plot) & ms.print){
+      if (!is.null(dat$out) & !inherits(ind_plot, "try-error") & ms.print){
         pdf(plot_file)
         plot(ind_plot)
         dev.off()
@@ -203,23 +202,22 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                               file.path(dat$ind_dir, 
                                         paste0(dat$file_order[k,2], "PlotCov.pdf")))
         
-        ind_plot_psi <- tryCatch(qgraph(plot_vals_psi,
-                                    layout       = "circle",
-                                    lty          = 1,
-                                    edge.labels  = FALSE,
-                                    curve        = FALSE,
-                                    parallelEdge = TRUE,
-                                    fade         = FALSE,
-                                    posCol       = "red",
-                                    negCol       = "blue",
-                                    arrows       = FALSE,
-                                    labels       = 
-                                      dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
-                                    label.cex    = 2,
-                                    DoNotPlot    = TRUE), 
-                             error = function(e) e)
+        ind_plot_psi <- try(qgraph(plot_vals_psi,
+                                   layout       = "circle",
+                                   lty          = 1,
+                                   edge.labels  = FALSE,
+                                   curve        = FALSE,
+                                   parallelEdge = TRUE,
+                                   fade         = FALSE,
+                                   posCol       = "red",
+                                   negCol       = "blue",
+                                   arrows       = FALSE,
+                                   labels       = 
+                                     dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)],
+                                   label.cex    = 2,
+                                   DoNotPlot    = TRUE))
         
-        if (!is.null(dat$out) & !"error" %in% class(ind_plot_psi) & ms.print){
+        if (!is.null(dat$out) & !inherits(ind_plot_psi, "try-error") & ms.print){
           pdf(plot_file_psi)
           plot(ind_plot_psi)
           dev.off()

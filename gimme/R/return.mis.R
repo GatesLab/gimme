@@ -6,7 +6,7 @@
 return.mis <- function(fit, elig_paths){
   zero_se  <- FALSE
   no_paths <- FALSE
-  error    <- any(grepl("error", class(fit)))
+  error    <- inherits(fit, "try-error")
   if (!error){
     no_paths <- sum(lavInspect(fit, "free")$beta, na.rm = TRUE) == 0 
   }
@@ -28,9 +28,9 @@ return.mis <- function(fit, elig_paths){
       return(mis)
     }
     
-    mis   <- tryCatch(lanMod(fit, elig_paths),
-                      error = function(e) e)
-    error <- any(grepl("error", class(mis)))
+    mis   <- try(lanMod(fit, elig_paths))
+
+    error <- inherits(mis, "try-error")
     if (error) mis <- NA 
   } else {
     mis <- NA
