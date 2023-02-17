@@ -13,7 +13,6 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
   
   ind = store$ind
   sub_coefs  <- list()
-  sub_summ   <- list()
   sub_plots  <- list()
   sub_plots_cov <- list()
   sub_counts <- list()

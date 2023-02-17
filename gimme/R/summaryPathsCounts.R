@@ -11,6 +11,7 @@
 summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
   
   coefs       <- do.call("rbind", store$coefs)
+  sub_summ   <- list()
   
   if(length(coefs[,1])>0){
     coefs$id    <- rep(names(store$coefs), sapply(store$coefs, nrow))
@@ -178,6 +179,9 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
                   dev.off()}
               }
               
+              sub_plots[[s]] <- sub_plot
+              if (sum(contemp_cov)>0) sub_plots_cov[[s]] <- sub_plot_cov
+              
             } else {
               sub_plot         <- NULL
               sub_s_mat_counts <- NULL
@@ -200,13 +204,12 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
                           row.names = TRUE)
               }
             }
-            if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ ##add by lan 021220: store the sub_plot & sub_plot_cov to the plots when n>1
+            #if (dat$plot & sub_spec[[s]]$n_sub_subj != 1){ ##add by lan 021220: store the sub_plot & sub_plot_cov to the plots when n>1
               sub_summ[[s]]  <- sub_s_summ
-              sub_plots[[s]] <- sub_plot
               sub_counts[[s]] <- sub_s_mat_counts
               sub_counts_cov[[s]] <- sub_s_mat_counts_cov
-              if (sum(contemp_cov)>0) sub_plots_cov[[s]] <- sub_plot_cov
-            }
+             
+            #} removed by Katie - prevented singletons from being included in path counts 01302023
             sub_coefs[[s]] <- sub_s_coefs
       }
       
