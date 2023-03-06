@@ -11,6 +11,8 @@ The GIMME algorithm is a continually maintained R package, gimme.
 
 In addition to the [official documentation](https://cran.r-project.org/web/packages/gimme/index.html), a comprehensive tutorial can be found here: [GIMME tutorial](http://gimme.web.unc.edu/files/2014/12/Lane-Gates-2017-SEM-gimme.pdf).
 
+For up-to-date tutorials for both new and old options, [check out our online *gimme* tutorials](https://tarheels.live/gimme/tutorials/). 
+
 Program developers are invited to submit changes here at the GitHub repository.
 
 **The Basics**
