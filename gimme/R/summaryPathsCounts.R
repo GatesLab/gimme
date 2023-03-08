@@ -9,6 +9,9 @@
 #' @keywords internal
 #' 
 summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
+ 
+  param  = NULL # appease CRAN check
+  est.std = NULL # appease CRAN check
   
   coefs       <- do.call("rbind", store$coefs)
   sub_summ   <- list()

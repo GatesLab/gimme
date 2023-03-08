@@ -27,10 +27,10 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
   
     ### If path now exists for >= groupcutoff, rerun individual search with it estimated for all
-    if(any(summarize$a$count.ind/dat$n_subj >= groupcutoff)){
-      loc <- which(summarize$a$count.ind/dat$n_subj >= groupcutoff)
+    if(any(summarize$a$count.ind/dat$n_subj >= dat$groupcutoff)){
+      loc <- which(summarize$a$count.ind/dat$n_subj >= dat$groupcutoff)
       grp$group_paths <-c(grp$group_paths, paste0(summarize$a$lhs[loc],summarize$a$op[loc], summarize$a$rhs[loc]))
-      if(subgroup){
+      if(dat$subgroup){
         store <- indiv.search(dat, grp, ind[[1]])
       } else {
         store <- indiv.search(dat, grp, ind[1])

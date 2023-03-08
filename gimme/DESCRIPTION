@@ -1,12 +1,13 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
 Version: 0.7-11
-Date: 2023-01-26
+Date: 2023-02-28
 Author: Stephanie Lane [aut, trl],
     Kathleen Gates [aut, cre, ccp],
     Zachary Fisher [aut], 
     Cara Arizmendi [aut],
     Peter Molenaar [aut, ccp],
+    Edgar Merkle [ctb],
     Michael Hallquist [ctb],
     Hallie Pike [ctb], 
     Teague Henry [ctb], 
@@ -18,7 +19,7 @@ Author: Stephanie Lane [aut, trl],
     Sebastian Castro Alvarez [ctb]
 Maintainer: Kathleen M Gates <gateskm@email.unc.edu>
 Depends: R (>= 3.5.0)
-Imports: lavaan (>= 0.6-9), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0), nloptr, graphics, stats, mvtnorm, MASS, aTSA
+Imports: lavaan (>= 0.6-9), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0), nloptr, graphics, stats, MASS, aTSA
 Description: Data-driven approach for arriving at person-specific time series models. The method first identifies which relations replicate across the majority of individuals to detect signal from noise. These group-level relations are then used as a foundation for starting the search for person-specific (or individual-level) relations. See Gates & Molenaar (2012) <doi:10.1016/j.neuroimage.2012.06.026>. 
 License: GPL-2
 LazyData: true

@@ -164,11 +164,11 @@ simulateVAR <- function(A         = NULL,
           time[,(t+1)] <- time1[,t]
       }
       go <- 0
-      # for (c in 1:length(time[,1])){
-      #   if(adf.test(time[,c], out = FALSE)$type3[1,3]>0.05)
-      #     go <- go + 1
-      #     counter <- sum(counter, 1)
-      # }
+      for (c in 1:length(time[,1])){
+         if(aTSA::adf.test(time[,c], out = FALSE)$type3[1,3]>0.05)
+           go <- go + 1
+          counter <- sum(counter, 1)
+       }
     }
     if(counter == 100){
       Ind.nonstation <- append(Ind.nonstation, ind)
