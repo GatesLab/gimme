@@ -140,7 +140,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
                                     DoNotPlot    = TRUE))
       
       samp_plot_cov$graphAttributes$Edges$width <- (plot_vals_cov[,3])*7.137138  
-      }
+      } else {      
+        samp_plot_cov <- NULL
+}
       
       if (!is.null(dat$out)){
         pdf(file.path(dat$out, "summaryPathsPlot.pdf"))
