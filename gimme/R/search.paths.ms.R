@@ -102,7 +102,7 @@ search.paths.ms <- function(obj,
             if (!inherits(fit, "try-error")){
               # stl 2018/08/16 separated convergence check from error check
               # can't inspect convergence of an error object
-              if (lavaan::lavInspect(fit, "converged")){ 
+              if (lavaan::lavInspect(fit, "converged") & !any(is.na(lavInspect(fit, what = "list")$se))){ 
                 indices    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
                                                  "srmr", "nnfi", "cfi"))
               } else indices <- NULL
