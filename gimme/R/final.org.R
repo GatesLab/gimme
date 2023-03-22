@@ -12,11 +12,6 @@
 final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
   
   ind = store$ind
-  sub_coefs  <- list()
-  sub_plots  <- list()
-  sub_plots_cov <- list()
-  sub_counts <- list()
-  sub_counts_cov <- list()
   
   param  = NULL # appease CRAN check
   est.std = NULL # appease CRAN check
@@ -297,12 +292,12 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
               param_est     = indiv_paths,
               samp_plot     = samp_plot,
               samp_plot_cov = samp_plot_cov,
-              sub_plots     = sub_plots,
-              sub_plots_cov  = sub_plots_cov, 
+              sub_plots     = summarize$sub_plots,
+              sub_plots_cov  = summarize$sub_plots_cov, 
               sample_counts = sample_counts,
               sample_counts_cov =    sample_counts_corr,
-              sub_counts    = sub_counts,
-              sub_counts_cov = sub_counts_cov,
+              sub_counts    = summarize$sub_counts,
+              sub_counts_cov = summarize$sub_counts_cov,
               dx)  
   return(res)
   

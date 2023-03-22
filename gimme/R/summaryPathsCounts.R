@@ -12,6 +12,11 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
  
   param  = NULL # appease CRAN check
   est.std = NULL # appease CRAN check
+  sub_plots  <- list()
+  sub_plots_cov <- list()
+  sub_coefs  <- list()
+  sub_counts <- list()
+  sub_counts_cov <- list()
   
   coefs       <- do.call("rbind", store$coefs)
   sub_summ   <- list()
@@ -211,7 +216,7 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
               sub_counts_cov[[s]] <- sub_s_mat_counts_cov
              
             #} removed by Katie - prevented singletons from being included in path counts 01302023
-            sub_coefs[[s]] <- sub_s_coefs
+            sub_coefs[[s]] <- sub_s_coefs      
       }
       
       summ <- do.call("rbind", sub_summ)
@@ -253,6 +258,10 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
   
   res <- list(a = a, 
               summ = summ,
-              coefs = coefs)
+              coefs = coefs,
+              sub_plots = sub_plots,
+              sub_counts = sub_counts, 
+              sub_plots_cov = sub_plots_cov, 
+              sub_counts_cov = sub_counts_cov)
 return(res)
 }
