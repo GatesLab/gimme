@@ -123,7 +123,7 @@ simulateVAR <- function(A         = NULL,
           ATemp[which(ATemp == 1)] <- -stats::rnorm(1, AMean, 0.3)
         if(ASign == "pos")
           ATemp[which(ATemp == 1)] <- stats::rnorm(1, AMean, 0.3)
-        diag(A) <- 0
+        diag(ATemp) <- 0
       }
       
       if(indPhi>0){
@@ -165,23 +165,20 @@ simulateVAR <- function(A         = NULL,
       }
       go <- 0
       for (c in 1:length(time[,1])){
-         if(aTSA::adf.test(time[,c], out = FALSE)$type3[1,3]>0.05)
-           go <- go + 1
-          counter <- sum(counter, 1)
-       }
+        if(aTSA::adf.test(time[c,], out = FALSE)$type3[1,3]>0.05)
+          go <- go + 1
+        counter <- sum(counter, 1)
+      }
     }
     if(counter == 100){
       Ind.nonstation <- append(Ind.nonstation, ind)
-    }
-    else{
+      writeLines(paste0('WARNING: No Stationary Time Series Data Generated for Individual:', ind))
+    } else {
       dataList[[ind]] <- t(time[,401:(400+Obs)]) 
       names(dataList)[ind]<- paste0('ind', ind)
     }
   }
   
-  if(length(Ind.nonstation)!=0){
-    writeLines(paste0('WARNING: No Stationary Time Series Data Generated for Individual:', Ind.nonstation))
-  }
   
   return(list(A=AList,
               Phi = PhiList, 
@@ -190,4 +187,3 @@ simulateVAR <- function(A         = NULL,
               subAssign = subAssign))
   
 }
-
