@@ -75,7 +75,7 @@ search.paths <- function(base_syntax,
     # ms_allow       = ms_allow
     # ms_tol         = ms_tol
   ####################################
-
+  
   obj <- replicate(1, 
     list(
       add_syntax     = add_syntax,
@@ -87,6 +87,7 @@ search.paths <- function(base_syntax,
   
   cnt <- 1
   history <- list()
+
   
   while(!all(unlist(lapply(obj,"[[","final.sol")))){
     

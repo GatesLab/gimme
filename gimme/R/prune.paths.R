@@ -92,7 +92,7 @@ prune.paths <- function(base_syntax,
           
         } else {
           
-          fit <- fit.model(
+          fit[[k]] <- fit.model(
             syntax = c(base_syntax,fixed_syntax, add_syntax),
             data_file = data_list[[k]], start = prev_fit[[k]]
           )
@@ -120,9 +120,9 @@ prune.paths <- function(base_syntax,
         
       } else{
         
-        fit <- fit.model(
+        fit[[k]] <- fit.model(
           syntax = c(base_syntax, fixed_syntax, add_syntax),
-          data_file = data_list
+          data_file = data_list, start = prev_fit[[k]]
         ) 
         
       }
