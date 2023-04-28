@@ -22,6 +22,8 @@
 #' individual).
 #' @param subgroup_stage Logical. Only present in order to instruct gimme
 #' what message to print to console using writeLines.
+#' @param prev_fit list of estimates from previous fit 
+#' what message to print to console using writeLines.
 #' @return Returns updated values of n_paths and add_syntax.
 #' @keywords internal 
 search.paths <- function(base_syntax, 
@@ -37,7 +39,8 @@ search.paths <- function(base_syntax,
                          ms_allow = FALSE,
                          ms_tol   = 1e-6,
                          hybrid = F,
-                         dir_prop_cutoff = 0){
+                         dir_prop_cutoff = 0,
+                         prev_fit       = NULL){
   
   ####################################
   # ind search
@@ -77,7 +80,8 @@ search.paths <- function(base_syntax,
     list(
       add_syntax     = add_syntax,
       n_paths        = n_paths, 
-      final.sol      = FALSE
+      final.sol      = FALSE,
+      prev_fit       = prev_fit
     ), simplify = FALSE
   )
   
@@ -109,7 +113,7 @@ search.paths <- function(base_syntax,
   
   # remove final solution from obj
   history <- lapply(history, function(obj){
-     lapply(obj, "[", c("add_syntax", "n_paths"))
+     lapply(obj, "[", c("add_syntax", "n_paths", "prev_fit"))
   })
   
   return(history)

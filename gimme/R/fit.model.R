@@ -4,7 +4,7 @@
 #' @return If successful, returns fitted lavaan object. If not successful,
 #' catches and returns error message.
 #' @keywords internal 
-fit.model <- function (syntax, data_file) {
+fit.model <- function (syntax, data_file, start = NULL) {
   
   fit <- try(lavaan::lavaan(syntax,
                             data            = data_file,
@@ -20,7 +20,8 @@ fit.model <- function (syntax, data_file) {
                             auto.delta      = TRUE,
                             auto.cov.y      = FALSE,
                             auto.fix.single = TRUE,
-                            warn            = FALSE))
+                            warn            = FALSE, 
+                            start           = start))
 
   return(fit)
 }

@@ -68,8 +68,6 @@ search.paths.ms <- function(obj,
         
         indices <- NULL
     
-          # kmg 04.30.2019 remove for loop for individuals; use lapply 
-        
           if (!is.null(prop_cutoff)){
             
             if(!subgroup_stage){
@@ -78,10 +76,10 @@ search.paths.ms <- function(obj,
               writeLines(paste0("subgroup-level search"))
             }
            
-            fit <- lapply(seq_along(data_list), function(i){fit.model(
-              syntax= c(base_syntax, fixed_syntax, obj[[1]]$add_syntax),
-              data_file = data_list[[i]])
-            })
+                          fit <- lapply(seq_along(data_list), function(i){fit.model(
+                syntax= c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
+                data_file = data_list[[i]], start = obj[[j]]$prev_fit[[i]])
+              })
 
             for (k in 1:n_subj)
             mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
@@ -90,10 +88,12 @@ search.paths.ms <- function(obj,
             for (k in 1:n_subj){
             
             # individual level search
-            fit <- fit.model(
+           
+            fit[[k]] <- fit.model(
               syntax = c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
-              data_file = data_list
+              data_file = data_list, start = obj[[j]]$prev_fit[[k]]
             )
+
             
             #------------------------------------------------------#
             # Check to see if model converged.
@@ -107,7 +107,7 @@ search.paths.ms <- function(obj,
                                                  "srmr", "nnfi", "cfi"))
               } else indices <- NULL
             } else indices <- NULL
-            mi_list[[k]] <- return.mis(fit, elig_paths)
+            mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
             
           }
            }
@@ -165,7 +165,8 @@ search.paths.ms <- function(obj,
           res[[1]] <- list(
             add_syntax     = obj[[j]]$add_syntax,
             n_paths        = obj[[j]]$n_paths,
-            final.sol      = obj[[j]]$final.sol
+            final.sol      = obj[[j]]$final.sol,
+            prev_fit       = fit
           )
         
         #------------------------------------------------------#
@@ -177,6 +178,7 @@ search.paths.ms <- function(obj,
           
           obj[[j]]$n_paths     <- obj[[j]]$n_paths + 1
           obj[[j]]$add_syntax  <- append(obj[[j]]$add_syntax, add_param[1])
+          obj[[j]]$prev_fit    <- fit
     
           
         #------------------------------------------------------#

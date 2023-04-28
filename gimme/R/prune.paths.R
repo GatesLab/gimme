@@ -29,7 +29,8 @@ prune.paths <- function(base_syntax,
                         n_subj, 
                         prop_cutoff, 
                         elig_paths, 
-                        subgroup_stage = FALSE){
+                        subgroup_stage = FALSE,
+                        prev_fit = NULL){
   
   #-----------------------------------------------#
   # Determine the stage                           #
@@ -59,14 +60,14 @@ prune.paths <- function(base_syntax,
           
           fit <- fit.model(
             syntax = c(base_syntax,fixed_syntax[[k]], add_syntax),
-            data_file = data_list[[k]]
+            data_file = data_list[[k]], start = prev_fit
           )
           
         } else {
           
           fit <- fit.model(
             syntax = c(base_syntax,fixed_syntax, add_syntax),
-            data_file = data_list[[k]]
+            data_file = data_list[[k]], start = prev_fit
           )
           
         }
@@ -94,7 +95,7 @@ prune.paths <- function(base_syntax,
         
         fit <- fit.model(
           syntax = c(base_syntax, fixed_syntax, add_syntax),
-          data_file = data_list
+          data_file = data_list, start = prev_fit
         ) 
         
       }

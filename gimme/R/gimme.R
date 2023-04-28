@@ -421,7 +421,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
     elig_paths = c(dat$candidate_paths, dat$candidate_corr)
   }
   
-  
 
 
   grp_hist  <- search.paths(
@@ -452,6 +451,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   grp <- lapply(seq_along(grp), function(i){
     grp[[i]]$n_group_paths <- grp_hist[[length(grp_hist)]][[i]]$n_paths
     grp[[i]]$group_paths   <- grp_hist[[length(grp_hist)]][[i]]$add_syntax
+    grp[[i]]$prev_fit      <- grp_hist[[length(grp_hist)]][[i]]$prev_fit
     grp[[i]]
   })
    
@@ -503,7 +503,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         n_subj         = dat$n_subj,
         prop_cutoff    = dat$group_cutoff,
         elig_paths     = grp[[i]]$group_paths,
-        subgroup_stage = FALSE
+        subgroup_stage = FALSE,
+        prev_fit       = grp[[i]]$prev_fit
       )
       
     })
