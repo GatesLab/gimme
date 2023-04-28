@@ -30,7 +30,7 @@ prune.paths <- function(base_syntax,
                         prop_cutoff, 
                         elig_paths, 
                         subgroup_stage = FALSE,
-                        prev_fit = NULL){
+                        prev_fit){
   
   #-----------------------------------------------#
   # Determine the stage                           #
@@ -46,11 +46,38 @@ prune.paths <- function(base_syntax,
   }
   #-----------------------------------------------#
   
-  prune <- TRUE
+  # Initial check of paths 
+  
+  z_list <- vector("list", length = n_subj)
+  
+  for (k in 1:n_subj)
+    z_list[[k]] <- return.zs(prev_fit[[k]], elig_paths)
+  
+  if(!all(is.na(z_list))){
+    drop_param <- lowest.z(z_list,
+                           elig_paths  = elig_paths,
+                           prop_cutoff = prop_cutoff, 
+                           n_subj      = n_subj)
+  } else {
+    drop_param <- NA
+  }
+  
+  
+  if (!is.na(drop_param)){
+    n_paths    <- n_paths - 1
+    add_syntax <- add_syntax[!add_syntax %in% drop_param] 
+    
+    prun <- TRUE
+    
+  } else {
+    
+    prune <- FALSE
+    
+  }
   
   while(prune){      
     
-    z_list <- list()
+    fit <- z_list <- vector("list", length = n_subj)
     
     for (k in 1:n_subj){
       
@@ -58,16 +85,16 @@ prune.paths <- function(base_syntax,
         
         if (is.list(fixed_syntax)){
           
-          fit <- fit.model(
+          fit[[k]] <- fit.model(
             syntax = c(base_syntax,fixed_syntax[[k]], add_syntax),
-            data_file = data_list[[k]], start = prev_fit
+            data_file = data_list[[k]], start = prev_fit[[k]]
           )
           
         } else {
           
           fit <- fit.model(
             syntax = c(base_syntax,fixed_syntax, add_syntax),
-            data_file = data_list[[k]], start = prev_fit
+            data_file = data_list[[k]], start = prev_fit[[k]]
           )
           
         }
@@ -95,14 +122,16 @@ prune.paths <- function(base_syntax,
         
         fit <- fit.model(
           syntax = c(base_syntax, fixed_syntax, add_syntax),
-          data_file = data_list, start = prev_fit
+          data_file = data_list
         ) 
         
       }
       
-      z_list[[k]] <- return.zs(fit, elig_paths)
-      
+      z_list[[k]] <- return.zs(fit[[k]], elig_paths)
+
     }
+    
+    prev_fit <- fit
     
     if(!all(is.na(z_list))){
       drop_param <- lowest.z(z_list,
@@ -122,8 +151,7 @@ prune.paths <- function(base_syntax,
       prune <- FALSE
       
     }
-  }
-  
+  }  
   #---------------------------------------------------------#
   #---------------------------------------------------------#
   # syntax may be a list
@@ -142,7 +170,8 @@ prune.paths <- function(base_syntax,
   
   res <- list(
     add_syntax = add_syntax,
-    n_paths    = n_paths
+    n_paths    = n_paths,
+    prev_fit   = prev_fit
   )
   
   return(res)

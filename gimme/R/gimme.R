@@ -536,6 +536,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
 
       grp[[i]][["n_group_paths"]] <- grp_prune[[i]]$n_paths
       grp[[i]][["group_paths"  ]] <- grp_prune[[i]]$add_syntax
+      grp[[i]][["prev_fit" ]]     <- grp_prune[[i]]$prev_fit
       grp[[i]]
 
     })
