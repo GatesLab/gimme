@@ -27,7 +27,8 @@ determine.subgroups <- function(data_list,
                                 sub_method,
                                 sub_sim_thresh,
                                 hybrid,
-                                dir_prop_cutoff){
+                                dir_prop_cutoff,
+                                prev_fit){
   #######################
   # base_syntax  = c(dat$syntax, grp[[i]]$group_paths)
   # data_list    = dat$ts_list
@@ -48,10 +49,8 @@ determine.subgroups <- function(data_list,
   converge <- matrix(,n_subj,1)
 
   
-  fit <- lapply(seq_along(data_list), function(i){fit.model(
-    syntax= base_syntax,
-    data_file = data_list[[i]])
-  })
+  fit <- prev_fit
+  
   for (k in 1:n_subj){
     # writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
     # fit          <- fit.model(syntax    = base_syntax,

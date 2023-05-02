@@ -26,11 +26,14 @@ subgroupStage <- function(dat,
                                sub_method   = sub_method, 
                                sub_sim_thresh = sub_sim_thresh,
                                hybrid       = hybrid,
-                               dir_prop_cutoff = dir_prop_cutoff)
+                               dir_prop_cutoff = dir_prop_cutoff,
+                               prev_fit        = grp$prev_fit)
 
   # begin subgroup-level search for paths ------------------------------------ #
 
   sub_spec <- vector("list", sub$n_subgroups)
+  
+  names(grp$prev_fit) <- names(dat$ts_list)
 
   for (s in 1:sub$n_subgroups){
 
@@ -54,18 +57,24 @@ subgroupStage <- function(dat,
                          chisq_cutoff = qchisq(1-.05/sub_s$n_sub_subj, 1),
                          subgroup_stage = TRUE,
                          ms_tol         = ms_tol,
-                         ms_allow       = FALSE)
+                         ms_allow       = FALSE, 
+                         prev_fit       = grp$prev_fit[sub_s$sub_s_subjids])
       #sub_s[c("n_sub_paths", "sub_paths")] <- s4
       
       sub_s$sub_paths   <- s4[[1]][[1]]$add_syntax
       sub_s$n_sub_paths <- s4[[1]][[1]]$n_paths
+      sub_s$prev_fit    <- s4[[1]][[1]]$prev_fit
       
+    } else {
+      sub_s$prev_fit    <- grp$prev_fit[sub_s$sub_s_subjids]
     }
     sub_spec[[s]] <- sub_s
   }
   # end subgroup-level search for paths -------------------------------------- #
 
   # begin subgroup-level pruning --------------------------------------------- #
+  new_prev_fit <- vector("list", length = 0) # needed for group-level pruning next#
+  
   for (s in 1:sub$n_subgroups){
     prune <- sub_spec[[s]]$n_sub_paths != 0 & sub_spec[[s]]$n_sub_subj != 1
     if(prune){
@@ -77,18 +86,25 @@ subgroupStage <- function(dat,
                         n_subj       = sub_spec[[s]]$n_sub_subj,
                         prop_cutoff  = dat$sub_cutoff,
                         elig_paths   = sub_spec[[s]]$sub_paths,
-                        subgroup_stage = TRUE)
+                        subgroup_stage = TRUE,
+                        prev_fit       = sub_spec[[s]]$prev_fit)
       
       #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s5
       sub_spec[[s]]$n_sub_paths <- s5$n_paths
       sub_spec[[s]]$sub_paths   <- s5$add_syntax
+      sub_spec[[s]]$prev_fit    <- s5$prev_fit
     }
+    names(sub_spec[[s]]$prev_fit) <- sub_spec[[s]]$sub_s_subjids
+    new_prev_fit <- c(new_prev_fit, sub_spec[[s]]$prev_fit)
   }
 
   # begin second-round group-level pruning ----------------------------------- #
   prune <- any(lapply(sub_spec, FUN = function(x) x$n_sub_paths != 0) == TRUE)
+  
+  sub_spec_no_prev <- lapply(seq_along(sub_spec), FUN = function(x) {sub_spec[[x]]$prev_fit <- NULL
+  sub_spec[[x]]})
 
-  sub_spec_comb <- do.call(rbind, sub_spec)
+  sub_spec_comb <- do.call(rbind, sub_spec_no_prev)
   ind           <- merge(sub$sub_mem, sub_spec_comb, "sub_membership", all.x = TRUE)
   ind           <- ind[order(ind$index),]
   ind$sub_paths[is.na(ind$sub_paths)] <- ""
@@ -103,14 +119,22 @@ subgroupStage <- function(dat,
                       n_subj       = dat$n_subj,
                       prop_cutoff  = dat$group_cutoff,
                       elig_paths   = grp$group_paths,
-                      subgroup_stage = FALSE)
+                      subgroup_stage = FALSE, 
+                      prev_fit     = new_prev_fit)
 
     #grp[c("n_group_paths", "group_paths")] <- s6
     grp$n_group_paths <- s6$n_paths
     grp$group_paths   <- s6$add_syntax
+    grp$prev_fit      <- s6$prev_fit
+    
+    # put back into subgroup info 
+    for (s in 1:sub$n_subgroups){
+      sub_spec[[s]]$prev_fit    <- s6$prev_fit[sub_spec[[s]]$sub_s_subjids]
+      
+    }
   }
 
-  if (temp_count != grp$n_group_paths){
+  if (temp_count != grp$n_group_paths){ # if new paths added
     temp_sub_spec <- sub_spec
     for (s in 1:sub$n_subgroups){
       if (sub_spec[[s]]$n_sub_subj > 1){
@@ -125,14 +149,16 @@ subgroupStage <- function(dat,
                            n_subj       = sub_spec[[s]]$n_sub_subj,
                            chisq_cutoff =
                              qchisq(1-.05/sub_spec[[s]]$n_sub_subj, 1),
-                           subgroup_stage = FALSE)
+                           subgroup_stage = FALSE,
+                           prev_fit      = sub_spec[[s]]$prev_fit)
         #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s7
         sub_spec[[s]]$sub_paths   <- s7[[1]][[1]]$add_syntax
         sub_spec[[s]]$n_sub_paths <- s7[[1]][[1]]$n_paths
+        sub_spec[[s]]$prev_fit    <- s7[[1]][[1]]$prev_fit
       }
     }
 
-    if (!identical(temp_sub_spec, sub_spec)){
+    if (!identical(temp_sub_spec, sub_spec)){ # paths were added at the subgroup levels
       
       for (s in 1:sub$n_subgroups){
         prune <- temp_sub_spec[[s]]$n_sub_paths != sub_spec[[s]]$n_sub_paths
@@ -146,10 +172,12 @@ subgroupStage <- function(dat,
                             n_subj       = sub_spec[[s]]$n_sub_subj,
                             prop_cutoff  = dat$sub_cutoff,
                             elig_paths   = sub_spec[[s]]$sub_paths,
-                            subgroup_stage = FALSE)
+                            subgroup_stage = FALSE,
+                            prev_fit = sub_spec[[s]]$prev_fit)
           #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s8
            sub_spec[[s]]$sub_paths   <- s8$add_syntax
            sub_spec[[s]]$n_sub_paths <- s8$n_paths
+           sub_spec[[s]]$prev_fit    <- s8$prev_fit
         }
       }
       
