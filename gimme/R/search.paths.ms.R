@@ -76,7 +76,7 @@ search.paths.ms <- function(obj,
               writeLines(paste0("subgroup-level search"))
             }
            
-                          fit <- lapply(seq_along(data_list), function(i){fit.model(
+                fit <- lapply(seq_along(data_list), function(i){fit.model(
                 syntax= c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
                 data_file = data_list[[i]], start = obj[[j]]$prev_fit[[i]])
               })
@@ -85,13 +85,12 @@ search.paths.ms <- function(obj,
             mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
           } else {
             
-            for (k in 1:n_subj){
-            
             # individual level search
+            fit <- vector("list", 1) # have it be a list for highest.mi
            
-            fit[[k]] <- fit.model(
+            fit[[1]] <- fit.model(
               syntax = c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
-              data_file = data_list, start = obj[[j]]$prev_fit[[k]]
+              data_file = data_list, start = obj[[j]]$prev_fit
             )
 
             
@@ -102,14 +101,14 @@ search.paths.ms <- function(obj,
             if (!inherits(fit, "try-error")){
               # stl 2018/08/16 separated convergence check from error check
               # can't inspect convergence of an error object
-              if (lavaan::lavInspect(fit, "converged") & !any(is.na(lavInspect(fit, what = "list")$se))){ 
-                indices    <- fitMeasures(fit, c("chisq", "df", "pvalue", "rmsea", 
+              if (lavaan::lavInspect(fit[[1]], "converged")){ 
+                indices    <- fitMeasures(fit[[1]], c("chisq", "df", "pvalue", "rmsea", 
                                                  "srmr", "nnfi", "cfi"))
               } else indices <- NULL
             } else indices <- NULL
-            mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
+            mi_list[[1]]  <- return.mis(fit[[1]], elig_paths)
             
-          }
+          
            }
         
         
@@ -206,7 +205,8 @@ search.paths.ms <- function(obj,
             res[[i]] <- list(
               add_syntax     = add_syntax[[i]],
               n_paths        = n_paths[[i]], 
-              final.sol      = obj[[j]]$final.sol
+              final.sol      = obj[[j]]$final.sol,
+              prev_fit       = obj[[j]]$prev_fit[[i]]
             )
             
             

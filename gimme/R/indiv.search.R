@@ -62,7 +62,8 @@ indiv.search <- function(dat, grp, ind){
                              elig_paths   = elig_paths,
                              prop_cutoff  = NULL,
                              n_subj       = 1,
-                             chisq_cutoff = qchisq(.99, 1)
+                             chisq_cutoff = qchisq(.99, 1),
+                             prev_fit     = grp$prev_fit[[k]]
             )
     
     temp_ind_spec <- ind_spec
@@ -75,7 +76,8 @@ indiv.search <- function(dat, grp, ind){
                             n_paths      = ind_spec[[1]][[1]]$n_paths,
                             n_subj       = 1,
                             prop_cutoff  = NULL,
-                            elig_paths   = ind_spec[[1]][[1]]$add_syntax)
+                            elig_paths   = ind_spec[[1]][[1]]$add_syntax, 
+                            prev_fit     = ind_spec[[1]][[1]]$prev_fit)
     
     if (!identical(temp_ind_spec[[1]][[1]]$add_syntax, ind_spec$add_syntax)){
       ind_spec <- search.paths(base_syntax  = dat$syntax, 
@@ -87,15 +89,17 @@ indiv.search <- function(dat, grp, ind){
                                elig_paths   = elig_paths,
                                prop_cutoff  = NULL,
                                n_subj       = 1,
-                               chisq_cutoff = 0)
+                               chisq_cutoff = 0, 
+                               prev_fit     = ind_spec$prev_fit[[1]])
       ind$ind_paths[[k]] <- ind_spec[[1]][[1]]$add_syntax
       ind$n_ind_paths[k] <- ind_spec[[1]][[1]]$n_paths
+      ind$prev_fit[[k]]  <- ind_spec[[1]][[1]]$prev_fit[[1]]
       
     } else {
       
       ind$ind_paths[[k]] <- ind_spec$add_syntax
       ind$n_ind_paths[k] <- ind_spec$n_paths
-      
+      ind$prev_fit[[k]]  <- ind_spec$prev_fit[[1]]
     }
     
     

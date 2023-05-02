@@ -67,7 +67,7 @@ prune.paths <- function(base_syntax,
     n_paths    <- n_paths - 1
     add_syntax <- add_syntax[!add_syntax %in% drop_param] 
     
-    prun <- TRUE
+    prune <- TRUE
     
   } else {
     

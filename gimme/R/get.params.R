@@ -13,11 +13,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   ind_plot = NA
   
   if (!dat$agg){
-    fit <- fit.model(syntax    = c(dat$syntax, 
-                                   grp$group_paths, 
-                                   ind$sub_paths[[k]], 
-                                   ind$ind_paths[[k]]), 
-                     data_file = dat$ts_list[[k]])
+    fit <- ind$prev_fit[[k]]
   } else {
     data_file <- do.call("rbind", dat$ts_list)
     fit        <- fit.model(syntax    = c(dat$syntax, 
@@ -43,7 +39,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   # if no convergence, roll back one path at individual level, try again 
   if (!converge | zero_se){
     status <- "nonconvergence"
-    if (length(ind$ind_paths[[k]]!= 0)){
+    if (length(ind$ind_paths[[k]])!= 0){
       ind$ind_paths[[k]] <- ind$ind_paths[[k]][-length(ind$ind_paths[[k]])]
       if (!dat$agg){
         fit <- fit.model(syntax    = c(dat$syntax, 
