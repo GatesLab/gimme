@@ -177,7 +177,11 @@ search.paths.ms <- function(obj,
           
           obj[[j]]$n_paths     <- obj[[j]]$n_paths + 1
           obj[[j]]$add_syntax  <- append(obj[[j]]$add_syntax, add_param[1])
+          if (!is.null(prop_cutoff)){
           obj[[j]]$prev_fit    <- fit
+          } else {
+            obj[[j]]$prev_fit    <- fit[[1]]
+          }
     
           
         #------------------------------------------------------#
