@@ -80,8 +80,7 @@ search.paths <- function(base_syntax,
     list(
       add_syntax     = add_syntax,
       n_paths        = n_paths, 
-      final.sol      = FALSE,
-      prev_fit       = prev_fit
+      final.sol      = FALSE
     ), simplify = FALSE
   )
   
@@ -104,7 +103,8 @@ search.paths <- function(base_syntax,
       ms_allow,
       ms_tol, 
       hybrid,
-      dir_prop_cutoff
+      dir_prop_cutoff,
+      prev_fit
     )
     
     history[[cnt]] <- obj
