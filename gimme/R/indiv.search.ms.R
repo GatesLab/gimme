@@ -63,7 +63,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
       subgroup_stage = FALSE,
       ms_allow       = TRUE,
       ms_tol         = ms_tol,
-      hybrid         = dat$hybrid
+      hybrid         = dat$hybrid,
+      prev_fit     = grp$prev_fit[[k]]
     )
     
     s1.ind <- lapply(seq_along(s1.ind), function(i){
@@ -97,7 +98,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         n_subj         = 1,
         prop_cutoff    = NULL,
         elig_paths     = s1.ind[[length(s1.ind)]][[i]]$add_syntax,
-        subgroup_stage = FALSE
+        subgroup_stage = FALSE,
+        prev_fit       = s1.ind[[1]][[1]]$prev_fit
       )
       
     })
@@ -139,7 +141,9 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         chisq_cutoff = 0,
         subgroup_stage = FALSE,
         ms_allow       = FALSE, # do not allow multiple solutions on cleanup
-        ms_tol         = ms_tol)
+        ms_tol         = ms_tol,
+        prev_fit       = s1.ind[[i]][[1]]$prev_fit
+        )
       
     }, simplify = TRUE)
     

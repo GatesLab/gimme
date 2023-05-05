@@ -36,7 +36,8 @@ search.paths.ms <- function(obj,
                             ms_allow,
                             ms_tol,
                             hybrid,
-                            dir_prop_cutoff){
+                            dir_prop_cutoff,
+                            prev_fit){
   
   
   #-----------------------------------------------#
@@ -78,7 +79,7 @@ search.paths.ms <- function(obj,
            
                 fit <- lapply(seq_along(data_list), function(i){fit.model(
                 syntax= c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
-                data_file = data_list[[i]], start = obj[[j]]$prev_fit[[i]])
+                data_file = data_list[[i]], start = prev_fit[[i]])
               })
 
             for (k in 1:n_subj)
@@ -90,7 +91,7 @@ search.paths.ms <- function(obj,
            
             fit[[1]] <- fit.model(
               syntax = c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
-              data_file = data_list, start = obj[[j]]$prev_fit
+              data_file = data_list, start = prev_fit
             )
 
             
@@ -178,9 +179,9 @@ search.paths.ms <- function(obj,
           obj[[j]]$n_paths     <- obj[[j]]$n_paths + 1
           obj[[j]]$add_syntax  <- append(obj[[j]]$add_syntax, add_param[1])
           if (!is.null(prop_cutoff)){
-          obj[[j]]$prev_fit    <- fit
+          prev_fit    <- fit
           } else {
-            obj[[j]]$prev_fit    <- fit[[1]]
+            prev_fit    <- fit[[1]]
           }
     
           
@@ -210,7 +211,7 @@ search.paths.ms <- function(obj,
               add_syntax     = add_syntax[[i]],
               n_paths        = n_paths[[i]], 
               final.sol      = obj[[j]]$final.sol,
-              prev_fit       = obj[[j]]$prev_fit[[i]]
+              prev_fit       = prev_fit[[i]]
             )
             
             
