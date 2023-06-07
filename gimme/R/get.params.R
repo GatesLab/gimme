@@ -195,6 +195,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       if(dat$hybrid){
         covpsi     <- ind_psi[(dat$n_lagged+1):(dat$n_vars_total), (dat$n_lagged+1):(dat$n_vars_total)]
         covpsi[lower.tri(covpsi)] <- 0 # so we don't get duplicates
+        diag(covpsi)    <- 0
         plot_vals_psi   <- w2e(covpsi)
         
         plot_file_psi   <- ifelse(dat$agg, 
@@ -222,7 +223,11 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
           plot(ind_plot_psi)
           dev.off()
         }
-      }
+      
+      } else {
+          ind_plot_psi <- NULL
+        }
+      
     }
   } 
   
@@ -263,10 +268,11 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
               "ind_coefs" = ind_coefs, 
               "ind_betas" = ind_betas, 
               "ind_psi"   = ind_psi, 
-              "ind_psi_unstd" = ind_psi_unstd, 
-              "ind_vcov"  = ind_vcov,
+              "ind_psi_unstd"  = ind_psi_unstd, 
+              "ind_vcov"       = ind_vcov,
               "ind_vcov_full"  = ind_vcov_full,
-              "ind_plot"  = ind_plot,
+              "ind_plot"       = ind_plot,
+              "ind_plot_cov"   = ind_plot_psi,
               "ind_syntax" = c(dat$syntax, grp$group_paths,ind$sub_paths[[k]], ind$ind_paths[[k]])
               )
   return(res)

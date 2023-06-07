@@ -200,6 +200,7 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         "psiunstd"  = s10$ind_psi_unstd, 
         "vcov"   = s10$ind_vcov,
         "plots"  = s10$ind_plot,
+        "plots_cov" = s10$ind_plot_cov,
         "syntax" = s10$ind_syntax
       )
     })

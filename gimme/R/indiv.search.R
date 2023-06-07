@@ -31,6 +31,7 @@ indiv.search <- function(dat, grp, ind){
   syntax   <- list()
   psi      <- list()
   psiunstd <- list()
+  plots_cov <- list()
   
   n_ind    <- ifelse(dat$agg, 1, dat$n_subj) 
   
@@ -111,6 +112,7 @@ indiv.search <- function(dat, grp, ind){
     vcov[[k]]   <- s10$ind_vcov
     vcovfull[[k]]   <- s10$ind_vcov_full
     plots[[k]]  <- s10$ind_plot
+    plots_cov[[k]] <- s10$ind_plot_cov
     syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k]])
     psi[[k]]      <- s10$ind_psi
     psiunstd[[k]] <- s10$ind_psi_unstd
@@ -137,6 +139,7 @@ indiv.search <- function(dat, grp, ind){
               "vcov"   = vcov,
               "vcovfull"   = vcovfull,
               "plots"  = plots,
+              "plots_cov" = plots_cov,
               "ind"    = ind,
               "syntax" = syntax)
   return(res)
