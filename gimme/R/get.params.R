@@ -93,6 +93,12 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     ind_fit    <- round(ind_fit, digits = 4)
     ind_fit[2] <- round(ind_fit[2], digits = 0)
     
+    r2         <- inspect(fit, "rsquare")
+    r2         <- r2[which(r2>0)]
+    names(r2)  <- paste0(names(r2), "_r2")
+    
+    ind_fit    <- c(ind_fit, round(r2, digits = 4))
+    
     ind_vcov_full <- lavInspect(fit, "vcov.std.all")
     keep          <- rownames(ind_vcov_full) %in% dat$candidate_paths
     ind_vcov      <- ind_vcov_full[keep, keep]
