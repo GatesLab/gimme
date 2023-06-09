@@ -264,6 +264,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     ind_betas <- NA
     ind_vcov  <- NA
     ind_plot  <- NA
+    ind_plot_psi <- NA
     ind_psi   <- NA
     ind_psi_unstd   <- NA
     ind_vcov_full <- NA
