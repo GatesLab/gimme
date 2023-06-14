@@ -12,7 +12,7 @@ vignette: >
 # **The Basics**
 
 
-* GIMME can be used to estimate the unified SEM (uSEM; Kim et al., 2007; Gates et al., 2010).
+* GIMME can be used to estimate the unified SEM, Vector Autoregressive (VAR), and hybrid-VAR models.
 
 * Missing data is not a problem. 
 
@@ -29,24 +29,16 @@ vignette: >
 * Can be freely downloaded by installing the package "gimme" in R.
  
 # **Running GIMME**
-
-__1. Create two new folders (i.e., directories)__
-
- * Create a source folder for your time series. This can be anywhere that you have permission to read and write. 
  
- * Nothing can be in the source folder other than the time series data.
- 
- * Create an output folder for your results. This must be different from the above folder.
+__1. Extract the time series for your variables__
 
-__2. Extract the time series for your variables__
-
-  * Have each variable be a column, with the rows being the observation (e.g., scan in fMRI or a day in daily diary studies).
+  * Create a data frame for each person. Have each variable be a column, with the rows being the observation across time (e.g., scans in fMRI or days in daily diary studies).
+  
+  * Make sure you don't have any constants, such as ID number. All variables must vary across time for each individual. 
   
   * Substitute NA for missing values.
   
-  * Have a separate file for each individual/session.
-  
-  * Put each file in the source folder you created in step 1. Do not put anything else in this folder.
+  * Either put the data frames in an R list object, where each slice is a different person's data frame or save the individuals' time series as separate files (i.e., each person has a file) and put them in a folder. Do not put anything else in this folder.
   
   * Files must be either comma, space, or tab delimited.
 
@@ -57,15 +49,14 @@ __3. Installing gimme with R__
   * Once gimme has been installed, you will need to load the package by entering: `library(gimme)`
   
 __4. Running gimme__
-   The *gimme* (or equivelantly, *gimmeSEM*) function requires that you input:
-   1. Source directory
-   2. How data are separated (e..g, comma-separated values)
-   3. If there is a header 
+   The *gimme* (or equivelently, *gimmeSEM*) function requires that you input:
+   1. Data object (if you put your individual data frames in a list) or source directory (if you saved them as seperate files)
+   2. If you stored them in a folder: How data are separated (e..g, comma-separated values) and if there is a header
    
    All other fields are optional and will go to defaults if no user input is provided. If no output directory is indicated, all information    is stored as R objects (see tutorial linked above for details).
 ```{r, eval = FALSE}
 gimme(                  # can use "gimme" or "gimmeSEM"
-    data = '',          # source directory where your data are 
+    data = '',          # list object or source directory where your data are 
     out = '',           # output directory where you'd like your output to go
     sep = "",           # how data are separated. "" for space; "," for comma, "/t" for tab-delimited
     header = ,          # TRUE or FALSE, is there a header
@@ -74,7 +65,9 @@ gimme(                  # can use "gimme" or "gimmeSEM"
     subgroup = FALSE,   # TRUE or FALSE (default), cluster individuals based on similarities in effects
     paths = NULL,       # option to list paths that will be group-level (semi-confirmatory)
     groupcutoff = .75,  # the proportion that is considered the majority at the group level
-    subcutoff = .5      # the proportion that is considered the majority at the subgroup level
+    subcutoff = .75,     # the proportion that is considered the majority at the subgroup level
+    VAR       = FALSE,  # TRUE or FALSE (default), option to use VAR model instead of uSEM
+    hybrid    = FALSE   # TRUE or FALSE (default), option to use hybrid-VAR model instead of uSEM
     )        
 ```
 While *gimme* is running you will see information iterate in the command window. The algorithm will tell you when it is finished.
@@ -126,4 +119,5 @@ Do some initial trouble-shooting.
 2. Ensure that all variables have variability (i.e., are not constant). *gimme* will let you know if this is the case. 
 3. Ensure your path directories are correct. 
 4. Ensure that the columns are variables and the rows contain the observations across time. 
-5. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: echo gimme@unc.edu. 
+5. Ensure that variables aren't perfectly correlated (or nearly perfectly correlated) for all individuals. 
+6. If all this is correct, please email the error you received, code used to run *gimme*, and the data (we promise not to use it or share it) to: echo gimme@unc.edu. 
