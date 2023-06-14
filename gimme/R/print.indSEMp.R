@@ -88,5 +88,3 @@ print.indSEMp <- function(x, file = NULL, mean = FALSE, estimates = FALSE, fitMe
   }
 }
 
-
-

@@ -192,15 +192,12 @@ aggSEM <- function(data,
               path_se_est  = final$param_est, 
               plot         = store$plots, 
               vcov         = store$vcov)
-  
-  print.gimme.aggSEM(z = dat)
-  
+
+    writeLines("aggSEM finished running normally")
+    if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
+
   class(res) <- "aggSEMp"
   
   invisible(res)
 }
 
-print.gimme.aggSEM <- function(z){
-  writeLines("aggSEM finished running normally")
-  if (!is.null(z$out)) writeLines(paste("output is stored in", z$out))
-}

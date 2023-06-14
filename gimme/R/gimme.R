@@ -98,7 +98,7 @@
 #' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 #' standard deviation of one. Defaults to FALSE. 
 #' @param plot Logical. If TRUE, graphs depicting relations among variables
-#' of interest will automatically be
+#' of interest will automatically be 
 #' created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
 #' lagged relations (lag 1). For individual-level plots, red paths represent positive weights
 #' and blue paths represent negative weights. Width of paths corresponds to estimated path weight.
@@ -650,9 +650,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        diagnos = diagnos,
                        store)
     
-    print.gimme(x = sub[[1]],
-                y = subgroup,
-                z = dat)
+      writeLines("gimme finished running normally")
+      if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
+      if (subgroup == TRUE) {
+        writeLines(paste("Number of subgroups =", sub[[1]]$n_subgroups))
+        writeLines(paste("Modularity =", round(sub[[1]]$modularity, digits = 5)))
+      }
     
   
     # plot.gimmep convenience functions. 
@@ -739,14 +742,5 @@ gimmeSEM <- gimme <- function(data             = NULL,
     invisible(res)
   }
   
-}
-
-print.gimme <- function(x, y, z){
-  writeLines("gimme finished running normally")
-  if (!is.null(z$out)) writeLines(paste("output is stored in", z$out))
-  if (y == TRUE) {
-    writeLines(paste("Number of subgroups =", x$n_subgroups))
-    writeLines(paste("Modularity =", round(x$modularity, digits = 5)))
-  }
 }
 
