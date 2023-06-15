@@ -3,7 +3,33 @@
 #' @title Group iterative multiple model estimation
 #' @description This package contains functions to automatically identify the structure of group- and individual-level networks 
 #' from a range of vector autoregressive models, estimated with structural equation modeling.
+#' @author {
+#'    Stephanie Lane [aut, trl],\cr 
+#'    Kathleen Gates [aut, cre], \cr
+#'    Zachary Fisher [aut],  \cr
+#'    Cara Arizmendi [aut], \cr
+#'    Peter Molenaar [aut], \cr
+#'    Michael Hallquist [ctb], \cr
+#'    Hallie Pike [ctb],  \cr
+#'    Cara Arizmendi [ctb], \cr
+#'    Teague Henry [ctb], \cr
+#'    Kelly Duffy [ctb], \cr
+#'    Lan Luo [ctb], \cr
+#'    Adriene Beltz [csp]
+#' }
 #' Maintainer: KM Gates \email{gateskm@email.unc.edu}
+#' @import lavaan 
+#' @import MIIVsem 
+#' @import igraph
+#' @import data.tree
+#' @importFrom grDevices dev.off pdf
+#' @importFrom stats aggregate ave complete.cases qchisq qnorm reshape time cov sd na.omit lm convolve
+#' @importFrom utils capture.output head read.table write.csv write.table file_test read.csv getFromNamespace
+#' @importFrom qgraph qgraph 
+#' @importFrom imputeTS na.kalman
+#' @importFrom stats ts
+#' @importFrom igraph graph.adjacency cluster_walktrap modularity membership
+#' @importFrom graphics plot
 #' @keywords gimme
 #' @details Researchers across varied domains gather multivariate data for each individual unit of study
 #' across multiple occasions of measurement. Generally referred to as time series

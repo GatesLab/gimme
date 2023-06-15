@@ -32,4 +32,3 @@ print.aggSEMp <- function(x, estimates = FALSE, fitMeasures = FALSE, ...){
       print.data.frame(x$fit, row.names = F)
     }
   }
-  

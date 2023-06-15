@@ -67,7 +67,7 @@ autoregressive (AR) paths freed for estimation. If ms_allow=TRUE, it is recommen
 to set ar=FALSE.  Multiple solutions are unlikely to be found when ar=TRUE.  Defaults to TRUE.}
 
 \item{plot}{Logical. If TRUE, graphs depicting relations among variables
-of interest will automatically be
+of interest will automatically be 
 created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
 lagged relations (lag 1). For individual-level plots, red paths represent positive weights
 and blue paths represent negative weights. Width of paths corresponds to estimated path weight.

@@ -190,8 +190,9 @@ indSEM <- function(data   = NULL,
                      sub_spec = NULL, 
                      diagnos = FALSE,
                      store = store)
-
-  print.gimme.indSEM(z = dat)
+  
+  writeLines("indSEM finished running normally")
+  if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
   
   res <- list(path_est_mats = store$betas,
               varnames = dat$varnames,
@@ -218,7 +219,3 @@ indSEM <- function(data   = NULL,
   invisible(res)
 }
 
-print.gimme.indSEM <- function(z){
-  writeLines("indSEM finished running normally")
-  if (!is.null(z$out)) writeLines(paste("output is stored in", z$out))
-}

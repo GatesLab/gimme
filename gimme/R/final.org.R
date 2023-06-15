@@ -22,8 +22,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
   
     ### If path now exists for >= groupcutoff, rerun individual search with it estimated for all
-    if(any(summarize$a$count.ind/dat$n_subj >= dat$groupcutoff)){
-      loc <- which(summarize$a$count.ind/dat$n_subj >= dat$groupcutoff)
+    if(any(summarize$a$count.ind/dat$n_subj >= dat$group_cutoff)){
+      loc <- which(summarize$a$count.ind/dat$n_subj >= dat$group_cutoff)
       grp$group_paths <-c(grp$group_paths, paste0(summarize$a$lhs[loc],summarize$a$op[loc], summarize$a$rhs[loc]))
       if(dat$subgroup){
         store <- indiv.search(dat, grp, ind[[1]])
@@ -154,6 +154,8 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       samp_plot_cov <- NULL
     }
     
+    sample_counts_corr <- sample_counts_corr[,(dat$n_lagged+1):dat$n_vars_total]
+    sample_counts_corr[lower.tri(sample_counts_corr)] <- t(sample_counts_corr)[lower.tri(sample_counts_corr)] 
     # 8.13.22 kad: Create df for paths set to 0 by user if applicable
     zero.paths.df <- NULL
     if(!is.null(dat$zero.paths)){
@@ -191,7 +193,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     fits        <- as.data.frame(do.call(rbind, store$fits))
     fits$file   <- rownames(fits)
     fits$status <- do.call(rbind, store$status)
-    fits        <- fits[ ,c(12, 1:11, 13)]
+    fits        <- subset(fits, select=c("file", colnames(fits[-which(colnames(fits) == "file")])))
     
     if (dat$subgroup){
       fits <- merge(fits, sub$sub_mem[ ,c(1,3)], by.x = "file", by.y = "names")  
