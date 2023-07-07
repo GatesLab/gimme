@@ -125,6 +125,10 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     ind_psi <- round(lavInspect(fit, "std")$psi, digits = 4)
     ind_psi_unstd <- round(lavInspect(fit, "estimates")$psi, digits = 4)
     
+    ind_psi <- ind_psi[dat$varLabels$endo,]
+    ind_psi <- ind_psi[,dat$varLabels$coln]
+    ind_psi_unstd <- ind_psi_unstd[dat$varLabels$endo,]
+    ind_psi_unstd <- ind_psi_unstd[,dat$varLabels$coln]
     #rownames(ind_betas) <- rownames(ind_ses) <- dat$varnames[(dat$n_lagged+1):(dat$n_vars_total)]
     #colnames(ind_betas) <- colnames(ind_ses) <- dat$varnames
     #   } # stl comment out 11.20.17 
@@ -199,7 +203,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
         dev.off()
       }
       if(dat$hybrid){
-        covpsi     <- ind_psi[(dat$n_lagged+1):(dat$n_vars_total), (dat$n_lagged+1):(dat$n_vars_total)]
+        covpsi     <- ind_psi[, (dat$n_lagged+1):(dat$n_vars_total)]
         covpsi[lower.tri(covpsi)] <- 0 # so we don't get duplicates
         diag(covpsi)    <- 0
         plot_vals_psi   <- w2e(covpsi)
