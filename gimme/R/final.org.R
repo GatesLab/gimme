@@ -233,7 +233,10 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
       if (dat$subgroup)
       write.table(sub$sim, file.path(dat$out, "similarityMatrix.csv"), sep = ",", col.names = FALSE, row.names = FALSE)
     }
-    
+    sub_plots     = summarize$sub_plots
+    sub_plots_cov  = summarize$sub_plots_cov
+    sub_counts    = summarize$sub_counts
+    sub_counts_cov = summarize$sub_counts_cov
   } else {
     # 8.13.22 kad: Create df for paths set to 0 by user if applicable
     zero.paths.df <- NULL
@@ -279,6 +282,11 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     sample_counts_corr <- NULL
     samp_plot_cov <- NULL
     samp_plot     <- NULL
+    
+    sub_plots     = NULL
+    sub_plots_cov  = NULL
+    sub_counts    = NULL
+    sub_counts_cov = NULL
   }
   
   dx <- list()
@@ -294,12 +302,12 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
               param_est     = indiv_paths,
               samp_plot     = samp_plot,
               samp_plot_cov = samp_plot_cov,
-              sub_plots     = summarize$sub_plots,
-              sub_plots_cov  = summarize$sub_plots_cov, 
+              sub_plots     = sub_plots,
+              sub_plots_cov  = sub_plots_cov, 
               sample_counts = sample_counts,
               sample_counts_cov =    sample_counts_corr,
-              sub_counts    = summarize$sub_counts,
-              sub_counts_cov = summarize$sub_counts_cov,
+              sub_counts    = sub_counts,
+              sub_counts_cov = sub_counts_cov,
               dx)  
   return(res)
   
