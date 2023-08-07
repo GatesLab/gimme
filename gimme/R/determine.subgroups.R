@@ -226,8 +226,16 @@ determine.subgroups <- function(data_list,
     
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
   } else {
-    sub_mem         <- confirm_subgroup
+    sub_mem         <- as.data.frame(confirm_subgroup)
     names(sub_mem)  <- c("names", "sub_membership")
+    # add rows/columns for those who didn't converge
+    if(length(drop) != 0){
+      for (r in 1:length(drop)){
+        sim = rbind(sim[1:(drop[r]-1),],0,sim[-(1:(drop[r]-1)),])
+        sim = cbind(sim[,1:(drop[r]-1)],0,sim[,-(1:(drop[r]-1))])
+        colnames(sim) <- rownames(sim) <- names(data_list)
+      }
+    }
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
     sub$sub_mem     <- merge(file_order, sub_mem, by = "names", all.x = TRUE)
