@@ -275,12 +275,17 @@ gimmeSEM <- gimme <- function(data             = NULL,
   varnames = NULL
   lvarnames = NULL
   sub_membership = NULL
+  
+  arguments <- as.list(sys.frame(which = 1)) 
+  arguments2 <- commandArgs(trailingOnly = TRUE)
+  arguments3 <- commandArgs(trailingOnly = FALSE)
+  
+  
 
   setupConvolve = NULL
   ts = NULL
   setupFinalDataChecks = NULL
-  
-  
+   
   #Error check for ms_allow
   if(ms_allow & subgroup){
       stop(paste0("gimme ERROR: Subgrouping is not available for ms-gimme.",
@@ -380,6 +385,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        VAR                  = VAR,
                        ordered              = ordered)
 
+  
+  if(!is.null(out)){
+    writeArg <- arguments[(dat$n_subj+1):length(arguments)]
+    write.csv(unlist(writeArg), 
+              file.path(paste0(out, "/arguments.csv")))
+  }
   
   #Error Check for Confirm Subgroup Labels
   if(subgroup & !is.null(confirm_subgroup)){
@@ -677,7 +688,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 group_plot_cov  = final$samp_plot_cov,
                 sub_plots_paths = final$sub_plots,
                 sub_plots_cov   = final$sub_plots_cov,
-                subgroup        = subgroup,
                 path_counts     = final$sample_counts,
                 path_counts_sub = final$sub_counts,
                 cov_counts      = final$sample_counts_cov,
@@ -689,7 +699,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 sim_matrix      = sub[[1]]$sim, 
                 syntax          = dat$syntax,
                 lvgimme         = dat$lvgimme,
-                rf_est         = dat$rf_est # 6.19.22 kad: added HRF estimates 
+                rf_est         = dat$rf_est, # 6.19.22 kad: added HRF estimates
+                arguments      = arguments
                 )
     class(res) <- "gimmep"
     
