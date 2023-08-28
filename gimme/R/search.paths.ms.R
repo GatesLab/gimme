@@ -177,7 +177,7 @@ search.paths.ms <- function(obj,
           
           obj[[j]]$n_paths     <- obj[[j]]$n_paths + 1
           obj[[j]]$add_syntax  <- append(obj[[j]]$add_syntax, add_param[1])
-    
+          print(obj[[j]]$add_syntax)
           
         #------------------------------------------------------#
         #  If there is > 1 path to add, stop searching.
