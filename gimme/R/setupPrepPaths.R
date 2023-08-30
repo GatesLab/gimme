@@ -65,7 +65,7 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
                          table[specific,]$op, 
                          table[specific,]$ustart, 
                          "*", 
-                        table[specific,]$lhs)
+                        table[specific,]$rhs)
     
 
   
