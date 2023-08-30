@@ -2,8 +2,6 @@
 #' @param dat A list containing information created in setup().
 #' @param grp A list containing group-level information. NULL in aggSEM and
 #' indSEM.
-#' @param ind A list containing individual- and (potentially) subgroup-level
-#' information.
 #' @param sub A list containing subgroup information.
 #' @param sub_spec A list containing information specific to each subgroup.
 #' @param store A list containing output from indiv.search().
