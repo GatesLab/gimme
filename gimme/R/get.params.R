@@ -67,6 +67,11 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     if (!error){
       converge  <- lavInspect(fit, "converged")
       
+      ind_coefs_unst0 <- parameterEstimates(fit)
+      ind_coefs_unst_idx <- paste0(ind_coefs_unst0$lhs,ind_coefs_unst0$op,ind_coefs_unst0$rhs)
+      ind_coefs_unst <- ind_coefs0[ind_coefs_unst0$op == "~" |
+                                     ind_coefs_unst_idx %in% c(dat$candidate_paths, dat$candidate_corr),]
+      
       ind_coefs0 <- standardizedSolution(fit)
       ind_coefs_idx <- paste0(ind_coefs0$lhs,ind_coefs0$op,ind_coefs0$rhs)
       ind_coefs <- ind_coefs0[ind_coefs0$op == "~" |
@@ -104,11 +109,19 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     keep          <- rownames(ind_vcov_full) %in% dat$candidate_paths
     ind_vcov      <- ind_vcov_full[keep, keep]
     
+    ind_coefs_unst0 <- parameterEstimates(fit)
+    ind_coefs_unst_idx <- paste0(ind_coefs_unst0$lhs,ind_coefs_unst0$op,ind_coefs_unst0$rhs)
+    ind_coefs_unst <- ind_coefs_unst0[ind_coefs_unst0$op == "~" |
+                                   ind_coefs_unst_idx %in% c(dat$candidate_paths, dat$candidate_corr),]
     
     ind_coefs0 <- standardizedSolution(fit)
     ind_coefs_idx <- paste0(ind_coefs0$lhs,ind_coefs0$op,ind_coefs0$rhs)
     ind_coefs <- ind_coefs0[ind_coefs0$op == "~" |
                               ind_coefs_idx %in% c(dat$candidate_paths, dat$candidate_corr),]
+    
+    ind_coefs <- cbind(ind_coefs[,1:3], ind_coefs_unst$est, ind_coefs[,4:9])
+    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est", "est.std", "se", "z", "pvalue", "ci.lower", "ci.upper")
+    
     #ind_coefs <- subset(standardizedSolution(fit), op == "~")
     
     # if (length(ind_coefs[,1]) > 0){ # stl comment out 11.20.17
@@ -264,8 +277,8 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     if (!converge) status <- "nonconvergence"
     if (zero_se)   status <- "computationally singular"
     ind_fit   <- rep(NA, 11)
-    ind_coefs <- matrix(NA, nrow = 1, ncol = 9)
-    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est.std", "se", "z", "pvalue", "ci.lower", "ci.upper")
+    ind_coefs <- matrix(NA, nrow = 1, ncol = 10)
+    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est", "est.std", "se", "z", "pvalue", "ci.lower", "ci.upper")
     ind_betas <- NA
     ind_vcov  <- NA
     ind_plot  <- NA
