@@ -8,25 +8,17 @@
 #' end of the variable name with no separation. Defaults to NULL.
 #' @keywords internal
 setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
-  
-  # Satisfy CRAN checks
-  varnames = NULL
-  lvarnames = NULL
-  
+
   table   <- lavaan::lavParTable(paths)
   
   # include paths in the syntax which are specified free by the user
   # allows the possibility for the user to fix certain paths to zero (or now specific values, done below)
-  tableFree    <- table[table$op == "~" & table$free != 0, ]
-  
-  dvsFree      <- tableFree$lhs
-  ivsFree      <- tableFree$rhs
   
   # check if any exogenous variables have been incorrectly specified
   # for free paths
   if(!is.null(varLabels$uexo)){
     for (exog in varLabels$uexo){
-      if (exog %in% dvsFree){
+      if (exog %in% table[which(table$op == "~"),]$lhs){
         stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
                     specified paths.  Please remove variable from exogenous list or 
                     correct path specification'))
@@ -38,7 +30,7 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   # for free paths
   if(!is.null(varLabels$outc)){
     for (out in varLabels$outc){
-      if (out %in% ivsFree){
+      if (out %in% table[which(table$op == "~"),]$rhs){
         stop(paste0('gimme ERROR: an outcome variable was included as a predictor in 
                     user-specified paths.  Please remove variable from outcome list or 
                     correct path specification'))
@@ -47,9 +39,13 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   }
   
   
-  if (nrow(tableFree) != 0){
+  if (any(is.na(table$ustart))){
     
-    vsFree <- paste0(dvsFree, "~", ivsFree)
+    free <- which(is.na(table$ustart))
+                  
+    vsFree <- paste0(table[free,]$lhs, 
+                     table[free,]$op, 
+                     table[free,]$rhs)
     
   } else {
     
@@ -59,91 +55,39 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   
   # 7.16.22 kad: ALSO include paths in the syntax which are specified to a certain non-zero value by the user
   # Paths fixed to zero are separated below, as they will be removed, whereas these should be included in base syntax
-  tableSpecific    <- table[table$op == "~" & table$free == 0 & table$ustart != 0, ]
+  # 8.30.23 kmg: updated to include ~~ paths
   
-  dvsSpecific      <- tableSpecific$lhs
-  ivsSpecific      <- tableSpecific$rhs
-  ustartSpecific   <- tableSpecific$ustart
-  
-  # check if any exogenous variables have been incorrectly specified
-  # for specified value paths
-  if(!is.null(varLabels$uexo)){
-    for (exog in varLabels$uexo){
-      if (exog %in% dvsSpecific){
-        stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
-                    specified paths.  Please remove variable from exogenous list or 
-                    correct path specification'))
-      }
-    }
-  }
-  
-  # check if any outcome variables have been incorrectly specified
-  # for specified value paths
-  if(!is.null(varLabels$outc)){
-    for (out in varLabels$outc){
-      if (out %in% ivsSpecific){
-        stop(paste0('gimme ERROR: an outcome variable was treated as predictor in 
-                    specified paths.  Please remove variable from outcome list or 
-                    correct path specification'))
-      }
-    }
-  }
-  
-  if (nrow(tableSpecific) != 0){
+  if (nrow(table[table$free == 0 & table$ustart != 0, ])>0) {
     
-    vsSpecific <- paste0(dvsSpecific, "~", ustartSpecific, "*", ivsSpecific)
+    specific <- which(table$ustart != 0)
+    
+    vsSpecific <- paste0(table[specific,]$lhs, 
+                         table[specific,]$op, 
+                         table[specific,]$ustart, 
+                         "*", 
+                        table[specific,]$lhs)
+    
+
+  
+  # 7.16.22 kad: will also need to remove these paths from candidate paths
+    
+    vsSpecificRemove <- paste0(table[specific,]$lhs, table[specific,]$op, table[specific,]$rhs)
     
   } else {
     
     vsSpecific <- NULL
-    
-  }
-  
-  # 7.16.22 kad: will also need to remove these paths from candidate paths
-  if (nrow(tableSpecific) != 0){
-    
-    vsSpecificRemove <- paste0(dvsSpecific, "~", ivsSpecific)
-    
-  } else {
-    
+ 
     vsSpecificRemove <- NULL
     
   }
   
   # 7.16.22 kad: table up the paths which are fixed to ZERO by the user (and thus will be removed)
-  tableFixed   <- table[table$op == "~" & table$free == 0 & table$ustart == 0,]
-  
-  if (nrow(tableFixed) > 0){
+
+  if (any(table$user == 1 & table$ustart == 0 & !is.na(table$ustart))){
     
-    dvsFixed     <- tableFixed$lhs
+    fixed        <- which(table$user == 1 & table$ustart == 0 & !is.na(table$ustart))
     
-    # check if any exogenous variables have been incorrectly specified
-    # for fixed to zero paths
-    if(!is.null(varLabels$uexo)){
-      for (exog in varLabels$uexo){
-        if (exog %in% dvsFixed){
-          stop(paste0('gimme ERROR: an exogenous variable was treated as endogenous in 
-                      specified paths.  Please remove variable from exogenous list or 
-                      correct path specification'))
-        }
-      }
-    }
-    
-    # check if any outcome variables have been incorrectly specified
-    # for fixed paths
-    if(!is.null(varLabels$outc)){
-      for (out in varLabels$outc){
-        if (out %in% ivsFixed){
-          stop(paste0('gimme ERROR: an outcome variable was included as a predictor in 
-                    user-specified paths.  Please remove variable from outcome list or 
-                    correct path specification'))
-        }
-      }
-    }
-    
-    
-    ivsFixed     <- recode.vars(tableFixed$rhs, varnames, lvarnames)
-    vsFixed      <- paste0(dvsFixed, "~", ivsFixed)
+    vsFixed      <- paste0(table[fixed,]$lhs, table[fixed,]$op, table[fixed,]$rhs)
     
   } else {
         
