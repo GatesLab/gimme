@@ -11,6 +11,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   
   op  = NULL # appease CRAN check
   ind_plot = NA
+  ind_plot_psi = NA
   
   if (!dat$agg){
     fit <- fit.model(syntax    = c(dat$syntax, 
@@ -235,7 +236,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
         }
       
       } else {
-          ind_plot_psi <- NULL
+          ind_plot_psi <- NA
         }
       
     }
