@@ -2,12 +2,8 @@
 #' @param base_syntax A character vector containing syntax that never changes.
 #' @param fixed_syntax A character vector containing syntax that does not change
 #' in a given stage of searching.
-#' @param add_syntax A character vector containing the syntax that is allowed
-#' to change in a given stage of searching.
 #' @param data_list A list of datasets to be used in a given stage of the 
 #' search. Varies based on group, subgroup, or individual-level stage.
-#' @param n_paths The number of paths present in a given stage of searching.
-#' Equal to the number of paths in add_syntax.
 #' @param n_subj The number of subjects in a given stage of the search. If
 #' in the group stage, n_subj equals the number of subjects. If in the subgroup
 #' stage, n_subj equals the number of individuals in a given subgroup. At the 
@@ -177,8 +173,7 @@ search.paths.ms <- function(obj,
           
           obj[[j]]$n_paths     <- obj[[j]]$n_paths + 1
           obj[[j]]$add_syntax  <- append(obj[[j]]$add_syntax, add_param[1])
-          print(obj[[j]]$add_syntax)
-          
+
         #------------------------------------------------------#
         #  If there is > 1 path to add, stop searching.
         #------------------------------------------------------#  
