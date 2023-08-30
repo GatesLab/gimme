@@ -17,9 +17,6 @@ indSEM.}
 \item{sub_spec}{A list containing information specific to each subgroup.}
 
 \item{store}{A list containing output from indiv.search().}
-
-\item{ind}{A list containing individual- and (potentially) subgroup-level
-information.}
 }
 \value{
 Aggregated information, such as counts, levels, and plots.

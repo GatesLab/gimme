@@ -47,12 +47,6 @@ individual).}
 
 \item{subgroup_stage}{Logical. Only present in order to instruct gimme
 what message to print to console using writeLines.}
-
-\item{add_syntax}{A character vector containing the syntax that is allowed
-to change in a given stage of searching.}
-
-\item{n_paths}{The number of paths present in a given stage of searching.
-Equal to the number of paths in add_syntax.}
 }
 \value{
 Returns updated values of n_paths and add_syntax.
