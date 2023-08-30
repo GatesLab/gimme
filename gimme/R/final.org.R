@@ -183,7 +183,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     indiv_paths$lhs <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)
     indiv_paths     <- indiv_paths[order(indiv_paths$id, indiv_paths$level), ]
-    colnames(indiv_paths) <- c("file", "lhs","op", "rhs", "beta", "se", 
+    colnames(indiv_paths) <- c("file", "lhs","op", "rhs", "beta.std", "se", 
                                "z", "pval", "level")
     # } # end "if no coefficients" commented out stl 11.20.17
     # combine fit information for summaryFit.csv

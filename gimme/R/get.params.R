@@ -153,7 +153,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       } else if (!dat$agg & !is.null(dat$out)) { # & ind$n_ind_paths[k]>0)
         write.csv(ind_betas, file.path(dat$ind_dir, 
                                        paste0(dat$file_order[k,2], 
-                                              "Betas.csv")), row.names = TRUE)
+                                              "BetasStd.csv")), row.names = TRUE)
         
         # write.csv(ind_vcov_full, file.path(dat$ind_dir, 
         #                                paste0(dat$file_order[k,2], 

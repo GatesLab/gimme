@@ -276,11 +276,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   lvarnames = NULL
   sub_membership = NULL
   
-  arguments <- as.list(sys.frame(which = 1)) 
-  arguments2 <- commandArgs(trailingOnly = TRUE)
-  arguments3 <- commandArgs(trailingOnly = FALSE)
-  
-  
+  arguments <- as.list(sys.frame(which = 1))
 
   setupConvolve = NULL
   ts = NULL
