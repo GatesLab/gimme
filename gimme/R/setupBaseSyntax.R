@@ -95,7 +95,7 @@ setupBaseSyntax  <- function(paths, remove, varLabels, ctrlOpts){
       fixed.paths = fixed.paths,
       # 7.16.22 kad: now removing paths set to a fixed value (both zero and non-zero) from candidate paths
       candidate.paths = setdiff(all.poss, c(fixed.paths,remove)), 
-      candidate.corr = all.corr,
+      candidate.corr = setdiff(all.corr,remove),
       nonsense.paths =  nons.paths 
     ))
   

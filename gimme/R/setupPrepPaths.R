@@ -72,6 +72,14 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
   # 7.16.22 kad: will also need to remove these paths from candidate paths
     
     vsSpecificRemove <- paste0(table[specific,]$lhs, table[specific,]$op, table[specific,]$rhs)
+     
+    if (any(table[specific,]$op == '~~')) {
+      specificBi <- which(table[specific,]$op == '~~')
+      vsSpecificRemoveBi <- paste0(table[specificBi,]$rhs, table[specificBi,]$op, table[specificBi,]$lhs)
+      vsSpecificRemove <- c(vsSpecificRemove, vsSpecificRemoveBi)
+    }
+      
+    
     
   } else {
     
@@ -88,6 +96,12 @@ setupPrepPaths  <- function(paths, varLabels, ctrlOpts){
     fixed        <- which(table$user == 1 & table$ustart == 0 & !is.na(table$ustart))
     
     vsFixed      <- paste0(table[fixed,]$lhs, table[fixed,]$op, table[fixed,]$rhs)
+    
+    if (any(table[fixed,]$op == '~~')) {
+      fixedBi <- which(table[specific,]$op == '~~')
+      vsFixedBi <- paste0(table[fixedBi,]$rhs, table[fixedBi,]$op, table[fixedBi,]$lhs)
+      vsSpecificRemove <- c(vsSpecificRemove, vsFixedBi)
+    }
     
   } else {
         
