@@ -178,12 +178,12 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     # 8.13.22 kad: Combine paths set to 0 with regular coefs for output
     coefs <- rbind(summarize$coefs,zero.paths.df)
     
-    indiv_paths     <- coefs[, c("id", "lhs", "op", "rhs", "est.std", 
+    indiv_paths     <- coefs[, c("id", "lhs", "op", "rhs", "est", "est.std", 
                                  "se", "z", "pvalue", "level")]
     indiv_paths$lhs <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)
     indiv_paths     <- indiv_paths[order(indiv_paths$id, indiv_paths$level), ]
-    colnames(indiv_paths) <- c("file", "lhs","op", "rhs", "beta.std", "se", 
+    colnames(indiv_paths) <- c("file", "lhs","op", "rhs", "beta", "beta.std", "se", 
                                "z", "pval", "level")
     # } # end "if no coefficients" commented out stl 11.20.17
     # combine fit information for summaryFit.csv
@@ -202,6 +202,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     }
     
     # Write path counts matrix to output
+    
     if (!is.null(dat$out)){ #& length(coefs[,1]) > 0){ # commented out stl 11.20.17
       write.csv(indiv_paths, file.path(dat$out, "indivPathEstimates.csv"),
                 row.names = FALSE)
@@ -258,9 +259,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
     indiv_paths$lhs  <- recode.vars(indiv_paths$lhs, dat$lvarnames, dat$varnames)
     indiv_paths$rhs  <- recode.vars(indiv_paths$rhs, dat$lvarnames, dat$varnames)
     indiv_paths      <- indiv_paths[order(indiv_paths$file), ]
-    indiv_paths      <- indiv_paths[ ,c("file", "lhs","op", "rhs", "est.std", 
+    indiv_paths      <- indiv_paths[ ,c("file", "lhs","op", "rhs", "est", "est.std", 
                                         "se", "z", "pvalue")]
-    colnames(indiv_paths) <- c("file", "lhs", "op", "rhs", "beta", "se", "z", "pval")
+    colnames(indiv_paths) <- c("file", "lhs", "op", "rhs", "est.std", "se", "z", "pval")
     
     fits          <- store$fits[[1L]]
     file          <- c("all")
