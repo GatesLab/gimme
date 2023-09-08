@@ -31,7 +31,7 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
   # 6.19.21 kad: modify ts_list to ts_est_list, which now also returns a list of the HRF estimates
   ts_est_list <- lapply(ts_list, function(df){
     
-    conv_use  <- df[,to_convolve, drop = FALSE]
+    conv_use  <- as.matrix(df[,to_convolve, drop = FALSE])
     
     if(any(apply(conv_use, 2, function(x) any(is.na(x) | is.infinite(x))))){
       
@@ -41,7 +41,9 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
     
     # 6.19.21 kad: initialize a matrix of HRF estimates, with each convolved variable as a column
     est <- matrix(NA, nrow = (conv_length/conv_interval), ncol = length(varLabels$conv))
+    R2conv <- matrix(NA, nrow = 1, ncol = length(varLabels$conv))
     colnames(est) <- varLabels$conv
+    colnames(R2conv) <- varLabels$conv
     
     for (cv in varLabels$conv){
       
@@ -58,10 +60,11 @@ convolveFIR <- setupConvolve <- function(ts_list = NULL,
       df[,cv]   <- convolved$conv_stim_onsets[1:nrow(df)]
       # 6.19.21 kad: now store estimate for each convolved variable
       est[,cv] <- convolved$est_rf
+      R2conv[,cv]  <- convolved$R2
     }
     
     # 6.19.21 kad: now return data (ts_list) and HRF estimates 
-    ts_est_list <- list(data = df, estimates = est)
+    ts_est_list <- list(data = df, rf_est = est, rf_conv=R2conv)
 
   })
   

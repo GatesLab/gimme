@@ -19,10 +19,16 @@ sFIR <- function(data,
   
   # set up basis vectors
   c_onsets <- which(stimuli == 1)
+  if(is.null(c_onsets)){
+    est_rf = NULL
+    conv_stim_onsets = NULL
+    R2 = NULL
+  }
   id_cols <- seq(from=1, to = response_length/interval)
   for (j in 1: length(c_onsets)){
     id_rows <- seq(from =c_onsets[j], to= (c_onsets[j]+response_length/interval-1))
     for (k in 1:min(length(id_rows),(length(X_fir[,1])-c_onsets[j]))){
+      if(k==0) k <-1
       X_fir[id_rows[k], id_cols[k]]<- 1
     }
   }
@@ -33,11 +39,13 @@ sFIR <- function(data,
   R2 <- matrix(,length(data[1,]), 1)
   for (p in 1:length(data[1,]))
     R2[p]<- summary(lm(data[,p]~X_fir))$r.squared
-  R2 <- R2[-which(R2 == max(R2))] # delete max
+  R2 <- R2[-which(R2 == max(R2))] # delete max 
+  ## comment kmg 9.07.23: why? ^
   best <- which(R2 == max(R2)) # take second best
-  } else 
+  } else {
+    R2 <- summary(lm(data~X_fir))$r.squared
     best <- 1
-  
+  }
   ### For smoothing
   C <- seq(1:length(t))%*%matrix(1, 1, length(t))
   h <- sqrt(1/(7/interval))
@@ -57,6 +65,7 @@ sFIR <- function(data,
   conv_onsets <- stats::convolve(as.numeric(stimuli), rev(est_hrf), type = c("open"))
   
   res <- list(est_rf = est_hrf, 
-              conv_stim_onsets = conv_onsets)
+              conv_stim_onsets = conv_onsets,
+              R2 = R2)
   return(res)
 }

@@ -353,7 +353,8 @@ setup <- function (data,
   )
   ts_list <- ts_est_list$ts_list
   rf_est <- ts_est_list$rf_est
-
+  rf_conv <- ts_est_list$rf_conv
+  
   #-------------------------------------------------------------#
   
   #-------------------------------------------------------------#
@@ -439,7 +440,8 @@ setup <- function (data,
               "hybrid"    = hybrid,
               "VAR"       = VAR,
               "rf_est" = rf_est, # 6.19.22 kad: return HRF estimates
-              "zero.paths" = zero.paths # 8.13.22 kad: return paths set to 0 by the user
+              "zero.paths" = zero.paths, # 8.13.22 kad: return paths set to 0 by the user
+              "rf_conv"  = rf_conv 
     )
   return(dat)
 }
