@@ -100,8 +100,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     ind_fit[2] <- round(ind_fit[2], digits = 0)
     
     r2         <- inspect(fit, "rsquare")
-    r2         <- r2[which(round(r2,3)>0)]
-    names(r2)  <- paste0(names(r2), "_r2")
+    r2         <- r2[dat$varLabels$endo]
     
     ind_fit    <- c(ind_fit, round(r2, digits = 4))
     
