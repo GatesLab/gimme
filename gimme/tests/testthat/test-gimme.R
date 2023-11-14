@@ -1,5 +1,20 @@
+## 4 Different runs are tested:
+#   (1) Typical
+#   (2) HRF
+#   (3) Subgrouping
+#   (4) Latent Variables
 
-# Initial Test Passed
+## Each run has 2 tests:
+#   (1) The "expect_equal" line tests that the beta estimates for the current 
+# version are equal to the path estimates from the source of truth version, with
+# a tolerance of 1e-5 (i.e. differences smaller than 1e-5 are ignored)
+#   (2) The "expect_identical" line tests that the paths recovered by the
+# current version are the same as the paths recovered by the source of truth
+# version.
+
+## The "source of truth" version is the version of GIMME on CRAN as of Oct 2023.
+
+
 test_that("Run 1 gives expected results", {
   run1_sot <- readRDS("rds/run1_path_matrix.rds")
   run1_paths_sot <-readRDS("rds/run1_path_counts.rds")
@@ -9,7 +24,7 @@ test_that("Run 1 gives expected results", {
 })
 
 
-# Error - test not run
+
 test_that("Run 2 gives expected results", {
   run2_sot <- readRDS("rds/run2_path_matrix.rds")
   run2_paths_sot <-readRDS("rds/run2_path_counts.rds")
@@ -27,8 +42,7 @@ test_that("Run 2 gives expected results", {
 })
 
 
-# Initial Test failed - differences smaller than 2 decimal places
-# Change code to allow this unless one of the elements is zero
+
 test_that("Run 3 gives expected results", {
   run3_sot <- readRDS("rds/run3_path_matrix.rds")
   run3_paths_sot <-readRDS("rds/run3_path_counts.rds")
@@ -38,7 +52,7 @@ test_that("Run 3 gives expected results", {
   expect_identical(run3[["path_counts"]], run3_paths_sot)
 })
 
-# Initial Test Passed
+
 test_that("Run 4 gives expected results", {
   run4_sot <- readRDS("rds/run4_path_matrix.rds")
   run4_paths_sot <-readRDS("rds/run4_path_counts.rds")
