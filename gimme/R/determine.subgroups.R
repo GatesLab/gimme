@@ -243,6 +243,6 @@ determine.subgroups <- function(data_list,
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
     sub$sub_mem     <- confirm_subgroup
-
+  }
   return(sub)
 }
