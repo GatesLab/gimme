@@ -255,6 +255,7 @@ setupTransformData <- function(ts_list       = NULL,
       stop(paste0('gimme ERROR: not all data files have the same number of columns. ',
                   'Please fix or remove file before continuing.'))
     }
+  }
     if (sd(missingCols) != 0) {
       stop(paste0('gimme ERROR: at least one data file contains a column with all NA. ',
                   'Please fix or remove files listed below before continuing. \n', 
@@ -264,7 +265,7 @@ setupTransformData <- function(ts_list       = NULL,
       stop(paste0('gimme ERROR: at least one data file contains a column with all NA. ',
                   'Please fix or remove file before continuing.'))
     }  
-    if any(is.na(constantCols)){
+    if (any(is.na(constantCols))){
       stop(paste0('gimme ERROR: at least one data file contains NA rows for all but one row. ',
                   'Please fix or remove files listed below before continuing. \n', 
                   paste0(names(ts_list)[which(is.na(constantCols))], collapse = "\n")))
@@ -286,7 +287,7 @@ setupTransformData <- function(ts_list       = NULL,
                   'Please fix or remove files listed below before continuing. \n', 
                   paste0(names(ts_list)[numericCols == TRUE], collapse = "\n")))
     }
-  } 
+
   # if (n_subjects == 1 & !ctrlOpts$ind) {
   #   stop(paste0('gimme ERROR: only one subject detected in data directory. ',
   #               'Please use indSEM function instead.'))
