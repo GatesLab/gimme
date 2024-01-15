@@ -182,6 +182,7 @@ setupTransformData <- function(ts_list       = NULL,
       
     )
     dir.create(ctrlOpts$out, recursive = TRUE)
+  
     
     if (dir.exists(ctrlOpts$out)){
       
@@ -238,6 +239,7 @@ setupTransformData <- function(ts_list       = NULL,
   constantCols <- logical()
   numericCols  <- logical()
   largeVar <- logical()
+  fewer30 <- NULL
   
   # check for obvious errors in data
   for (k in 1:length(ts_list)){
@@ -247,6 +249,7 @@ setupTransformData <- function(ts_list       = NULL,
     constantCols[k] <- any(apply(data.file, 2, sd, na.rm = TRUE) == 0)
     largeVar[k] <- max(apply(data.file, 2, stats::var, na.rm = TRUE))/min(apply(data.file, 2, stats::var, na.rm = TRUE)) >50
     numericCols[k]  <- any(apply(data.file, 2, is.numeric) == FALSE)
+    fewer30[k] <- any((length(data.file[,1]) - length(which(rowSums(is.na(data.file))==ncol(data.file))))<=30)
   }
   
   
@@ -287,11 +290,17 @@ setupTransformData <- function(ts_list       = NULL,
                   'Please fix or remove files listed below before continuing. \n', 
                   paste0(names(ts_list)[numericCols == TRUE], collapse = "\n")))
     }
+  
+  if(any(fewer30 == TRUE)){
+    stop(paste0('gimme ERROR: at least one data file has fewer than 30 timepoints (not including NA). ',
+                'Please fix or remove files listed below before continuing. \n', 
+                paste0(names(ts_list)[fewer30 == TRUE], collapse = "\n")))
+  }
 
-  # if (n_subjects == 1 & !ctrlOpts$ind) {
-  #   stop(paste0('gimme ERROR: only one subject detected in data directory. ',
-  #               'Please use indSEM function instead.'))
-  # }
+  if (n_subjects == 1 & !ctrlOpts$ind) {
+    stop(paste0('gimme ERROR: only one subject detected in data directory. ',
+                'Please use indSEM function instead.'))
+  }
   
   # 6.19.22 kad: return now ts_est_list containing both ts_list and hrf estimates
   ts_est_list <- list(ts_list = ts_list, rf_est = rf_est)
