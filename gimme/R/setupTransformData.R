@@ -277,7 +277,7 @@ setupTransformData <- function(ts_list       = NULL,
     if (any(largeVar == TRUE)){
       cat('gimme WARNING: at least one data file contains variables where the variance of one variable
               is greater than 50 times the variance of another variable. \n',
-          'We recommend rescaling data. \n')
+          'We recommend rescaling data or setting "standardize = TRUE" in arguments. \n')
       
     }
     

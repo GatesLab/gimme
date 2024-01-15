@@ -20,6 +20,7 @@ setupFinalDataChecks <- function(data){
     constantCols[k] <- any(apply(data.file, 2, sd, na.rm = TRUE) == 0)
     largeVar[k] <- max(apply(data.file, 2, stats::var, na.rm = TRUE))/min(apply(data.file, 2, stats::var, na.rm = TRUE)) >10
     numericCols[k]  <- any(apply(data.file, 2, is.numeric) == FALSE)
+    fewer30[k] <- any((length(data.file[[k]][,1]) - length(which(rowSums(is.na(data.file[[k]]))==ncol(data_list[[k]]))))<=30)
   }
   
   
@@ -28,6 +29,7 @@ setupFinalDataChecks <- function(data){
       stop(paste0('gimme ERROR: not all data files have the same number of columns. ',
                   'Please fix or remove file before continuing.'))
     }
+  }
     if (sd(missingCols) != 0) {
       stop(paste0('gimme ERROR: at least one data file contains a column with all NA. ',
                   'Please fix or remove files listed below before continuing. \n', 
@@ -46,7 +48,7 @@ setupFinalDataChecks <- function(data){
     if (any(largeVar == TRUE)){
       cat('gimme WARNING: at least one data file contains variables where the variance of one variable
               is greater than 50 times the variance of another variable. \n',
-                  'We recommend rescaling data. \n')
+                  'We recommend rescaling data or setting "standardize = TRUE" in arguments. \n')
              
     }
     
@@ -55,7 +57,11 @@ setupFinalDataChecks <- function(data){
                   'Please fix or remove files listed below before continuing. \n', 
                   paste0(names(ts_list)[numericCols == TRUE], collapse = "\n")))
     }
-  } 
+   if(any(fewer30 == TRUE)){
+     stop(paste0('gimme ERROR: at least one data file has fewer than 30 timepoints (not including NA). ',
+                 'Please fix or remove files listed below before continuing. \n', 
+                 paste0(names(ts_list)[fewer30 == TRUE], collapse = "\n")))
+   }
   # if (n_subjects == 1 & !ind) {
   #   stop(paste0('gimme ERROR: only one subject detected in data directory. ',
   #               'Please use indSEM function instead.'))
