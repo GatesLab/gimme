@@ -165,9 +165,13 @@ simulateVAR <- function(A         = NULL,
       }
       go <- 0
       for (c in 1:length(time[,1])){
-        if(aTSA::adf.test(time[c,], out = FALSE)$type3[1,3]>0.05)
-          go <- go + 1
+        # aTSA no longer an option 1/22/2024
+        # if(aTSA::adf.test(time[c,], out = FALSE)$type3[1,3]>0.05)
+        #   go <- go + 1
+        if(suppressWarnings(tseries::adf.test(time[c,])$p.value)>0.05){
+        go <- go + 1
         counter <- sum(counter, 1)
+        }
       }
     }
     if(counter == 100){
