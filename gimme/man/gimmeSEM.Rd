@@ -146,7 +146,7 @@ variable name should be followed by "lag" with no separation (e.g. V1*V2lag).}
 before being multiplied together. Defaults to FALSE.}
 
 \item{standardize}{Logical. If TRUE, all variables will be standardized to have a mean of zero and a
-standard deviation of one. Defaults to FALSE.}
+standard deviation of one. Defaults to TRUE.}
 
 \item{groupcutoff}{Cutoff value for group-level paths. Defaults to .75,
 indicating that a path must be significant across 75\% of individuals to be
