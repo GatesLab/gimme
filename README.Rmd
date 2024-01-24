@@ -24,7 +24,9 @@ These papers also provide insights for researchers wishing to get started with t
 
 Program developers are invited to submit changes here at the GitHub repository. 
 
-Please email here with bugs and questions: [gimme@unc.edu](mail.to:gimme@unc.edu). 
+Please email here with bugs: [gimme@unc.edu](mail.to:gimme@unc.edu). 
+
+Please post questions regarding interpretation, study design, and other topics here: [GIMME google group](https://groups.google.com/g/gimme-r)
 
 # **The Basics**
 
