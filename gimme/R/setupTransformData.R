@@ -258,12 +258,12 @@ setupTransformData <- function(ts_list       = NULL,
       stop(paste0('gimme ERROR: not all data files have the same number of columns. ',
                   'Please fix or remove file before continuing.'))
     }
-  }
     if (sd(missingCols) != 0) {
       stop(paste0('gimme ERROR: at least one data file contains a column with all NA. ',
                   'Please fix or remove files listed below before continuing. \n', 
                   paste0(names(ts_list)[missingCols != cols], collapse = "\n")))
     }
+  }
     if (any(cols != missingCols)) {
       stop(paste0('gimme ERROR: at least one data file contains a column with all NA. ',
                   'Please fix or remove file before continuing.'))
