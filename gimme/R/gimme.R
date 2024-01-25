@@ -96,7 +96,7 @@
 #' @param mean_center_mult Logical. If TRUE, the variables indicated in mult_vars will be mean-centered
 #' before being multiplied together. Defaults to FALSE. 
 #' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
-#' standard deviation of one. Defaults to TRUE. 
+#' standard deviation of one. Defaults to FALSE 
 #' @param plot Logical. If TRUE, graphs depicting relations among variables
 #' of interest will automatically be 
 #' created. Solid lines represent contemporaneous relations (lag 0) and dashed lines reflect 
@@ -253,7 +253,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               conv_interval    = 1, 
                               mult_vars        = NULL,
                               mean_center_mult = FALSE,
-                              standardize      = TRUE,
+                              standardize      = FALSE,
                               groupcutoff      = .75,
                               subcutoff        = .75,
                               diagnos          = FALSE,
