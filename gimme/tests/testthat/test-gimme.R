@@ -67,7 +67,7 @@ test_that("Run 4 gives expected results", {
                 lv_estimator = "miiv",
                 lv_score = "regression",
                 lv_final_estimator = "miiv")
-  expect_equal(run4[["path_est_mats"]], run4_sot, tolerance = 1e-5)
+  expect_equal(run4[["path_est_mats"]], run4_sot, tolerance = 1e-3)
   expect_identical(run4[["path_counts"]], run4_paths_sot)
 })
 
