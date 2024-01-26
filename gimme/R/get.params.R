@@ -69,7 +69,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       
       ind_coefs_unst0 <- parameterEstimates(fit)
       ind_coefs_unst_idx <- paste0(ind_coefs_unst0$lhs,ind_coefs_unst0$op,ind_coefs_unst0$rhs)
-      ind_coefs_unst <- ind_coefs0[ind_coefs_unst0$op == "~" |
+      ind_coefs_unst <- ind_coefs_unst0[ind_coefs_unst0$op == "~" |
                                      ind_coefs_unst_idx %in% c(dat$candidate_paths, dat$candidate_corr),]
       
       ind_coefs0 <- standardizedSolution(fit)
