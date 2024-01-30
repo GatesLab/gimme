@@ -113,7 +113,7 @@ indiv.search <- function(dat, grp, ind){
     vcovfull[[k]]   <- s10$ind_vcov_full
     plots[[k]]  <- s10$ind_plot
     plots_cov[[k]] <- s10$ind_plot_cov
-    syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k]])
+    syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k]], ind$ind_paths[[k]])
     psi[[k]]      <- s10$ind_psi
     psiunstd[[k]] <- s10$ind_psi_unstd
   }
