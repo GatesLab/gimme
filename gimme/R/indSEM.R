@@ -211,7 +211,8 @@ indSEM <- function(data   = NULL,
               vcovfull        = store$vcovfull,
               psi             = store$psi,
               psi_unstd       = store$psiunstd,
-              rf_est         = dat$rf_est # 7.02.22 kad: added HRF estimates 
+              rf_est         = dat$rf_est, # 7.02.22 kad: added HRF estimates 
+              syntax         = store$syntax
               )
   
   class(res) <-  "indSEMp"
