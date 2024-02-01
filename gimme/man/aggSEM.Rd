@@ -108,21 +108,7 @@ Concatenates all individual-level data files and
 fits a group model to the data.
 }
 \details{
-In main output directory:
- \itemize{
- \item{\strong{allBetas}} Matrix. Contains estimates for each path in the
- aggregate-level model. The row variable is the outcome and the column 
- variable is the predictor variable.
- \item{\strong{allStdErrors}} Matrix. Contains standard errors for each path 
- in the aggregate-level model. The row variable is the outcome and the column
- variable is the predictor variable.
- \item{\strong{allPathEstimates}} {Contains estimate, standard error,
- p-value, and z-value for each path for the concatenated data.}
- \item{\strong{summaryFit}} {Contains model fit information for the 
- aggregate-level model.}
- \item{\strong{summaryPathsPlot}} Contains aggregate-level plot. Red paths 
- represent positive weights and blue paths represent negative weights.
-}
+Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used.
 }
 \examples{
 \dontrun{

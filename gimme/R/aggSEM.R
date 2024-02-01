@@ -85,21 +85,7 @@
 #' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
 #' search space.  Defaults to FALSE.
 #' @details
-#'  In main output directory:
-#'  \itemize{
-#'  \item{\strong{allBetas}} Matrix. Contains estimates for each path in the
-#'  aggregate-level model. The row variable is the outcome and the column 
-#'  variable is the predictor variable.
-#'  \item{\strong{allStdErrors}} Matrix. Contains standard errors for each path 
-#'  in the aggregate-level model. The row variable is the outcome and the column
-#'  variable is the predictor variable.
-#'  \item{\strong{allPathEstimates}} {Contains estimate, standard error,
-#'  p-value, and z-value for each path for the concatenated data.}
-#'  \item{\strong{summaryFit}} {Contains model fit information for the 
-#'  aggregate-level model.}
-#'  \item{\strong{summaryPathsPlot}} Contains aggregate-level plot. Red paths 
-#'  represent positive weights and blue paths represent negative weights.
-#' }
+#'  Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used. 
 #' @author Stephanie Lane
 #' @examples
 #' \dontrun{
@@ -191,7 +177,8 @@ aggSEM <- function(data,
               fit          = final$fit, 
               path_se_est  = final$param_est, 
               plot         = store$plots, 
-              vcov         = store$vcov)
+              vcov         = store$vcov,
+              syntax       = store$syntax)
 
     writeLines("aggSEM finished running normally")
     if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))

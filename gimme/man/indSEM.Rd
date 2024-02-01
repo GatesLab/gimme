@@ -105,34 +105,7 @@ This function identifies structural equation models for each
 individual. It does not utilize any shared information from the sample.
 }
 \details{
-In main output directory:
- \itemize{
- \item{\strong{indivPathEstimates}} {Contains estimate, standard error, 
- p-value, and z-value for each path for each individual}
- \item{\strong{summaryFit}} {Contains model fit information for individual-
- level models. }
- \item{\strong{summaryPathCountMatrix}} Contains counts of total number of 
- paths, both contemporaneous and lagged, estimated for the sample. The row
-  variable is the outcome and the column variable is the predictor variable.
- \item{\strong{summaryPathCounts}} {Contains summary count information for 
- paths identified at the individual-level.}
- \item{\strong{summaryPathsPlot}} Contains counts of total number of paths,
-  both contemporaneous and lagged, estimated for the sample. The row variable
-   is the outcome and the column variable is the predictor variable.
- }
- In individual output directory (where \strong{\emph{id}} represents the
-  original file name for each individual):
- \itemize{
- \item{\strong{\emph{id}Betas}} Contains individual-level estimates of each 
- path for each individual.
- \item{\strong{\emph{id}StdErrors}} Contains individual-level standard errors 
- for each path for each individual.
- \item{\strong{\emph{id}EstRF}} Produced if conv_vars is not NULL. 
- Contains individual-level estimated response function (e.g., hemodynamic response function (HRF) or relevant response function).
- One column for each convolved variable, output length is equal to conv_length input.
- \item{\strong{\emph{id}Plot}} Contains individual-level plots. Red paths 
- represent positive weights and blue paths represent negative weights.
-}
+Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used.
 }
 \examples{
  \dontrun{
