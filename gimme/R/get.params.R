@@ -277,7 +277,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     if (zero_se)   status <- "computationally singular"
     ind_fit   <- rep(NA, 11)
     ind_coefs <- matrix(NA, nrow = 1, ncol = 10)
-    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est","est.std", "se.std", "z", "pvalue", "ci.lower.std", "ci.upper.std")
+    colnames(ind_coefs) <- c("lhs", "op", "rhs", "est", "est.std", "se", "z", "pvalue", "ci.lower", "ci.upper")
     ind_betas <- NA
     ind_vcov  <- NA
     ind_plot  <- NA
