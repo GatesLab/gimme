@@ -337,7 +337,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
 
   
   if(!is.null(out)){
-    writeArg <- arguments[(dat$n_subj+1):length(arguments)]
+    writeArg <- arguments
     write.csv(unlist(writeArg), 
               file.path(paste0(out, "/arguments.csv")))
   }
