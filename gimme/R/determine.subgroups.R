@@ -238,7 +238,7 @@ determine.subgroups <- function(data_list,
     #   colnames(sim) <- rownames(sim) <- names(data_list)
     # }
     if(length(drop) == 0)
-      sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), (sub$sub_mem)$sub_membership)
+      sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), sub_mem$sub_membership)
       
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
