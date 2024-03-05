@@ -99,9 +99,37 @@ setupTransformData <- function(ts_list       = NULL,
   }
   #-------------------------------------------------------------# 
   
+  #-------------------------------------------------------------#
+  # (3) take care of excess NAs
+  #-------------------------------------------------------------#
+  #  only one row of NAs is needed between two rows that are 
+  #  not subsequent in time. Having too many NAs causes probs
+  #  in lavaan
+  #-------------------------------------------------------------#
+  
+  ts_list <- lapply(ts_list, function(df){
+    
+    rowNA    <- apply(is.na(df), 1, FUN = all)
+    rowNA    <- ifelse(rowNA, 1, 0) # convert to numbers for identifying rows in row
+    
+    last <- 0
+    p <- 0
+    # basically a dynamic for loop that ends when nearing the end of dataframe with shifting row number
+    while (last == 0){
+      p = 1 + p 
+      if(rowNA[p]+ rowNA[(p+1)] == 2){
+        df <- df[-p,]
+        rowNA <- rowNA[-p]
+        p = (p-1)
+      }
+      if((p+1)==length(rowNA))
+        last = 1
+    }
+    
+  })
   
   #-------------------------------------------------------------#
-  # (3) lag data
+  # (4) lag data
   #-------------------------------------------------------------#
   #  * by default, lagged conv_vars are created, 
   #      and they must be subsequently removed.
@@ -132,7 +160,7 @@ setupTransformData <- function(ts_list       = NULL,
   
   
   #-------------------------------------------------------------#
-  # (4) create bilinear variables
+  # (5) create bilinear variables
   #-------------------------------------------------------------#
   #  
   #-------------------------------------------------------------#
