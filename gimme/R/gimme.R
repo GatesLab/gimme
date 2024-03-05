@@ -356,6 +356,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
       stop(paste0("gimme ERROR: confirmatory subgroup assignments are non-numeric.",
                   " Please ensure that the confirmatory subgroup assignments are integer valued, beginning from 1. (Example: 1, 2, 3, 4)"))
     }
+    ### rename to match internal codee for exploratory subgroups
+    colnames(confirm_subgroup) <- c("names","sub_membership")
   }
   
   
