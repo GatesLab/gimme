@@ -125,7 +125,7 @@ setupTransformData <- function(ts_list       = NULL,
       if((p+1)==length(rowNA))
         last = 1
     }
-    
+    df
   })
   
   #-------------------------------------------------------------#
