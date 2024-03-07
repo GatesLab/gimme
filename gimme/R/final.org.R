@@ -7,7 +7,7 @@
 #' @param store A list containing output from indiv.search().
 #' @return Aggregated information, such as counts, levels, and plots.
 #' @keywords internal
-final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store){
+final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_subgroup){
   
   ind = store$ind
   

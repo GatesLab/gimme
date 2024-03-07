@@ -611,7 +611,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        sub = sub[[1]],
                        sub_spec = sub_spec[[1]],
                        diagnos = diagnos,
-                       store)
+                       store,
+                       confirm_subgroup)
     
       writeLines("gimme finished running normally")
       if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
