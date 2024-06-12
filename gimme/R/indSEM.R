@@ -112,7 +112,8 @@ indSEM <- function(data   = NULL,
                    mean_center_mult = FALSE,
                    standardize    = FALSE,
                    hybrid = FALSE,
-                   VAR    = FALSE){
+                   VAR    = FALSE,
+                  confirm_subgroup = FALSE){
   
   #Error check for hybrid
   if(hybrid & !ar){
