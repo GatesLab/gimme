@@ -162,6 +162,7 @@ indSEM <- function(data   = NULL,
                      sub      = NULL, 
                      sub_spec = NULL, 
                      diagnos = FALSE,
+                     confirm_subgroup = NULL,
                      store = store)
   
   writeLines("indSEM finished running normally")
