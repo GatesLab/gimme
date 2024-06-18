@@ -112,14 +112,16 @@ indSEM <- function(data   = NULL,
                    mean_center_mult = FALSE,
                    standardize    = FALSE,
                    hybrid = FALSE,
-                   VAR    = FALSE,
-                  confirm_subgroup = FALSE){
+                   VAR    = FALSE){
   
   #Error check for hybrid
   if(hybrid & !ar){
     stop(paste0("gimme ERROR: Autoregressive paths have to be open for hybrid-gimme.",
                 " Please ensure that ar=TRUE if hybrid=TRUE."))
   }
+  
+  # set value for unused argument in future code 
+  confirm_subgroup = FALSE
   
   # so all hybrid-related rules apply, as we are looking at covs of residuals
   if(VAR)
