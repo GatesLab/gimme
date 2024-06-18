@@ -1,5 +1,5 @@
-#' @name convolve
-#' @aliases  convolve setupConvolve
+#' @name setupConvolve
+#' @aliases  convolve setupConvolve convolveFIR
 #' @title Group iterative multiple model estimation.
 #' @description This function estimates the basis vectors related to responses following 
 #' a binary impulse and convolves that binary impulse vector. 
@@ -18,7 +18,7 @@
 #' fMRI studies, this is the repetition time. Defaults to 1. 
 #' @keywords setupConvolve
 #' @export convolveFIR
-convolveFIR <- setupConvolve <- function(ts_list = NULL, 
+setupConvolve <- convolveFIR <- function(ts_list = NULL, 
                           varLabels = NULL, 
                           conv_length = 16, 
                           conv_interval = 1){
