@@ -38,13 +38,13 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     zero_se  <- TRUE
   }
   
-  if (converge & !zero_se)#& (ind$n_ind_paths[k] >0) ){
+  if (converge & !zero_se & !any(abs(parameterTable(fit)$est)>1))#& (ind$n_ind_paths[k] >0) ){
     status   <- "converged normally"
     
   # if no convergence, roll back one path at individual level, try again 
-  if (!converge | zero_se){
+  if (!converge | zero_se | any(abs(parameterTable(fit)$est)>1)){
     status <- "nonconvergence"
-    if (length(ind$ind_paths[[k]]!= 0)){
+    if (length(ind$ind_paths[[k]])!= 0){
       ind$ind_paths[[k]] <- ind$ind_paths[[k]][-length(ind$ind_paths[[k]])]
       if (!dat$agg){
         fit <- fit.model(syntax    = c(dat$syntax, 
@@ -64,7 +64,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     
     error   <- inherits(fit, "try-error")
     
-    if (!error){
+    if (!error & !any(abs(parameterTable(fit)$est)>1)) {
       converge  <- lavInspect(fit, "converged")
       
       ind_coefs_unst0 <- parameterEstimates(fit)
@@ -84,7 +84,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       } else {
         zero_se <- FALSE
       }
-      if (converge & !any(abs(parameterTable(fit)$est)>1)){
+      if (converge){
         status <- "last known convergence"
       }
     } else {
