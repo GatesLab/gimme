@@ -14,7 +14,7 @@ LaTeX: pdfLaTeX
 
 BuildType: Package
 PackageUseDevtools: Yes
-PackagePath: gimme
+PackagePath: /Users/gateskm/Dropbox/GitHub/gimme
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageBuildArgs: --resave-data
 PackageCheckArgs: --as-cran
