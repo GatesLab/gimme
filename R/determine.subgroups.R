@@ -188,7 +188,7 @@ determine.subgroups <- function(data_list,
   colnames(sim) <- rownames(sim) <- names(mi_list)
   colnames(lay.sim) <- rownames(lay.sim) <- NULL
   if(is.null(confirm_subgroup)){
-    g            <- graph.adjacency(sim, mode = "undirected", weighted = TRUE)
+    g            <- graph_from_adjacency_matrix(sim, mode = "undirected", weighted = TRUE)
     weights      <- E(g)$weight
     if (sub_method == "Walktrap")
       res        <- cluster_walktrap(g, weights = weights, steps = 4)
@@ -208,7 +208,7 @@ determine.subgroups <- function(data_list,
       res        <- cluster_spinglass(g, weights = weights)
     
     
-    e = igraph::get.edgelist(igraph::graph.adjacency(lay.sim, mode = "undirected", weighted = TRUE))
+    e = igraph::as_edgelist(igraph::graph_from_adjacency_matrix(lay.sim, mode = "undirected", weighted = TRUE))
     l = qgraph::qgraph.layout.fruchtermanreingold(e,
                                                   vcount = vcount(g), weights = weights/5,
                                                   area = 8*(vcount(g)^2),
@@ -238,7 +238,7 @@ determine.subgroups <- function(data_list,
     #   colnames(sim) <- rownames(sim) <- names(data_list)
     # }
     if(length(drop) == 0)
-      sub$modularity  <- modularity(graph.adjacency(sim, mode = "undirected"), sub_mem$sub_membership)
+      sub$modularity  <- modularity(graph_from_adjacency_matrix(sim, mode = "undirected"), sub_mem$sub_membership)
       
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
