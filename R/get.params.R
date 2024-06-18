@@ -30,7 +30,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   
   error   <- inherits(fit, "try-error")
   
-  if (!error) {
+  if (!error & !any(abs(parameterTable(fit)$est)>1)) {
     converge <- lavInspect(fit, "converged")
     zero_se  <- sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0
   } else {
@@ -84,7 +84,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
       } else {
         zero_se <- FALSE
       }
-      if (converge){
+      if (converge & !any(abs(parameterTable(fit)$est)>1)){
         status <- "last known convergence"
       }
     } else {
