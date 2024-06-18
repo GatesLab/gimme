@@ -46,6 +46,7 @@ sFIR <- function(data,
     R2 <- summary(lm(data~X_fir))$r.squared
     best <- 1
   }
+  R2 <- R2[best]
   ### For smoothing
   C <- seq(1:length(t))%*%matrix(1, 1, length(t))
   h <- sqrt(1/(7/interval))

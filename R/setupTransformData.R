@@ -55,7 +55,7 @@ setupTransformData <- function(ts_list       = NULL,
   if(!is.null(varLabels$conv)){
     
     # 6.19.21 kad: using now modified setupConvolve, return ts_est_list which also has HRF estimates
-    ts_list_est <- setupConvolve(
+    ts_list_est <- convolveFIR( # changed to export name
       ts_list       = ts_list, 
       varLabels     = varLabels, 
       conv_length   = ctrlOpts$conv_length, 
