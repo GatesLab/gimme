@@ -1,0 +1,26 @@
+{
+    "id": "55AC9DA4",
+    "path": "~/Dropbox/GitHub/gimme/gimme/R/search.paths.ms.R",
+    "project_path": "gimme/R/search.paths.ms.R",
+    "type": "r_source",
+    "hash": "3423954846",
+    "contents": "",
+    "dirty": false,
+    "created": 1713990648539.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "106,12",
+        "scrollLine": "0"
+    },
+    "folds": "68|37|83|10|\n97|45|104|12|\n115|42|142|8|\n154|34|170|8|\n179|53|207|8|\n",
+    "lastKnownWriteTime": 1702489102,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1713991641740,
+    "read_only": false,
+    "read_only_alternatives": []
+}

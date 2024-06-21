@@ -1,0 +1,5 @@
+"0","WrightData_LF <-read.csv(""/Users/kgates/Library/CloudStorage/GoogleDrive-katie.gates@gmail.com/My Drive/gimme workshop materials/Data/Wright/Daily Diary Long Form reduce.csv"",  header = TRUE)
+"
+"2","Error in read.table(file = file, header = header, sep = sep, quote = quote,  : 
+  no lines available in input
+"

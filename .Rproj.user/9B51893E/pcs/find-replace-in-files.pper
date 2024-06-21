@@ -1,0 +1,17 @@
+{
+    "dialog-state": {
+        "query": "get.edgelist",
+        "path": "",
+        "regex": false,
+        "caseSensitive": false,
+        "wholeWord": false,
+        "filePatterns": [],
+        "useGitGrep": true,
+        "excludeGitIgnore": true,
+        "excludeFilePatterns": [],
+        "resultsCount": 0,
+        "errorCount": 0,
+        "replaceErrors": "",
+        "projectRelative": true
+    }
+}

@@ -4,7 +4,7 @@
 \alias{final.org}
 \title{Wrapup, create output files.}
 \usage{
-final.org(dat, grp, sub, sub_spec, diagnos = FALSE, store)
+final.org(dat, grp, sub, sub_spec, diagnos = FALSE, store, confirm_subgroup)
 }
 \arguments{
 \item{dat}{A list containing information created in setup().}

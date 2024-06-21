@@ -1,0 +1,19 @@
+require(devtools)
+install_github("GatesLab/gimme/gimme")
+
+library(tools)
+filename <- file_path_sans_ext(list.files(path = "~/Downloads/T All 30", full.names = FALSE))
+subgroup <- c(2,2,2,2,1,1,1,1,1,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1,2,1,1,2,1)
+confirm_dataframe <- data.frame(filename, subgroup)
+confirm_dataframe
+
+output <- gimme(data = "~/Downloads/T All 30", 
+                out = "~/Downloads/T All 30 output", 
+                sep = ",", 
+                header = TRUE, 
+                subgroup = TRUE, 
+                confirm_subgroup = confirm_dataframe, 
+                groupcutoff = .75, 
+                subcutoff = .75)
+
+#dataframe <- read.csv("/Users/kgates/Downloads/T All 30/627.csv")

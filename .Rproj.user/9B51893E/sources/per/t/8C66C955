@@ -1,0 +1,26 @@
+{
+    "id": "8C66C955",
+    "path": "~/Dropbox/GitHub/gimme/R/get.params.R",
+    "project_path": "R/get.params.R",
+    "type": "r_source",
+    "hash": "1138784034",
+    "contents": "",
+    "dirty": false,
+    "created": 1718737655909.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "42,4",
+        "scrollLine": "35"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1718738427,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1718742027021,
+    "read_only": false,
+    "read_only_alternatives": []
+}

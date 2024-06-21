@@ -1,0 +1,26 @@
+{
+    "id": "6FFF01EA",
+    "path": "~/Dropbox/GitHub/gimme/gimme/R/prune.paths.R",
+    "project_path": "gimme/R/prune.paths.R",
+    "type": "r_source",
+    "hash": "1636395846",
+    "contents": "",
+    "dirty": false,
+    "created": 1713991704155.0,
+    "source_on_save": false,
+    "relative_order": 9,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "141,5",
+        "scrollLine": "0"
+    },
+    "folds": "55|33|92|6|\n57|35|64|8|\n64|16|71|8|\n78|16|90|8|\n",
+    "lastKnownWriteTime": 1702489102,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1713992694638,
+    "read_only": false,
+    "read_only_alternatives": []
+}

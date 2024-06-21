@@ -1,0 +1,17 @@
+{
+    "dialog-state": {
+        "query": "lavInspect",
+        "path": "",
+        "regex": false,
+        "caseSensitive": true,
+        "wholeWord": false,
+        "filePatterns": [],
+        "useGitGrep": true,
+        "excludeGitIgnore": false,
+        "excludeFilePatterns": [],
+        "resultsCount": 17,
+        "errorCount": 0,
+        "replaceErrors": "",
+        "projectRelative": true
+    }
+}

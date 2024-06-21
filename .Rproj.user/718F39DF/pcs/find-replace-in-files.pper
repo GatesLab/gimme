@@ -1,0 +1,17 @@
+{
+    "dialog-state": {
+        "query": "Betasstd",
+        "path": "",
+        "regex": false,
+        "caseSensitive": false,
+        "wholeWord": false,
+        "filePatterns": [],
+        "useGitGrep": true,
+        "excludeGitIgnore": true,
+        "excludeFilePatterns": [],
+        "resultsCount": 1,
+        "errorCount": 0,
+        "replaceErrors": "",
+        "projectRelative": true
+    }
+}

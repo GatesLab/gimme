@@ -1,0 +1,39 @@
+library(lavaan)
+library(qgraph)
+library(igraph)
+
+data             = ts 
+out              = NULL 
+sep              = NULL 
+header           = NULL 
+ar               = TRUE 
+plot             = TRUE 
+subgroup         = FALSE 
+sub_feature      = "lag & contemp" 
+sub_method       = "Walktrap" 
+sub_sim_thresh   = "lowest"  
+confirm_subgroup = NULL 
+paths            = NULL 
+exogenous        = NULL 
+outcome          = NULL 
+conv_vars        = NULL 
+conv_length      = 16  
+conv_interval    = 1  
+mult_vars        = NULL 
+mean_center_mult = FALSE 
+standardize      = FALSE 
+groupcutoff      = .75 
+subcutoff        = .75 
+diagnos          = FALSE 
+ms_allow         = FALSE 
+ms_tol           = 1e-5 
+lv_model         = NULL  
+lv_estimator     = "miiv"              
+lv_scores        = "regression"        
+lv_miiv_scaling  = "first.indicator"   
+lv_final_estimator = "miiv" 
+lasso_model_crit = NULL  
+hybrid           = FALSE 
+VAR              = FALSE 
+dir_prop_cutoff  = 0 
+ordered          = NULL

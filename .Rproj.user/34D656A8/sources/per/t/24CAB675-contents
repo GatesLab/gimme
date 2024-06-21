@@ -1,0 +1,34 @@
+Package: gimme
+Title: Group Iterative Multiple Model Estimation
+Version: 0.7-17
+Date: 2024-05-21
+Author: Stephanie Lane [aut, trl],
+    Kathleen Gates [aut, cre, ccp],
+    Zachary Fisher [aut], 
+    Cara Arizmendi [aut],
+    Peter Molenaar [aut, ccp],
+    Edgar Merkle [ctb],
+    Michael Hallquist [ctb],
+    Hallie Pike [ctb], 
+    Teague Henry [ctb], 
+    Kelly Duffy [ctb], 
+    Lan Luo [ctb], 
+    Adriene Beltz [csp], 
+    Aidan Wright [csp],
+    Jonathan Park [ctb],
+    Sebastian Castro Alvarez [ctb]
+Maintainer: Kathleen M Gates <gateskm@email.unc.edu>
+Depends: R (>= 3.5.0)
+Imports: lavaan (>= 0.6-17), igraph (>= 1.0-0), qgraph, data.tree, MIIVsem(>= 0.5.4), imputeTS(>= 3.0), nloptr, graphics, stats, MASS, tseries
+Description: Data-driven approach for arriving at person-specific time series models. The method first identifies which relations replicate across the majority of individuals to detect signal from noise. These group-level relations are then used as a foundation for starting the search for person-specific (or individual-level) relations. See Gates & Molenaar (2012) <doi:10.1016/j.neuroimage.2012.06.026>. 
+License: GPL-2
+LazyData: true
+URL: https://github.com/GatesLab/gimme/, https://tarheels.live/gimme/tutorials/
+BugReports: https://github.com/GatesLab/gimme/issues
+ByteCompile: true
+RoxygenNote: 7.2.3
+NeedsCompilation: no
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Encoding: UTF-8

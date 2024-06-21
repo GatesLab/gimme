@@ -1,0 +1,28 @@
+{
+    "id": "82E02AA4",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1713990405448.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "id": "72981295d2964525b5fe2407fe833654",
+        "name": "store$status",
+        "title": "store$status",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 140410591838218,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1713990405448,
+    "read_only": false,
+    "read_only_alternatives": []
+}

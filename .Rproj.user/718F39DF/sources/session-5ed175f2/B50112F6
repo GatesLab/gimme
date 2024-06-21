@@ -1,0 +1,26 @@
+{
+    "id": "B50112F6",
+    "path": "~/Dropbox/GitHub/gimme/R/gimme.R",
+    "project_path": "R/gimme.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1718826364875.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "615,1",
+        "scrollLine": "593"
+    },
+    "folds": "597|27|605|4|\n",
+    "lastKnownWriteTime": 1709832410,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1718912936361,
+    "read_only": false,
+    "read_only_alternatives": []
+}

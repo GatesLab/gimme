@@ -1,0 +1,42 @@
+listoffiles <- list.files("~/Downloads/ptsd_data 2")
+
+ptsd_master <- list()
+for (p in 1:length(listoffiles)){
+  ptsd_master[[p]] <- read.csv(paste0("~/Downloads/ptsd_data 2/", listoffiles[p]), header = TRUE)
+}
+library(dplyr)
+ptsd_mean_avo = lapply(ptsd_master, function(x)
+  x %>%  mutate(neutral = mean.Neutral*10,
+                happy = mean.Happy*100,
+                sad = mean.Sad*100,
+                angry = mean.Angry*100,
+                surprised = mean.Surprised*100,
+                scared = mean.Scared*100,
+                disgusted = mean.Disgusted*100,
+                arousal = mean.Arousal*10,
+                edist = mean.Edistance,
+                avoidant = PCL_AVO
+  ) %>%
+    select(neutral:avoidant,
+           #id
+    ))
+
+#no variance
+ptsd_mean_avo = ptsd_mean_avo[-c(10,14,17,89)]
+##bad models
+ptsd_mean_avo = ptsd_mean_avo[-c(12,48,49,51,52,54,67,78)]
+
+# no variance in Avo aside from NA
+ptsd_mean_avo = ptsd_mean_avo[-c(1,63)]
+
+
+paths_list = 'arousal ~~ edist'
+
+output = gimme(  
+  data = ptsd_mean_avo,  
+  out = "~/filepath",  
+  paths = paths_list,  
+  standardize = TRUE,  
+  groupcutoff = .51,  
+  plot = TRUE,  
+  VAR = T)

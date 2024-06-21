@@ -1,0 +1,50 @@
+###Prep data from:
+### https://github.com/jmbh/EmotionTimeSeries/blob/master/DataClean/Wright2017/
+
+library(dplyr)
+
+tsData   <-readRDS("/Users/kgates/Library/CloudStorage/GoogleDrive-katie.gates@gmail.com/My Drive/Classes/compstat/Spring 2024 Undergrad/Assignments/Final Projects/data_Wright2017.RDS")
+btwnData <- readRDS("/Users/kgates/Library/CloudStorage/GoogleDrive-katie.gates@gmail.com/My Drive/Classes/compstat/Spring 2024 Undergrad/Assignments/Final Projects/data_Wright2017_between.RDS")
+
+colnames(tsData)
+
+tsData$na <- with(tsData, (Sad + Blue + Downhearted + Loathing + Disgusted + Upset ))
+
+tsData$energy <- with(tsData, (Active + Alert))
+
+tsData$pa <- with(tsData, (Excited + Inspired + Interested + Proud + Strong + Enthusiastic))
+
+tsData$hostile <- with(tsData, (Hostile + Irritable + Angry))
+
+tsData$nervous <- with(tsData, (Nervous + Afraid + Distressed + Scared))
+
+tsData$physDistress <- with(tsData, (Jittery + Shaky + Irritable))
+
+tsDataSub <- tsData %>%
+  select(subj_id, na, energy, pa, hostile, nervous)
+
+tsDataList <-  split(tsDataSub,tsDataSub$subj_id)
+
+for (p in 1:length(tsDataList))
+  tsDataList[[p]] <- tsDataList[[p]][,-1]
+
+names(tsDataList) <- paste0("person", names(tsDataList))
+
+# constant variables
+tsDataList <- tsDataList[-116]
+tsDataList <- tsDataList[-211]
+
+# fewer than 30 timepoints 
+tsDataList<-tsDataList[lapply(1:length(tsDataList), function(x) length(complete.cases(tsDataList[[x]])))>30]
+tsDataList <- tsDataList[-132]
+tsDataList <- tsDataList[-156]
+
+# low variability 
+tsDataList <- tsDataList[-54]
+tsDataList <- tsDataList[-13]
+
+library(gimme)
+outAidan <- gimme(data = tsDataList, 
+                  subgroup = TRUE, 
+                  standardize = TRUE,
+                  out = "~/Downloads/AidanOut")
