@@ -38,7 +38,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
     }
     
     # end creating wide summaryPathCounts ------------------------------------ #
-    
+    if (sum(is.na(summarize$coefs[,1])) < dat$n_subj) {
     b <- aggregate(count ~ lhs + op + rhs + color + label + param, data = summarize$summ, sum)
     b <- transform(b, xcount = ave(count, param, FUN = sum))
     # sorting by count and then dropping duplicated parameters
@@ -242,7 +242,7 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
     sub_plots_cov  = summarize$sub_plots_cov
     sub_counts    = summarize$sub_counts
     sub_counts_cov = summarize$sub_counts_cov
-  } else {
+  } } else {
     # 8.13.22 kad: Create df for paths set to 0 by user if applicable
     zero.paths.df <- NULL
     if(!is.null(dat$zero.paths)){
@@ -293,6 +293,29 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
     sub_counts    = NULL
     sub_counts_cov = NULL
   }
+  
+  ## If no one converged
+  if (!(sum(is.na(summarize$coefs[,1])) < dat$n_subj)) {
+    fits        <- as.data.frame(do.call(rbind, store$fits))
+    fits$file   <- rownames(fits)
+    fits$status <- do.call(rbind, store$status)
+    fits        <- subset(fits, select=c("file", colnames(fits[-which(colnames(fits) == "file")])))
+    
+    if (!is.null(dat$out)){
+      write.csv(fits, file.path(dat$out, "summaryFit.csv"), row.names = FALSE)
+    }
+    
+    indiv_paths    = NULL
+    samp_plot      = NULL
+    samp_plot_cov  = NULL
+    sub_plots      = NULL
+    sub_plots_cov  = NULL
+    sample_counts  = NULL
+    sample_counts_corr =    NULL
+    sub_counts     = NULL
+    sub_counts_cov = NULL
+    dx = NULL}
+  
   
   dx <- list()
   if(diagnos){

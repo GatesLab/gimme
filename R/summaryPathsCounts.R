@@ -21,7 +21,7 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
   coefs       <- do.call("rbind", store$coefs)
   sub_summ   <- list()
   
-  if(length(coefs[,1])>0){
+  if(sum(complete.cases(coefs[,1]))>0){ # skip everything if no one converged
     coefs$id    <- rep(names(store$coefs), sapply(store$coefs, nrow))
     coefs$param <- paste0(coefs$lhs, coefs$op, coefs$rhs)
     coefs <- coefs[!coefs$param %in% dat$nonsense_paths,] # Removes non-sense paths that occur when ar = FALSE or mult_vars is not null from output 
@@ -44,7 +44,6 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
     coefs$level[coefs$param %in% unique(unlist(store$ind$ind_paths))]  <- "ind"
     coefs$color[coefs$level == "group"] <- "black"
       coefs$color[coefs$level == "ind"]   <- "gray50"
-  }
   
   indiv_paths <- NULL
   samp_plot <- NULL
@@ -238,11 +237,12 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
     sub_paths <- NULL
     sub_plots_cov <- NULL
     sub_counts_cov <- NULL
+    
     summ <- transform(coefs, count = as.numeric(
       ave(param, param, FUN = length)))
-    summ <- subset(summ, !duplicated(param)) 
+    summ <- subset(summ, !duplicated(param))
   }
-  
+
   # combining and creating wide summaryPathCounts -------------------------- #
   summ$label <- ifelse(summ$level == "sub", 
                        paste0("subgroup", summ$mem),
@@ -255,6 +255,9 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec){
   a[is.na(a)] <- 0
   a$lhs <- recode.vars(a$lhs, dat$lvarnames, dat$varnames)
   a$rhs <- recode.vars(a$rhs, dat$lvarnames, dat$varnames)
+  } else {
+    a <- summ <- sub_plots <- sub_counts <- sub_plots_cov <- sub_counts_cov <- NULL
+  }
   
   res <- list(a = a, 
               summ = summ,

@@ -273,7 +273,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
   
   if (!converge | zero_se){
     if (!converge) status <- "nonconvergence"
-    if (sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0) status <- "computationally singular"
+    #if (sum(lavInspect(fit, "se")$beta, na.rm = TRUE) == 0) status <- "computationally singular"
     ind_fit   <- rep(NA, 11)
     ind_coefs <- matrix(NA, nrow = 1, ncol = 10)
     colnames(ind_coefs) <- c("lhs", "op", "rhs", "est", "est.std", "se", "z", "pvalue", "ci.lower", "ci.upper")
