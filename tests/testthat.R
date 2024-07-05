@@ -10,3 +10,5 @@
 # library(gimme)
 # 
 # test_check("gimme")
+
+load("/Users/kgates/Dropbox/GitHub/gimme/gimme/tests/testthat/rds/ex01_raw_data.RDS")
