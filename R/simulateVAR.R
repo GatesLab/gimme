@@ -61,20 +61,16 @@ simulateVAR <- function(A         = NULL,
   }
   
   if(is.null(A)){
-    A <- matrix(0, nrow = dim(PhiList[[1]])[1], ncol = dim(PhiList[[1]])[2])
-  }
+    stop(paste0("ERROR: No data generating matrix provided for A",
+                " Please provide a matrix or list of matrices. They can be zero."))  }
   
   if(is.list(A)) {
     AList   <- A
     PhiList <- Phi
     PsiList <- Psi
     if(is.null(subAssign)){
-      writeLines("NOTICE: Multiple patterns provided with no subgroup assignments",
-                 "By default subgroup assignments generated with equal prob. for each ind.")
-      nSubs <- length(A)
-      subAssign <- matrix(,N, 1)
-      for (ind in 1:N)
-        subAssign[ind] <- sample((1:nSubs),1)
+      stop(paste0("ERROR: Multiple patterns provided with no subgroup assignments",
+                  " Please provide subgroup assignments in subAssign argument."))
     }
     if(length(is.list(A)) != length(is.list(Phi))) 
       stop(paste0("ERROR: Different numbers of matrices provided for A and Phi.",
