@@ -157,6 +157,8 @@
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
+#' @param group_correct Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
+#' "Bonferoni Paths" corrects according to the number of eligable paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
 #' @details
 #'  Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used. 
 #' @references Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm
@@ -222,7 +224,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               hybrid           = FALSE,
                               VAR              = FALSE,
                               dir_prop_cutoff  = 0,
-                              ordered          = NULL){          
+                              ordered          = NULL,
+                              group_correct    = "Bonferoni Group"){          
   
   # satisfy CRAN checks
   ind     = NULL
@@ -385,7 +388,18 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
   
-
+  if(group_correct == "Bonferoni Group"){
+    grp_cutoff <- qchisq(1-.05/dat$n_subj, 1)
+    z_cutoff <- abs(qnorm(.025/dat$n_subj))
+  }
+  if(is.numeric(group_correct)){
+    grp_cutoff <- qchisq(1-group_correct, 1)
+    z_cutoff <- abs(qnorm(group_correct/2))
+  }
+  if(group_correct == "Bonferoni Paths"){
+    grp_cutoff <- qchisq(1-.05/length(elig_paths), 1)
+    z_cutoff <- abs(qnorm(.025/length(elig_paths)))
+  }
 
   grp_hist  <- search.paths(
     base_syntax    = dat$syntax,
@@ -396,7 +410,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     elig_paths     = elig_paths, 
     prop_cutoff    = dat$group_cutoff,
     n_subj         = dat$n_subj,
-    chisq_cutoff   = qchisq(1-.05/dat$n_subj, 1),
+    chisq_cutoff   = grp_cutoff,
     subgroup_stage = FALSE,
     ms_allow       = ms_allow,
     ms_tol         = ms_tol, 
@@ -466,7 +480,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         n_subj         = dat$n_subj,
         prop_cutoff    = dat$group_cutoff,
         elig_paths     = grp[[i]]$group_paths,
-        subgroup_stage = FALSE
+        subgroup_stage = FALSE,
+        test_cutoff    = z_cutoff
       )
       
     })
@@ -522,7 +537,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
         ms_allow = FALSE,
         sub_sim_thresh = sub_sim_thresh,
         hybrid, 
-        dir_prop_cutoff = dir_prop_cutoff
+        dir_prop_cutoff = dir_prop_cutoff,
+        chisq_cutoff   = grp_cutoff,
+        group_correct = group_correct
       )
     })
 
@@ -587,12 +604,13 @@ gimmeSEM <- gimme <- function(data             = NULL,
   # If this is classic gimme...
   #-------------------------------------------------------------#
   if(!ms_allow){
-  
+    ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
+    ind_z_cutoff <- abs(qnorm(.025/length(elig_paths)))
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
-      store <- indiv.search(dat, grp[[1]], ind[[1]])
+      store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff)
     } else {
-      store <- indiv.search(dat, grp[[1]], ind[1])
+      store <- indiv.search(dat, grp[[1]], ind[1], ind_cutoff, ind_z_cutoff)
     }
     
     if(!is.null(lv_model)){
