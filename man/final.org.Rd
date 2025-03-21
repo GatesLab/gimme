@@ -4,7 +4,17 @@
 \alias{final.org}
 \title{Wrapup, create output files.}
 \usage{
-final.org(dat, grp, sub, sub_spec, diagnos = FALSE, store, confirm_subgroup)
+final.org(
+  dat,
+  grp,
+  sub,
+  sub_spec,
+  diagnos = FALSE,
+  store,
+  confirm_subgroup,
+  elig_paths = NULL,
+  ind = NULL
+)
 }
 \arguments{
 \item{dat}{A list containing information created in setup().}
@@ -17,6 +27,10 @@ indSEM.}
 \item{sub_spec}{A list containing information specific to each subgroup.}
 
 \item{store}{A list containing output from indiv.search().}
+
+\item{elig_paths}{if subgroup = TRUE, eligable paths for potential individual-level search}
+
+\item{ind}{if subgroup = TRUE, ind list for potential individual-level search}
 }
 \value{
 Aggregated information, such as counts, levels, and plots.

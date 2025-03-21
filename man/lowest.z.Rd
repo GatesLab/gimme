@@ -4,7 +4,7 @@
 \alias{lowest.z}
 \title{Identifies lowest z value from list of z values.}
 \usage{
-lowest.z(z_list, elig_paths, prop_cutoff, n_subj)
+lowest.z(z_list, elig_paths, prop_cutoff, n_subj, test_cutoff)
 }
 \arguments{
 \item{z_list}{A list of z values across individuals.}
@@ -20,6 +20,8 @@ at the individual-level.}
 in the group stage, n_subj equals the number of subjects. If in the subgroup
 stage, n_subj equals the number of individuals in a given subgroup. At the 
 individual stage, n_subj = 1.}
+
+\item{test_cutoff}{Z score cutoff for significance testing.}
 }
 \value{
 Returns name of parameter associated with lowest z. If no z meets 

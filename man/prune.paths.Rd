@@ -13,7 +13,8 @@ prune.paths(
   n_subj,
   prop_cutoff,
   elig_paths,
-  subgroup_stage = FALSE
+  subgroup_stage = FALSE,
+  test_cutoff
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ gimme is allowed to drop from the model at a given stage.}
 
 \item{subgroup_stage}{Logical. Only present in order to instruct gimme
 what message to print to console using writeLines.}
+
+\item{test_cutoff}{Z score cutoff for significance testing.}
 }
 \value{
 Returns updated values of n_paths and add_syntax.

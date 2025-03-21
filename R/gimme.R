@@ -38,7 +38,8 @@
 #'          hybrid = FALSE,
 #'          VAR = FALSE,
 #'          dir_prop_cutoff =0,
-#'          ordered = NULL)
+#'          ordered = NULL,
+#'          group_correct = "Bonferoni Group")
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -158,7 +159,7 @@
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
 #' @param group_correct Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
-#' "Bonferoni Paths" corrects according to the number of eligable paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
+#' "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
 #' @details
 #'  Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used. 
 #' @references Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm
@@ -226,6 +227,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               dir_prop_cutoff  = 0,
                               ordered          = NULL,
                               group_correct    = "Bonferoni Group"){          
+  arguments <- as.list(sys.frame(which = 1))
+  if(!is.null(out)){
+    writeArg <- arguments
+    write.csv(unlist(writeArg), 
+              file.path(paste0(out, "/arguments.csv")))
+  }
   
   # satisfy CRAN checks
   ind     = NULL
@@ -233,7 +240,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
   lvarnames = NULL
   sub_membership = NULL
   
-  arguments <- as.list(sys.frame(which = 1))
 
   setupConvolve = NULL
   ts = NULL
@@ -249,6 +255,14 @@ gimmeSEM <- gimme <- function(data             = NULL,
     writeLines("gimme WARNING: Multiple solutions are not likely when ar=TRUE.",
                 " We recommend setting ar to FALSE if using ms_allow.")
   }
+  
+  # Warning for plot when Variables = 3
+  if(plot == TRUE && length(data[[1]][1,] < 4)){
+    plot = FALSE
+    writeLines("gimme WARNING: plot=TRUE changed to plot=FALSE.",
+               " Errors in plotting occur with fewer than 4 nodes.")
+  }
+    
   
   #Error check for hybrid
   if(hybrid & !ar){
@@ -339,11 +353,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        ordered              = ordered)
 
   
-  if(!is.null(out)){
-    writeArg <- arguments
-    write.csv(unlist(writeArg), 
-              file.path(paste0(out, "/arguments.csv")))
-  }
+
   
   #Error Check for Confirm Subgroup Labels
   if(subgroup & !is.null(confirm_subgroup)){
@@ -623,6 +633,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
       )
     }
   
+    if(subgroup){
     # wrap-up and create output
     final <- final.org(dat,
                        grp = grp[[1]],
@@ -630,8 +641,19 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        sub_spec = sub_spec[[1]],
                        diagnos = diagnos,
                        store,
-                       confirm_subgroup)
-    
+                       confirm_subgroup,
+                       elig_paths, 
+                       ind[[1]])
+    } else {
+      final <- final.org(dat,
+                         grp = grp[[1]],
+                         sub = sub[[1]],
+                         sub_spec = sub_spec[[1]],
+                         diagnos = diagnos,
+                         store,
+                         confirm_subgroup)
+    }
+      
       writeLines("gimme finished running normally")
       if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
       if (subgroup == TRUE) {

@@ -4,9 +4,11 @@
 #' indSEM.
 #' @param ind A list containing individual- and (potentially) subgroup-level
 #' information.
+#' @param ind_cutoff Chi square cutoff, .05 level adjusted for multiple tests.
+#' @param ind_z_cutoff  Z score cutoff, .05 level adjusted for multiple tests. 
 #' @return Lists associated with coefficients, fit indices, etc.
 #' @keywords internal 
-indiv.search <- function(dat, grp, ind, ind_cutoff = .99, ind_z_cutoff = 1.96){
+indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
   
   if (!dat$agg){
     ind$ind_paths   <-  vector("list", dat$n_subj)

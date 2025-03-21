@@ -9,6 +9,7 @@
 #' in the group stage, n_subj equals the number of subjects. If in the subgroup
 #' stage, n_subj equals the number of individuals in a given subgroup. At the 
 #' individual stage, n_subj = 1.
+#' @param test_cutoff Z score cutoff for significance testing. 
 #' @return Returns name of parameter associated with lowest z. If no z meets 
 #' the criteria, returns NA.
 #' @keywords internal 

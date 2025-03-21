@@ -39,7 +39,8 @@ gimmeSEM(data        = NULL,
          hybrid = FALSE,
          VAR = FALSE,
          dir_prop_cutoff =0,
-         ordered = NULL)
+         ordered = NULL,
+         group_correct = "Bonferoni Group")
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
@@ -194,6 +195,9 @@ search space.  Defaults to FALSE.}
 \item{dir_prop_cutoff}{Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.}
 
 \item{ordered}{A character vector containing the names of all ordered categorical variables in the model.}
+
+\item{group_correct}{Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
+"Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.}
 }
 \description{
 This function identifies structural equation models for each

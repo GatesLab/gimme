@@ -15,7 +15,9 @@ subgroupStage(
   ms_allow,
   sub_sim_thresh,
   hybrid,
-  dir_prop_cutoff
+  dir_prop_cutoff,
+  chisq_cutoff,
+  group_correct
 )
 }
 \description{

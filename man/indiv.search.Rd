@@ -4,7 +4,7 @@
 \alias{indiv.search}
 \title{Individual-level search. Used in gimmeSEM, aggSEM, indSEM.}
 \usage{
-indiv.search(dat, grp, ind)
+indiv.search(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96)
 }
 \arguments{
 \item{dat}{A list containing information created in setup().}
@@ -14,6 +14,10 @@ indSEM.}
 
 \item{ind}{A list containing individual- and (potentially) subgroup-level
 information.}
+
+\item{ind_cutoff}{Chi square cutoff, .05 level adjusted for multiple tests.}
+
+\item{ind_z_cutoff}{Z score cutoff, .05 level adjusted for multiple tests.}
 }
 \value{
 Lists associated with coefficients, fit indices, etc.
