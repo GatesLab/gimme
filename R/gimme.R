@@ -228,11 +228,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               ordered          = NULL,
                               group_correct    = "Bonferoni Group"){          
   arguments <- as.list(sys.frame(which = 1))
-  if(!is.null(out)){
-    writeArg <- arguments
-    write.csv(unlist(writeArg), 
-              file.path(paste0(out, "/arguments.csv")))
-  }
   
   # satisfy CRAN checks
   ind     = NULL
@@ -258,9 +253,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
   
   # Warning for plot when Variables = 3
   if(plot == TRUE && length(data[[1]][1,] < 4)){
-    plot = FALSE
     writeLines("gimme WARNING: plot=TRUE changed to plot=FALSE.",
                " Errors in plotting occur with fewer than 4 nodes.")
+    plot = FALSE
   }
     
   
@@ -353,7 +348,11 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        ordered              = ordered)
 
   
-
+  if(!is.null(out)){
+    writeArg <- arguments
+    write.csv(unlist(writeArg), 
+              file.path(paste0(out, "/arguments.csv")))
+  }
   
   #Error Check for Confirm Subgroup Labels
   if(subgroup & !is.null(confirm_subgroup)){
@@ -377,7 +376,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
-  # Group Search Stage
+  #### Group Search Stage #####
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
@@ -466,7 +465,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
-  # Group Prune Stage
+  ##### Group Prune Stage ######
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
@@ -531,7 +530,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
 
   
   #-----------------------------------------------------------#
-  # Subgroup stage.
+  #### Subgroup stage.######
   #-----------------------------------------------------------#
   if (subgroup){
   
@@ -609,10 +608,13 @@ gimmeSEM <- gimme <- function(data             = NULL,
     
   }
   
-  
+  #-----------------------------------------------------------#
+  ### Individual-level stage ######
+  #-----------------------------------------------------------#
   #-------------------------------------------------------------#
   # If this is classic gimme...
   #-------------------------------------------------------------#
+  
   if(!ms_allow){
     ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
     ind_z_cutoff <- abs(qnorm(.025/length(elig_paths)))
@@ -633,8 +635,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
       )
     }
   
-    if(subgroup){
-    # wrap-up and create output
     final <- final.org(dat,
                        grp = grp[[1]],
                        sub = sub[[1]],
@@ -642,17 +642,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        diagnos = diagnos,
                        store,
                        confirm_subgroup,
-                       elig_paths, 
-                       ind[[1]])
-    } else {
-      final <- final.org(dat,
-                         grp = grp[[1]],
-                         sub = sub[[1]],
-                         sub_spec = sub_spec[[1]],
-                         diagnos = diagnos,
-                         store,
-                         confirm_subgroup)
-    }
+                       elig_paths)
+
       
       writeLines("gimme finished running normally")
       if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
@@ -703,7 +694,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     
   } else {
 
-
+    ### MS GIMME ######
     #-----------------------------------------------#
     # GIMME-MS: Individual level search             #
     #-----------------------------------------------#
