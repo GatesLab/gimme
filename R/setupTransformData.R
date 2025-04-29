@@ -281,6 +281,15 @@ setupTransformData <- function(ts_list       = NULL,
   }
   
   
+  if (any(is.na(constantCols))){
+    stop(paste0('gimme ERROR: at least one data file contains NA rows for all but one row or constant values. ',
+                'Please fix or remove files listed below before continuing. \n', 
+                paste0(names(ts_list)[which(is.na(constantCols))], collapse = "\n")))
+  } else if (any(constantCols == TRUE)){
+    stop(paste0('gimme ERROR: at least one data file contains a column with constant values. ',
+                'Please fix or remove files listed below before continuing. \n', 
+                paste0(names(ts_list)[constantCols == TRUE], collapse = "\n")))
+  }
   if (n_subjects != 1) {
     if (sd(cols) != 0) {
       stop(paste0('gimme ERROR: not all data files have the same number of columns. ',
@@ -296,15 +305,6 @@ setupTransformData <- function(ts_list       = NULL,
       stop(paste0('gimme ERROR: at least one data file contains a column with all NA. ',
                   'Please fix or remove file before continuing.'))
     }  
-    if (any(is.na(constantCols))){
-      stop(paste0('gimme ERROR: at least one data file contains NA rows for all but one row. ',
-                  'Please fix or remove files listed below before continuing. \n', 
-                  paste0(names(ts_list)[which(is.na(constantCols))], collapse = "\n")))
-    } else if (any(constantCols == TRUE)){
-      stop(paste0('gimme ERROR: at least one data file contains a column with constant values. ',
-                  'Please fix or remove files listed below before continuing. \n', 
-                  paste0(names(ts_list)[constantCols == TRUE], collapse = "\n")))
-    }
     
     if (any(largeVar == TRUE)){
       cat('gimme WARNING: at least one data file contains variables where the variance of one variable
