@@ -6,10 +6,9 @@
 #' @param sub_spec A list containing information specific to each subgroup.
 #' @param store A list containing output from indiv.search().
 #' @param elig_paths if subgroup = TRUE, eligable paths for potential individual-level search 
-#' @param ind if subgroup = TRUE, ind list for potential individual-level search
 #' @return Aggregated information, such as counts, levels, and plots.
 #' @keywords internal
-final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_subgroup, elig_paths = NULL, ind = NULL){
+final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_subgroup, elig_paths = NULL){
   
   ind = store$ind
   
@@ -23,34 +22,43 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
     
     ### If individual-level path now exists for >= subgroupcutoff, add to that subgroup
     if(dat$subgroup){
-      added_sub <- FALSE
-      for (p in 1:sub$n_subgroups){
-        submatrix <- summarize$summ[which(summarize$summ$level=='ind' & summarize$summ$mem ==p),]
-        add <- submatrix[which(submatrix$count/sub_spec[[p]]$n_sub_subj > dat$sub_cutoff), ]$param
-        if (length(add)>0) {
-          added_sub <- TRUE
-          for(t in 1:length(add)){
-               sub_spec[[p]]$sub_paths <- c(sub_spec[[2]]$sub_paths, add[p])
+      subsG1 <- which(table(sub$sub_mem$sub_membership)>1)
+      for (p in subsG1){
+        added_sub <- TRUE
+        while(added_sub == TRUE){
+          submatrix <- summarize$summ[which(summarize$summ$level=='ind' & summarize$summ$mem ==p),]
+          add <- submatrix[which(submatrix$count/sub_spec[[p]]$n_sub_subj > dat$sub_cutoff), ]$param
+           if (length(add)>0) {
+            added_sub <- TRUE
+            sub_spec[[p]]$sub_paths <- c(sub_spec[[p]]$sub_paths, add) 
+            id <- which(ind$sub_membership==p)
+            for (t in 1:length(id))
+              ind$sub_paths[[id[t]]] <- sub_spec[[p]]$sub_paths
+            ind_cutoff <- qchisq(1 - .05 / length(elig_paths), 1)
+            ind_z_cutoff <- abs(qnorm(.025 / length(elig_paths)))
+            store <- indiv.search(dat, grp, ind, ind_cutoff, ind_z_cutoff)
+            summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
+          } else {
+            added_sub <- FALSE
           }
         }
       }
-      if (added_sub) {
-        ind_cutoff <- qchisq(1 - .05 / length(elig_paths), 1)
-        ind_z_cutoff <- abs(qnorm(.025 / length(elig_paths)))
-        store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff)
-        summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
-      }
     }
     
-    ### If individual-level path now exists for >= groupcutoff, rerun individual search with it estimated for all
-    if(any(summarize$a$count.ind/dat$n_subj >= dat$group_cutoff)){
-      loc <- which(summarize$a$count.ind/dat$n_subj >= dat$group_cutoff)
+    ### If any path now exists for >= groupcutoff, rerun individual search with it estimated for all
+    if(any((summarize$a$count.ind + summarize$a$count.subgroup)/dat$n_subj >= dat$group_cutoff)){
+      loc <- which((summarize$a$count.ind + summarize$a$count.subgroup)/dat$n_subj >= dat$group_cutoff)
       grp$group_paths <-c(grp$group_paths, paste0(summarize$a$lhs[loc],summarize$a$op[loc], summarize$a$rhs[loc]))
-      if(dat$subgroup){
-        store <- indiv.search(dat, grp, ind[[1]])
-      } else {
-        store <- indiv.search(dat, grp, ind[1])
+      for (p in 1:length(sub_spec)){
+        sub_spec[[p]]$sub_paths <- sub_spec[[p]]$sub_paths[-which(sub_spec[[p]]$sub_paths %in% grp$group_paths)]
+        sub_spec[[p]]$n_sub_paths <- length(sub_spec[[p]]$sub_paths)
+        id <- which(ind$sub_membership==p)
+        for (t in 1:length(id))
+          ind$sub_paths[[id[t]]] <- sub_spec[[p]]$sub_paths
       }
+      ind_cutoff <- qchisq(1 - .05 / length(elig_paths), 1)
+      ind_z_cutoff <- abs(qnorm(.025 / length(elig_paths)))
+      store <- indiv.search(dat, grp, ind, ind_cutoff, ind_z_cutoff)
       ind = store$ind
       summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
     }
