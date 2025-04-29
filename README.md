@@ -6,7 +6,7 @@ The GIMME algorithm is a continually maintained R package, gimme.
 
 For up-to-date tutorials for both new and old options, [check out our online *gimme* tutorials](https://tarheels.live/gimme/tutorials/) and [CRAN documentation](hhttps://cran.r-project.org/package=gimme) . 
 
-Program developers are invited to submit changes here at the GitHub repository.
+Developers or those who fixed a bug are invited to submit changes here at the GitHub repository.
 
 **The Basics**
 ==============
@@ -26,6 +26,8 @@ Program developers are invited to submit changes here at the GitHub repository.
 -   Works well with as little as 3 or as many as 20 variables.
 
 -   Can be freely downloaded by installing the package "gimme" in R.
+
+-   Requires at least T = 30 time points per person / per variable, with T = 60 and above recommended. 
 
 **Running GIMME**
 =================

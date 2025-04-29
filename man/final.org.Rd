@@ -12,8 +12,7 @@ final.org(
   diagnos = FALSE,
   store,
   confirm_subgroup,
-  elig_paths = NULL,
-  ind = NULL
+  elig_paths = NULL
 )
 }
 \arguments{
@@ -29,8 +28,6 @@ indSEM.}
 \item{store}{A list containing output from indiv.search().}
 
 \item{elig_paths}{if subgroup = TRUE, eligable paths for potential individual-level search}
-
-\item{ind}{if subgroup = TRUE, ind list for potential individual-level search}
 }
 \value{
 Aggregated information, such as counts, levels, and plots.
