@@ -282,7 +282,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
   # Warning for plot when Variables = 3
-  if(plot == TRUE && length(data[[1]][1,] < 4)){
+  if(plot == TRUE && (length(data[[1]][1,]) < 4)){
     writeLines("gimme WARNING: plot=TRUE changed to plot=FALSE.",
                " Errors in plotting occur with fewer than 4 nodes.")
     plot = FALSE
@@ -379,7 +379,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
 
   
   if(!is.null(out)){
-    writeArg <- arguments
+    writeArg <- arguments[-1]
     write.csv(unlist(writeArg), 
               file.path(paste0(out, "/arguments.csv")))
   }
@@ -577,7 +577,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
         sub_sim_thresh = sub_sim_thresh,
         hybrid, 
         dir_prop_cutoff = dir_prop_cutoff,
-        chisq_cutoff   = grp_cutoff,
         group_correct = group_correct
       )
     })
