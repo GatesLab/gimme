@@ -11,7 +11,6 @@ subgroupStage <- function(dat,
                           sub_sim_thresh, 
                           hybrid,
                           dir_prop_cutoff,
-                          chisq_cutoff,
                           group_correct){
 # Satisfy CRAN checks
   sub_membership = NULL
@@ -19,7 +18,7 @@ subgroupStage <- function(dat,
     sub <- determine.subgroups(base_syntax  = c(dat$syntax, grp$group_paths),
                                data_list    = dat$ts_list,
                                n_subj       = dat$n_subj,
-                               chisq_cutoff = chisq_cutoff,
+                               chisq_cutoff = dat$chisq_cutoff_mi_epc,
                                file_order   = dat$file_order,
                                elig_paths   = c(elig_paths, dat$fixed_paths),
                                confirm_subgroup = confirm_subgroup,
