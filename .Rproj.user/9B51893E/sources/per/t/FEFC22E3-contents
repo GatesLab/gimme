@@ -38,7 +38,8 @@
 #'          hybrid = FALSE,
 #'          VAR = FALSE,
 #'          dir_prop_cutoff =0,
-#'          ordered = NULL)
+#'          ordered = NULL,
+#'          group_correct = "Bonferoni Group")
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -157,6 +158,8 @@
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
+#' @param group_correct Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
+#' "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
 #' @details
 #'  Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used. 
 #' @references Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm
@@ -169,6 +172,36 @@
 #' with Multiple Solutions in Structural Vector Autoregressive Models, 
 #' Multivariate Behavioral Research, 51:2-3, 357-373.
 #' @author Zachary Fisher, Kathleen Gates, & Stephanie Lane
+#' @return A list with the following components: 
+#' \itemize{
+#' \item{data: list of data used in analyses. Contains lagged variables and any data manipulations done within gimme.}
+#' \item{path_est_mats: N matrices of individual-level coefficient estimates for directed paths.}
+#' \item{varnames: Variable names in order of data.} 
+#' \item{n_vars_total: total number of variables.}
+#' \item{n_lagged: total nubmer of lagged varaibles.}
+#' \item{n_endog: total number of endogenous variables. }
+#' \item{fit: Final fit indices, R-squared for each variable, convergence status, subgroup membership (if applicable), and modularity (if applicable).}
+#' \item{path_se_est: Matrix of all individuals' unstandardized & standardized coefficient estimates, standard errors, level of each relation (e.g., "group"), and subgroup membership.}
+#' \item{plots: If number of variables >3, N individual-level plots of directed lagged and contemporaneous relations among variables. Red = high / hot / positive values; Blue = low / cold / negative values.  Line width corresponds with absolute value of beta estimate. Use plot() function.}  
+#' \item{plots_cov: If number of variables >3 and hybrid = TRUE or VAR = TRUE, N plots of contemporaneous covariances among residuals.}
+#' \item{group_plot_paths: If number of variables >3, aggregated plot of directed relations. Black = group-level, Green = subgroup level, Grey = individual level. Line width corresponds with percent of individuals who have that path estimated.} 
+#' \item{group_plot_cov: If number of variables >3 and hybrid = TRUE or VAR = TRUE, aggregated plot of covariances among residuals.} 
+#' \item{sub_plots_paths: Aggregated directed subgroup plots for K subgroups if applicable.}
+#' \item{sub_plots_cov: Aggregated covariance subgroup plots for K subgroups if applicable.}
+#' \item{path_counts: Matrix containing counts of the number of people for whom a given directed relation is estimated.}
+#' \item{path_counts_sub: K matrices containing counts of the number of people within that subgroup for whom a given directed relation is estimated.}
+#' \item{cov_counts: Matrix containing counts of the number of people for whom a given covariance relation is estimated.}
+#' \item{cov_counts_sub: K matrices containing counts of the number of people within that subgroup for whom a given covariance relation is estimated.}
+#' \item{vcov: N matrices containing the estimated covariance matrix of paramaters of interest in gimme.}
+#' \item{vcovfull: N matrices of the full estimated covariance matrix of parameters.}
+#' \item{psi: N standardized residual covariance matrices.}  
+#' \item{ps_unstd: N unstandardied residual covariance matrices.}
+#' \item{sim_matrix: If subgroup = TRUE, similarity count matrix of how many edges are in commong among each pair of individuals after the group-level search (also considers individual-level paths that may be added later via the EPC).}
+#' \item{syntax: N individual slices containing lavaan-style syntax.}
+#' \item{lvgimme: If provided, the latent variable model syntax (also included in the above).}
+#' \item{rf_est: If variables to convolve are provided in conv_vars, the N response function estimates for individuals.}
+#' \item{arguments: List of arguments provided by the user.}
+#' }
 #' @examples
 #'  \dontrun{
 #' paths <- 'V2 ~ V1
@@ -222,7 +255,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               hybrid           = FALSE,
                               VAR              = FALSE,
                               dir_prop_cutoff  = 0,
-                              ordered          = NULL){          
+                              ordered          = NULL,
+                              group_correct    = "Bonferoni Group"){          
+  arguments <- as.list(sys.frame(which = 1))
   
   # satisfy CRAN checks
   ind     = NULL
@@ -230,7 +265,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
   lvarnames = NULL
   sub_membership = NULL
   
-  arguments <- as.list(sys.frame(which = 1))
 
   setupConvolve = NULL
   ts = NULL
@@ -246,6 +280,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     writeLines("gimme WARNING: Multiple solutions are not likely when ar=TRUE.",
                 " We recommend setting ar to FALSE if using ms_allow.")
   }
+    
   
   #Error check for hybrid
   if(hybrid & !ar){
@@ -337,7 +372,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
 
   
   if(!is.null(out)){
-    writeArg <- arguments
+    writeArg <- arguments[-1]
     write.csv(unlist(writeArg), 
               file.path(paste0(out, "/arguments.csv")))
   }
@@ -364,7 +399,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
-  # Group Search Stage
+  #### Group Search Stage #####
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
@@ -385,7 +420,18 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
   
-
+  if(group_correct == "Bonferoni Group"){
+    grp_cutoff <- qchisq(1-.05/dat$n_subj, 1)
+    z_cutoff <- abs(qnorm(.025/dat$n_subj))
+  }
+  if(is.numeric(group_correct)){
+    grp_cutoff <- qchisq(1-group_correct, 1)
+    z_cutoff <- abs(qnorm(group_correct/2))
+  }
+  if(group_correct == "Bonferoni Paths"){
+    grp_cutoff <- qchisq(1-.05/length(elig_paths), 1)
+    z_cutoff <- abs(qnorm(.025/length(elig_paths)))
+  }
 
   grp_hist  <- search.paths(
     base_syntax    = dat$syntax,
@@ -396,7 +442,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     elig_paths     = elig_paths, 
     prop_cutoff    = dat$group_cutoff,
     n_subj         = dat$n_subj,
-    chisq_cutoff   = qchisq(1-.05/dat$n_subj, 1),
+    chisq_cutoff   = grp_cutoff,
     subgroup_stage = FALSE,
     ms_allow       = ms_allow,
     ms_tol         = ms_tol, 
@@ -442,7 +488,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
-  # Group Prune Stage
+  ##### Group Prune Stage ######
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
   #-------------------------------------------------------------#
@@ -466,7 +512,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         n_subj         = dat$n_subj,
         prop_cutoff    = dat$group_cutoff,
         elig_paths     = grp[[i]]$group_paths,
-        subgroup_stage = FALSE
+        subgroup_stage = FALSE,
+        test_cutoff    = z_cutoff
       )
       
     })
@@ -506,7 +553,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
 
   
   #-----------------------------------------------------------#
-  # Subgroup stage.
+  #### Subgroup stage.######
   #-----------------------------------------------------------#
   if (subgroup){
   
@@ -522,7 +569,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         ms_allow = FALSE,
         sub_sim_thresh = sub_sim_thresh,
         hybrid, 
-        dir_prop_cutoff = dir_prop_cutoff
+        dir_prop_cutoff = dir_prop_cutoff,
+        group_correct = group_correct
       )
     })
 
@@ -582,17 +630,21 @@ gimmeSEM <- gimme <- function(data             = NULL,
     
   }
   
-  
+  #-----------------------------------------------------------#
+  ### Individual-level stage ######
+  #-----------------------------------------------------------#
   #-------------------------------------------------------------#
   # If this is classic gimme...
   #-------------------------------------------------------------#
-  if(!ms_allow){
   
+  if(!ms_allow){
+    ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
+    ind_z_cutoff <- abs(qnorm(.025/length(elig_paths)))
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
-      store <- indiv.search(dat, grp[[1]], ind[[1]])
+      store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff)
     } else {
-      store <- indiv.search(dat, grp[[1]], ind[1])
+      store <- indiv.search(dat, grp[[1]], ind[1], ind_cutoff, ind_z_cutoff)
     }
     
     if(!is.null(lv_model)){
@@ -605,15 +657,16 @@ gimmeSEM <- gimme <- function(data             = NULL,
       )
     }
   
-    # wrap-up and create output
     final <- final.org(dat,
                        grp = grp[[1]],
                        sub = sub[[1]],
                        sub_spec = sub_spec[[1]],
                        diagnos = diagnos,
                        store,
-                       confirm_subgroup)
-    
+                       confirm_subgroup,
+                       elig_paths)
+
+      
       writeLines("gimme finished running normally")
       if (!is.null(dat$out)) writeLines(paste("output is stored in", dat$out))
       if (subgroup == TRUE) {
@@ -663,7 +716,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     
   } else {
 
-
+    ### MS GIMME ######
     #-----------------------------------------------#
     # GIMME-MS: Individual level search             #
     #-----------------------------------------------#
