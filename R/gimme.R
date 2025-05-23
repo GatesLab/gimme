@@ -375,6 +375,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
     writeArg <- arguments[-1]
     write.csv(unlist(writeArg), 
               file.path(paste0(out, "/arguments.csv")))
+    writeLines(capture.output(utils::sessionInfo()), 
+              file.path(paste0(out, "/sessionInfo.txt")))
   }
   
   #Error Check for Confirm Subgroup Labels
