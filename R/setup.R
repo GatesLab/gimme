@@ -94,6 +94,12 @@ setup <- function (data,
   
   ts_list <- setupDataLists(data = data, ctrlOpts = ctrlOpts, lv_model = lv_model)
   
+  # Warning for plot when Variables = 3
+  if(plot == TRUE && (length(ts_list[[1]][1,]) < 4)){
+    writeLines("gimme WARNING: plot=TRUE changed to plot=FALSE.",
+               " Errors in plotting occur with fewer than 4 nodes.")
+    plot = FALSE
+  }
   
   #-------------------------------------------------------------#
   # lv_gimme

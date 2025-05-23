@@ -280,13 +280,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
     writeLines("gimme WARNING: Multiple solutions are not likely when ar=TRUE.",
                 " We recommend setting ar to FALSE if using ms_allow.")
   }
-  
-  # Warning for plot when Variables = 3
-  if(plot == TRUE && (length(data[[1]][1,]) < 4)){
-    writeLines("gimme WARNING: plot=TRUE changed to plot=FALSE.",
-               " Errors in plotting occur with fewer than 4 nodes.")
-    plot = FALSE
-  }
     
   
   #Error check for hybrid
