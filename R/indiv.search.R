@@ -34,6 +34,7 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
   psi      <- list()
   psiunstd <- list()
   plots_cov <- list()
+  name     <- matrix(, nrow = n_ind, ncol = 1)
   
   n_ind    <- ifelse(dat$agg, 1, dat$n_subj) 
   
@@ -54,11 +55,11 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
       writeLines(paste0("individual-level search, subject ", k, " (", names(dat$ts_list)[k],")"))
     }
     
-    
+    k_ind <- which(ind$names == names(dat$ts_list)[k])
     
     ind_spec <- search.paths(base_syntax  = dat$syntax, 
                              fixed_syntax = c(grp$group_paths, 
-                                              ind$sub_paths[[k]]),
+                                              ind$sub_paths[[k_ind]]),
                              add_syntax   = character(),
                              n_paths      = 0,
                              data_list    = data_list,
@@ -72,7 +73,7 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
     
     ind_spec <- prune.paths(base_syntax  = dat$syntax,
                             fixed_syntax = c(grp$group_paths, 
-                                             ind$sub_paths[[k]]),
+                                             ind$sub_paths[[k_ind]]),
                             add_syntax   = ind_spec[[1]][[1]]$add_syntax,
                             data_list    = data_list,
                             n_paths      = ind_spec[[1]][[1]]$n_paths,
@@ -84,7 +85,7 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
     if (!identical(temp_ind_spec[[1]][[1]]$add_syntax, ind_spec$add_syntax)){
       ind_spec <- search.paths(base_syntax  = dat$syntax, 
                                fixed_syntax = c(grp$group_paths, 
-                                                ind$sub_paths[[k]]),
+                                                ind$sub_paths[[k_ind]]),
                                add_syntax   = ind_spec$add_syntax,
                                n_paths      = ind_spec$n_paths,
                                data_list    = data_list,
@@ -92,13 +93,13 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
                                prop_cutoff  = NULL,
                                n_subj       = 1,
                                chisq_cutoff = 0)
-      ind$ind_paths[[k]] <- ind_spec[[1]][[1]]$add_syntax
-      ind$n_ind_paths[k] <- ind_spec[[1]][[1]]$n_paths
+      ind$ind_paths[[k_ind]] <- ind_spec[[1]][[1]]$add_syntax
+      ind$n_ind_paths[k_ind] <- ind_spec[[1]][[1]]$n_paths
       
     } else {
       
-      ind$ind_paths[[k]] <- ind_spec$add_syntax
-      ind$n_ind_paths[k] <- ind_spec$n_paths
+      ind$ind_paths[[k_ind]] <- ind_spec$add_syntax
+      ind$n_ind_paths[k_ind] <- ind_spec$n_paths
       
     }
     
@@ -116,9 +117,10 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
     vcovfull[[k]]   <- s10$ind_vcov_full
     plots[[k]]  <- s10$ind_plot
     plots_cov[[k]] <- s10$ind_plot_cov
-    syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k]], ind$ind_paths[[k]])
+    syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k_ind]], ind$ind_paths[[k_ind]])
     psi[[k]]      <- s10$ind_psi
     psiunstd[[k]] <- s10$ind_psi_unstd
+    name[k] <- names(dat$ts_list)[k]
   }
   
   if (dat$agg){
