@@ -34,9 +34,10 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
   psi      <- list()
   psiunstd <- list()
   plots_cov <- list()
-  name     <- matrix(, nrow = n_ind, ncol = 1)
   
   n_ind    <- ifelse(dat$agg, 1, dat$n_subj) 
+  name     <- matrix(, nrow = n_ind, ncol = 1)
+  
   
   if (dat$agg){
     data_all <- do.call(rbind, dat$ts_list)
