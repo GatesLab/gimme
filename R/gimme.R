@@ -646,7 +646,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
     if(subgroup){
       store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff)
     } else {
-      store <- indiv.search(dat, grp[[1]], ind[1], ind_cutoff, ind_z_cutoff)
+      store <- indiv.search(dat, grp[[1]], ind, ind_cutoff, ind_z_cutoff)
     }
     
     if(!is.null(lv_model)){
