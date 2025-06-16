@@ -55,6 +55,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
     zero_se  <- TRUE
   }
   
+  if(dat$agg){
   ###### IF NON CONVERGE, ROLL BACK ######
   
   if (converge & !zero_se & !testWeights(fit, dat)){
@@ -106,6 +107,7 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
         }
     }
 }
+  }
   
   ###### COMPILE RESULTS IF CONVERGED ######
   

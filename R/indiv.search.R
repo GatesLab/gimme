@@ -58,71 +58,73 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
     
     k_ind <- which(ind$names == names(dat$ts_list)[k])
     
-    ind_spec <- search.paths(base_syntax  = dat$syntax, 
+    ind_spec <- search.paths.ind(base_syntax  = dat$syntax, 
                              fixed_syntax = c(grp$group_paths, 
                                               ind$sub_paths[[k_ind]]),
-                             add_syntax   = character(),
-                             n_paths      = 0,
                              data_list    = data_list,
                              elig_paths   = elig_paths,
                              prop_cutoff  = NULL,
                              n_subj       = 1,
-                             chisq_cutoff = ind_cutoff
+                             chisq_cutoff = ind_cutoff,
+                             ind_z_cutoff  = ind_z_cutoff
             )
     
-    temp_ind_spec <- ind_spec
+
+    # ind_spec <- prune.paths(base_syntax  = dat$syntax,
+    #                         fixed_syntax = c(grp$group_paths, 
+    #                                          ind$sub_paths[[k_ind]]),
+    #                         add_syntax   = ind_spec[[1]][[1]]$add_syntax,
+    #                         data_list    = data_list,
+    #                         n_paths      = ind_spec[[1]][[1]]$n_paths,
+    #                         n_subj       = 1,
+    #                         prop_cutoff  = NULL,
+    #                         elig_paths   = ind_spec[[1]][[1]]$add_syntax,
+    #                         test_cutoff = ind_z_cutoff)
+    # integrate prune into search.paths.ms to cut down fits
     
-    ind_spec <- prune.paths(base_syntax  = dat$syntax,
-                            fixed_syntax = c(grp$group_paths, 
-                                             ind$sub_paths[[k_ind]]),
-                            add_syntax   = ind_spec[[1]][[1]]$add_syntax,
-                            data_list    = data_list,
-                            n_paths      = ind_spec[[1]][[1]]$n_paths,
-                            n_subj       = 1,
-                            prop_cutoff  = NULL,
-                            elig_paths   = ind_spec[[1]][[1]]$add_syntax,
-                            test_cutoff = ind_z_cutoff)
-    
-    if (!identical(temp_ind_spec[[1]][[1]]$add_syntax, ind_spec$add_syntax)){
-      ind_spec <- search.paths(base_syntax  = dat$syntax, 
-                               fixed_syntax = c(grp$group_paths, 
-                                                ind$sub_paths[[k_ind]]),
-                               add_syntax   = ind_spec$add_syntax,
-                               n_paths      = ind_spec$n_paths,
-                               data_list    = data_list,
-                               elig_paths   = elig_paths,
-                               prop_cutoff  = NULL,
-                               n_subj       = 1,
-                               chisq_cutoff = 0)
       ind$ind_paths[[k_ind]] <- ind_spec[[1]][[1]]$add_syntax
       ind$n_ind_paths[k_ind] <- ind_spec[[1]][[1]]$n_paths
       
-    } else {
-      
-      ind$ind_paths[[k_ind]] <- ind_spec$add_syntax
-      ind$n_ind_paths[k_ind] <- ind_spec$n_paths
-      
-    }
-    
-    
+
+    ############### get.params ############
+    # integrated with search.paths.ms so fewer fits necessary, also helps with ordering for subgroup = TRUE
+    #######################################
+    if (ms_allow) {
     s10 <- get.params(dat, 
                       grp, 
                       ind,
                       k)
+
     
     status[[k]] <- s10$status
-    fits[[k]]   <- s10$ind_fit
+    fits[[k]]   <- s10$ind_fits
     coefs[[k]]  <- s10$ind_coefs
     betas[[k]]  <- s10$ind_betas
     vcov[[k]]   <- s10$ind_vcov
     vcovfull[[k]]   <- s10$ind_vcov_full
     plots[[k]]  <- s10$ind_plot
     plots_cov[[k]] <- s10$ind_plot_cov
-    syntax[[k]] <- c(dat$syntax,  grp$group_paths, ind$sub_paths[[k_ind]], ind$ind_paths[[k_ind]])
+    syntax[[k]] <- s10$ind_syntax
     psi[[k]]      <- s10$ind_psi
     psiunstd[[k]] <- s10$ind_psi_unstd
-    name[k] <- names(dat$ts_list)[k]
-  }
+  
+    } else {
+    # Compile output 
+    
+    status[[k]] <- ind_spec$status1
+    fits[[k]]   <- ind_spec$ind_fit
+    coefs[[k]]  <- ind_spec$ind_coefs
+    betas[[k]]  <- ind_spec$ind_betas
+    vcov[[k]]   <- ind_spec$ind_vcov
+    vcovfull[[k]]   <- ind_spec$ind_vcov_full
+    plots[[k]]  <- ind_spec$ind_plot
+    plots_cov[[k]] <- ind_spec$ind_plot_psi
+    syntax[[k]] <- ind_spec$syntax
+    psi[[k]]      <- ind_spec$ind_psi
+    psiunstd[[k]] <- ind_spec$ind_psi_unstd
+    }
+   ##########################
+  } # end for k in 1: n_subj
   
   if (dat$agg){
     names(status) <- names(fits) <- names(coefs) <- 

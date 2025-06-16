@@ -142,7 +142,7 @@ highest.mi <- function(mi_list,
     }
     
     
-    if (count.excellent(indices) >= 2) {
+    if (n_subj ==1 & count.excellent(indices) >= 2) {
       
       add_param <- NA
       
