@@ -154,15 +154,26 @@ aggSEM <- function(data,
                 hybrid      = hybrid,
                 VAR         = VAR,
                 # 7.02.22 kad: added to 'ordered' below resolve error now that this is an input to setup 
-                ordered    = ordered) 
+                ordered    = NULL) 
 
+  if(!hybrid){
+    elig_paths = dat$candidate_paths
+  }else{
+    elig_paths = c(dat$candidate_paths, dat$candidate_corr)
+  }
+  
   if(VAR){
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
   }
   
+  ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
+  ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
+  
   store <- indiv.search(dat, 
                         grp = NULL, 
-                        ind)
+                        ind,
+                        ind_cutoff = ind_cutoff,
+                        ind_z_cutoff = ind_z_cutoff)
 
   final <- final.org(dat, 
                      grp, 
