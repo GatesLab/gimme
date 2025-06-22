@@ -323,9 +323,12 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
     sub_plots_cov  = NULL
     sub_counts    = NULL
     sub_counts_cov = NULL
+    
+    
   }
   
   ## If no one converged
+  if (!dat$agg){
   if (!(sum(is.na(summarize$coefs[,1])) < dat$n_subj)) {
     fits        <- as.data.frame(do.call(rbind, store$fits))
     fits$file   <- rownames(fits)
@@ -345,8 +348,9 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
     sample_counts_corr =    NULL
     sub_counts     = NULL
     sub_counts_cov = NULL
-    dx = NULL}
-  
+    dx = NULL
+    }
+  }
   
   dx <- list()
   if(diagnos){

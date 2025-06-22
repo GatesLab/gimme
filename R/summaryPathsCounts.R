@@ -42,7 +42,7 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec) {
     }
     
     coefs$level[coefs$param %in% c(grp$group_paths, dat$syntax, specificValuePaths)] <- "group" # kad 7.26.22 added specificValuePaths created above
-    coefs$level[coefs$param %in% unique(unlist(store$ind$ind_paths))]  <- "ind"
+    coefs$level[coefs$param %in% unique(unlist(store$ind_paths))]  <- "ind"
     coefs$color[coefs$level == "group"] <- "black"
     coefs$color[coefs$level == "ind"]   <- "gray50"
     

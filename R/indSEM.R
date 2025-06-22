@@ -152,13 +152,23 @@ indSEM <- function(data   = NULL,
                 ##added ordered = ordered here to reflect the changes made in other code. lan 3.4.2022
                 ordered     = ordered)
   
+  if(!hybrid){
+    elig_paths = dat$candidate_paths
+  }else{
+    elig_paths = c(dat$candidate_paths, dat$candidate_corr)
+  }
+  
   if(VAR){
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
   }
 
+  ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
+  ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
   store <- indiv.search(dat, 
                         grp = NULL, 
-                        ind = dat$file_order)
+                        ind = dat$file_order,
+                        ind_cutoff = ind_cutoff,
+                        ind_z_cutoff = ind_z_cutoff)
 
   final <- final.org(dat, 
                      grp      = NULL, 

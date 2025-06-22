@@ -29,7 +29,7 @@ lowest.z <- function(z_list,
   z_list$param <- paste0(z_list$lhs, z_list$op, z_list$rhs)
   z_list       <- subset(z_list, param %in% elig_paths,
                          select = c("param", "z"))
-  z_list$sig   <- ifelse(abs(z_list$z) > test_cutoff, 1, 0)
+  z_list$sig   <- ifelse(abs(z_list$z) >= test_cutoff, 1, 0)
   z_list <- transform(z_list,
                       sum   = ave(abs(z), param, FUN = sum),
                       count = ave(sig, param, FUN = sum))
