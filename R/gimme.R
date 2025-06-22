@@ -641,7 +641,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
   
   if(!ms_allow){
     ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
-    ind_z_cutoff <- abs(qnorm(.025/length(elig_paths)))
+    ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
       store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff)
@@ -707,8 +707,9 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 sim_matrix      = sub[[1]]$sim, 
                 syntax          = store$syntax,
                 lvgimme         = dat$lvgimme,
-                rf_est         = dat$rf_est, # 6.19.22 kad: added HRF estimates
-                arguments      = arguments
+                rf_est          = dat$rf_est, # 6.19.22 kad: added HRF estimates
+                arguments       = arguments,
+                sessionInfo     = capture.output(utils::sessionInfo())
                 )
     class(res) <- "gimmep"
     
