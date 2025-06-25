@@ -155,6 +155,6 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
               "plots_cov" = plots_cov,
               "ind_paths"    =  ind_paths,
               "syntax" = syntax, 
-              ind)
+              "ind" = ind)
   return(res)
 }
