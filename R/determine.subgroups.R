@@ -47,11 +47,12 @@ determine.subgroups <- function(data_list,
   mi_list <- list()
   converge <- matrix(,n_subj,1)
 
-  
+  # if(is.null(confirm_subgroup)){
   fit <- lapply(seq_along(data_list), function(i){fit.model(
     syntax= base_syntax,
     data_file = data_list[[i]])
   })
+
   for (k in 1:n_subj){
     # writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
     # fit          <- fit.model(syntax    = base_syntax,
@@ -242,7 +243,7 @@ determine.subgroups <- function(data_list,
       
     sub$sim         <- sim
     sub$n_subgroups <- length(unique(na.omit(sub_mem$sub_membership))) 
-    sub$sub_mem     <- confirm_subgroup
+    sub$sub_mem     <- sub_mem
   }
   return(sub)
 }
