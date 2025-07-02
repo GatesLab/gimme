@@ -134,10 +134,7 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec) {
           sub_s_mat_colors_cov <- sub_s_mat_colors_cov[(dat$n_lagged +
                                                           1):(dat$n_vars_total), ]
           
-          if (dat$plot &
-              sub_spec[[s]]$n_sub_subj != 1) {
-            #plot subgroup plot if >1 nodes in subgroup
-            
+
             sub_s_counts <- t(sub_s_mat_counts / sub_spec[[s]]$n_sub_subj)
             sub_s_counts_cov <- t(sub_s_mat_counts_cov / sub_spec[[s]]$n_sub_subj)
             contemp_cov    <- sub_s_counts_cov[(dat$n_lagged + 1):(dat$n_vars_total), ]
@@ -152,6 +149,9 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec) {
                                                                           1):(dat$n_vars_total), ])
             colors     <- colors[!is.na(colors)]
             
+            if (dat$plot &
+                sub_spec[[s]]$n_sub_subj != 1) {
+              #plot subgroup plot if >1 nodes in subgroup            
             sub_plot <- try(qgraph(
               plot_vals,
               layout       = "circle",
@@ -219,7 +219,6 @@ summaryPathsCounts <- function(dat, grp, store, sub, sub_spec) {
             
           } else {
             sub_plot         <- NULL
-            sub_s_mat_counts <- NULL
           }
           
           ### Write subgroup path counts matrix to output

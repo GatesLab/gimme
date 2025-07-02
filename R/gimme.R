@@ -273,18 +273,18 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #Error check for ms_allow
   if(ms_allow & subgroup){
       stop(paste0("gimme ERROR: Subgrouping is not available for ms-gimme.",
-                  " Please ensure that subgroup=FALSE if ms_allow=TRUE"))
+                  " Please ensure that subgroup=FALSE if ms_allow=TRUE", "\n"))
   }
   
   if(ms_allow & ar){
     cat("gimme WARNING: Multiple solutions are not likely when ar=TRUE.",
-                " We recommend setting ar to FALSE if using ms_allow.")
+                " We recommend setting ar to FALSE if using ms_allow.", "\n")
   }
     
   # check of <3 variables and plot = TRUE
   if(plot == TRUE && (length(data[[1]][1,]) < 4)){
     cat("gimme WARNING: plot=TRUE changed to plot=FALSE.",
-               " Errors in plotting occur with fewer than 4 nodes.")
+               " Errors in plotting occur with fewer than 4 nodes.", "\n")
     plot = FALSE
   }
   
