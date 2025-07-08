@@ -198,6 +198,17 @@ search space.  Defaults to FALSE.}
 
 \item{group_correct}{Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
 "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.}
+
+\item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05).}
+
+\item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05).}
+
+\item{nnfi_cutoff}{Cutoff for NNFI for an individual model (default is .95).}
+
+\item{cfi_cutoff}{Cutoff for CFI for an individual model (default is .95).}
+
+\item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
+individual model to be considered excellent. Default is 2.}
 }
 \value{
 A list with the following components: 

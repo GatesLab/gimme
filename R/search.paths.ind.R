@@ -20,6 +20,8 @@
 #' individual).
 #' @param subgroup_stage Logical. Only present in order to instruct gimme
 #' what message to print to console using writeLines.
+#' @inheritParams count.excellent
+#' @inheritParams highest.mi
 #' @return Returns updated values of n_paths and add_syntax.
 #' @keywords internal 
 search.paths.ind <- function(dat,
@@ -34,7 +36,12 @@ search.paths.ind <- function(dat,
                              subgroup_stage,
                              hybrid,
                              dir_prop_cutoff,
-                             ind_z_cutoff){
+                             ind_z_cutoff,
+                             rmsea_cutoff = .05,
+                             srmr_cutoff = .05,
+                             nnfi_cutoff = .95,
+                             cfi_cutoff = .95,
+                             n_excellent = 2){
   
   #-----------------------------------------------------------#
   ##### FUNCTION FOR TESTING FOR STABILITY #####
@@ -120,7 +127,12 @@ search.paths.ind <- function(dat,
                               chisq_cutoff = chisq_cutoff,
                               allow.mult   = FALSE,
                               hybrid       = hybrid, 
-                              dir_prop_cutoff = dir_prop_cutoff)
+                              dir_prop_cutoff = dir_prop_cutoff,
+                              rmsea_cutoff = rmsea_cutoff,
+                              srmr_cutoff = srmr_cutoff,
+                              nnfi_cutoff = nnfi_cutoff,
+                              cfi_cutoff = cfi_cutoff,
+                              n_excellent = n_excellent)
       
       add_param <- add_p$add_param
       mi_info   <- add_p$mi_list
@@ -309,7 +321,12 @@ search.paths.ind <- function(dat,
                                 chisq_cutoff = chisq_cutoff,
                                 allow.mult   = FALSE,
                                 hybrid       = hybrid, 
-                                dir_prop_cutoff = dir_prop_cutoff)
+                                dir_prop_cutoff = dir_prop_cutoff,
+                                rmsea_cutoff = rmsea_cutoff,
+                                srmr_cutoff = srmr_cutoff,
+                                nnfi_cutoff = nnfi_cutoff,
+                                cfi_cutoff = cfi_cutoff,
+                                n_excellent = n_excellent)
         
         add_param <- add_p$add_param
         mi_info   <- add_p$mi_list
@@ -406,7 +423,12 @@ search.paths.ind <- function(dat,
                                   chisq_cutoff = chisq_cutoff,
                                   allow.mult   = FALSE,
                                   hybrid       = hybrid, 
-                                  dir_prop_cutoff = dir_prop_cutoff)
+                                  dir_prop_cutoff = dir_prop_cutoff,
+                                  rmsea_cutoff = rmsea_cutoff,
+                                  srmr_cutoff = srmr_cutoff,
+                                  nnfi_cutoff = nnfi_cutoff,
+                                  cfi_cutoff = cfi_cutoff,
+                                  n_excellent = n_excellent)
           
           add_param <- add_p$add_param
           mi_info   <- add_p$mi_list
