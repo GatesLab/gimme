@@ -4,7 +4,18 @@
 \alias{indiv.search}
 \title{Individual-level search. Used in gimmeSEM, aggSEM, indSEM.}
 \usage{
-indiv.search(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96)
+indiv.search(
+  dat,
+  grp,
+  ind,
+  ind_cutoff = NULL,
+  ind_z_cutoff = 1.96,
+  rmsea_cutoff = 0.05,
+  srmr_cutoff = 0.05,
+  nnfi_cutoff = 0.95,
+  cfi_cutoff = 0.95,
+  n_excellent = 2
+)
 }
 \arguments{
 \item{dat}{A list containing information created in setup().}
@@ -18,6 +29,17 @@ information.}
 \item{ind_cutoff}{Chi square cutoff, .05 level adjusted for multiple tests.}
 
 \item{ind_z_cutoff}{Z score cutoff, .05 level adjusted for multiple tests.}
+
+\item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05).}
+
+\item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05).}
+
+\item{nnfi_cutoff}{Cutoff for NNFI for an individual model (default is .95).}
+
+\item{cfi_cutoff}{Cutoff for CFI for an individual model (default is .95).}
+
+\item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
+individual model to be considered excellent. Default is 2.}
 }
 \value{
 Lists associated with coefficients, fit indices, etc.

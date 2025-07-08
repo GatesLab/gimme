@@ -13,6 +13,9 @@
 #' @param chisq_cutoff Cutoff used in order for MI to be considered significant.
 #' Value varies depending on stage of search (e.g., group, subgroup, 
 #' individual).
+#' @param n_excellent Number of fit indices needed to surpass their cutoffs for an
+#' individual model to be considered excellent. Default is 2.
+#' @inheritParams count.excellent
 #' @return Returns name of parameter associated with highest MI. If no MI meets 
 #' the criteria, returns NA.
 #' @keywords internal 
@@ -25,7 +28,12 @@ highest.mi <- function(mi_list,
                        allow.mult,
                        ms_tol,
                        hybrid,
-                       dir_prop_cutoff){
+                       dir_prop_cutoff, 
+                       rmsea_cutoff = .05,
+                       srmr_cutoff = .05,
+                       nnfi_cutoff = .95,
+                       cfi_cutoff = .95,
+                       n_excellent = 2){
   
   mi  = NULL # appease CRAN check
   sig = NULL # appease CRAN check
@@ -143,11 +151,19 @@ highest.mi <- function(mi_list,
     }
     
     
-    if (n_subj ==1 & count.excellent(indices) >= 2) {
+    if (n_subj ==1 & count.excellent(indices,
+                                     rmsea_cutoff,
+                                     srmr_cutoff,
+                                     nnfi_cutoff,
+                                     cfi_cutoff) >= n_excellent) {
       
       add_param <- NA
       
-      if(count.excellent(indices)>=2)
+      if(count.excellent(indices,
+                         rmsea_cutoff,
+                         srmr_cutoff,
+                         nnfi_cutoff,
+                         cfi_cutoff) >= n_excellent)
         goodfit = TRUE
       
     } else if (n_subj == 1) {

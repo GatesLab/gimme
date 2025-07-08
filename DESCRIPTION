@@ -57,7 +57,7 @@ LazyData: true
 URL: https://github.com/GatesLab/gimme/, https://tarheels.live/gimme/tutorials/
 BugReports: https://github.com/GatesLab/gimme/issues
 ByteCompile: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 NeedsCompilation: no
 Suggests: knitr,
     rmarkdown

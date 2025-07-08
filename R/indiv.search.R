@@ -6,9 +6,21 @@
 #' information.
 #' @param ind_cutoff Chi square cutoff, .05 level adjusted for multiple tests.
 #' @param ind_z_cutoff  Z score cutoff, .05 level adjusted for multiple tests. 
+#' @inheritParams count.excellent
+#' @inheritParams highest.mi
 #' @return Lists associated with coefficients, fit indices, etc.
 #' @keywords internal 
-indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
+indiv.search <- function(dat,
+                         grp,
+                         ind,
+                         ind_cutoff = NULL,
+                         ind_z_cutoff = 1.96,
+                         rmsea_cutoff = .05,
+                         srmr_cutoff = .05,
+                         nnfi_cutoff = .95,
+                         cfi_cutoff = .95,
+                         n_excellent = 2) {
+  
   
   if (!dat$agg){
     ind$ind_paths   <-  vector("list", dat$n_subj)
@@ -69,7 +81,12 @@ indiv.search <- function(dat, grp, ind, ind_cutoff = NULL, ind_z_cutoff = 1.96){
                              prop_cutoff  = NULL,
                              n_subj       = 1,
                              chisq_cutoff = ind_cutoff,
-                             ind_z_cutoff  = ind_z_cutoff
+                             ind_z_cutoff  = ind_z_cutoff,
+                             rmsea_cutoff = rmsea_cutoff,
+                             srmr_cutoff  = srmr_cutoff,
+                             nnfi_cutoff  = nnfi_cutoff,
+                             cfi_cutoff   = cfi_cutoff,
+                             n_excellent = n_excellent
             )
     
 

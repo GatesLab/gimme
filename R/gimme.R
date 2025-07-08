@@ -160,6 +160,8 @@
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
 #' @param group_correct Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
 #' "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
+#' @inheritParams count.excellent
+#' @inheritParams highest.mi
 #' @details
 #'  Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used. 
 #' @references Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm
@@ -256,7 +258,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               VAR              = FALSE,
                               dir_prop_cutoff  = 0,
                               ordered          = NULL,
-                              group_correct    = "Bonferoni Group"){          
+                              group_correct    = "Bonferoni Group",
+                              rmsea_cutoff = .05,
+                              srmr_cutoff = .05,
+                              nnfi_cutoff = .95,
+                              cfi_cutoff = .95,
+                              n_excellent = 2){          
   arguments <- as.list(sys.frame(which = 1))
   
   # satisfy CRAN checks
@@ -650,9 +657,19 @@ gimmeSEM <- gimme <- function(data             = NULL,
     ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
-      store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff)
+      store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff, 
+                            rmsea_cutoff = rmsea_cutoff,
+                            srmr_cutoff = srmr_cutoff,
+                            nnfi_cutoff = nnfi_cutoff,
+                            cfi_cutoff = cfi_cutoff,
+                            n_excellent = n_excellent)
     } else {
-      store <- indiv.search(dat, grp[[1]], ind, ind_cutoff, ind_z_cutoff)
+      store <- indiv.search(dat, grp[[1]], ind, ind_cutoff, ind_z_cutoff, 
+                            rmsea_cutoff = rmsea_cutoff,
+                            srmr_cutoff = srmr_cutoff,
+                            nnfi_cutoff = nnfi_cutoff,
+                            cfi_cutoff = cfi_cutoff,
+                            n_excellent = n_excellent)
     }
     
     if(!is.null(lv_model)){
