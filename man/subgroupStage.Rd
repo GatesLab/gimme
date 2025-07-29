@@ -16,7 +16,6 @@ subgroupStage(
   sub_sim_thresh,
   hybrid,
   dir_prop_cutoff,
-  chisq_cutoff,
   group_correct
 )
 }
