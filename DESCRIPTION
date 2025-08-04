@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.9.1111111
-Date: 2025-06-26
+Version: 0.9.2
+Date: 2025-08-02
 Authors@R: c(person(given = "Stephanie",
                       family = "Lane",
                       role = c("aut", "trl")),
@@ -47,6 +47,9 @@ Authors@R: c(person(given = "Stephanie",
                       role = "ctb"),
                person(given = c("Sebastian", "Castro"),
                       family = "Alvarez",
+                      role = "ctb"),
+               person(given = c("Björn"),
+                      family = "Siepe",
                       role = "ctb"))
 Maintainer: Kathleen M Gates <gateskm@email.unc.edu>
 Depends: R (>= 3.5.0)
