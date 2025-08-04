@@ -39,7 +39,12 @@
 #'          VAR = FALSE,
 #'          dir_prop_cutoff =0,
 #'          ordered = NULL,
-#'          group_correct = "Bonferoni Group")
+#'          group_correct = "Bonferoni Group",
+#'            rmsea_cutoff = .05, 
+#'            srmr_cutoff = .05, 
+#'            nnfi_cutoff = .95,
+#'            cfi_cutoff = .95,
+#'            n_excellent = 2)
 #' @param data The path to the directory where the data files are located,
 #' or the name of the list containing each individual's time series. Each file
 #' or matrix must contain one matrix for each individual containing a T (time)
@@ -305,6 +310,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
   if(VAR & !ar){
     stop(paste0("gimme ERROR: Autoregressive paths have to be open for var-gimme.",
                 " Please ensure that ar=TRUE if var=TRUE."))
+  }
+  
+  #Error check for cutoff valuesf
+  if(any(c(rmsea_cutoff, srmr_cutoff, nnfi_cutoff, cfi_cutoff) < 0 | c(rmsea_cutoff, srmr_cutoff, nnfi_cutoff, cfi_cutoff) >1)) {
+    stop(paste0("gimme ERROR: Check find idex cutoff values.",
+                " Values must be in the 0 to 1 range."))
   }
   
   # so all hybrid-related rules apply, as we are looking at covs of residuals
