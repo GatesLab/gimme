@@ -4,7 +4,7 @@
 
 The GIMME algorithm is a continually maintained R package, gimme.
 
-For up-to-date tutorials for both new and old options, [check out our online *gimme* tutorials](https://tarheels.live/gimme/tutorials/) and [CRAN documentation](hhttps://cran.r-project.org/package=gimme) . 
+For up-to-date tutorials for both new and old options, [check out our online *gimme* tutorials](https://tarheels.live/gimme/tutorials/) and [CRAN documentation](https://cran.r-project.org/package=gimme) . 
 
 Developers or those who fixed a bug are invited to submit changes here at the GitHub repository.
 
