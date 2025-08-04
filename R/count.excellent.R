@@ -1,9 +1,9 @@
 #' Counts number of excellent fit indices
 #' @param indices A vector of fit indices from lavaan.
-#' @param rmsea_cutoff Cutoff for RMSEA for an individual model(default is .05).
-#' @param srmr_cutoff Cutoff for SRMR for an individual model (default is .05).
-#' @param nnfi_cutoff Cutoff for NNFI for an individual model (default is .95).
-#' @param cfi_cutoff Cutoff for CFI for an individual model (default is .95).
+#' @param rmsea_cutoff Cutoff for RMSEA for an individual model(default is .05; must be between 0.0 and 1.0).
+#' @param srmr_cutoff Cutoff for SRMR for an individual model (default is .05; must be between 0.0 and 1.0).
+#' @param nnfi_cutoff Cutoff for NNFI for an individual model (default is .95; must be between 0.0 and 1.0).
+#' @param cfi_cutoff Cutoff for CFI for an individual model (default is .95; must be between 0.0 and 1.0).
 #' @return The number of fit indices that are excellent.
 #' @keywords internal 
 count.excellent <- function(indices,

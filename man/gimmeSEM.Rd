@@ -40,7 +40,12 @@ gimmeSEM(data        = NULL,
          VAR = FALSE,
          dir_prop_cutoff =0,
          ordered = NULL,
-         group_correct = "Bonferoni Group")
+         group_correct = "Bonferoni Group",
+           rmsea_cutoff = .05, 
+           srmr_cutoff = .05, 
+           nnfi_cutoff = .95,
+           cfi_cutoff = .95,
+           n_excellent = 2)
 }
 \arguments{
 \item{data}{The path to the directory where the data files are located,
@@ -199,16 +204,16 @@ search space.  Defaults to FALSE.}
 \item{group_correct}{Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
 "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.}
 
-\item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05).}
+\item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05; must be between 0.0 and 1.0).}
 
-\item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05).}
+\item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05; must be between 0.0 and 1.0).}
 
-\item{nnfi_cutoff}{Cutoff for NNFI for an individual model (default is .95).}
+\item{nnfi_cutoff}{Cutoff for NNFI for an individual model (default is .95; must be between 0.0 and 1.0).}
 
-\item{cfi_cutoff}{Cutoff for CFI for an individual model (default is .95).}
+\item{cfi_cutoff}{Cutoff for CFI for an individual model (default is .95; must be between 0.0 and 1.0).}
 
 \item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
-individual model to be considered excellent. Default is 2.}
+individual model to be considered excellent. Default is 2. Max is 4.}
 }
 \value{
 A list with the following components: 

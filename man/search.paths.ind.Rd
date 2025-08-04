@@ -57,16 +57,16 @@ individual).}
 \item{subgroup_stage}{Logical. Only present in order to instruct gimme
 what message to print to console using writeLines.}
 
-\item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05).}
+\item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05; must be between 0.0 and 1.0).}
 
-\item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05).}
+\item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05; must be between 0.0 and 1.0).}
 
-\item{nnfi_cutoff}{Cutoff for NNFI for an individual model (default is .95).}
+\item{nnfi_cutoff}{Cutoff for NNFI for an individual model (default is .95; must be between 0.0 and 1.0).}
 
-\item{cfi_cutoff}{Cutoff for CFI for an individual model (default is .95).}
+\item{cfi_cutoff}{Cutoff for CFI for an individual model (default is .95; must be between 0.0 and 1.0).}
 
 \item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
-individual model to be considered excellent. Default is 2.}
+individual model to be considered excellent. Default is 2. Max is 4.}
 }
 \value{
 Returns updated values of n_paths and add_syntax.

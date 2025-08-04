@@ -14,7 +14,7 @@
 #' Value varies depending on stage of search (e.g., group, subgroup, 
 #' individual).
 #' @param n_excellent Number of fit indices needed to surpass their cutoffs for an
-#' individual model to be considered excellent. Default is 2.
+#' individual model to be considered excellent. Default is 2. Max is 4. 
 #' @inheritParams count.excellent
 #' @return Returns name of parameter associated with highest MI. If no MI meets 
 #' the criteria, returns NA.
