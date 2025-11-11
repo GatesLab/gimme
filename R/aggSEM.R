@@ -1,5 +1,6 @@
 #' @name aggSEM
-#' @aliases aggSEM
+#' @aliases aggSEM\
+dfdsafdfsdf
 #' @title Group-level structural equation model search.
 #' @description Concatenates all individual-level data files and 
 #' fits a group model to the data.
