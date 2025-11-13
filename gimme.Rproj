@@ -1,4 +1,5 @@
 Version: 1.0
+ProjectId: 17b4c32e-dc02-46bd-976c-08c42b28f69f
 
 RestoreWorkspace: Default
 SaveWorkspace: No
@@ -18,4 +19,4 @@ PackagePath: /Users/gateskm/Dropbox/GitHub/gimme
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageBuildArgs: --resave-data
 PackageCheckArgs: --as-cran
-PackageRoxygenize: rd,collate,namespace,vignette
+PackageRoxygenize: rd,namespace,vignette

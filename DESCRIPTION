@@ -1,7 +1,7 @@
 Package: gimme
 Title: Group Iterative Multiple Model Estimation
-Version: 0.9.2
-Date: 2025-08-02
+Version: 0.9.3
+Date: 2025-11-13
 Authors@R: c(person(given = "Stephanie",
                       family = "Lane",
                       role = c("aut", "trl")),

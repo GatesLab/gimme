@@ -293,12 +293,6 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 " We recommend setting ar to FALSE if using ms_allow.", "\n")
   }
     
-  # check of <3 variables and plot = TRUE
-  if(plot == TRUE && (length(data[[1]][1,]) < 4)){
-    cat("gimme WARNING: plot=TRUE changed to plot=FALSE.",
-               " Errors in plotting occur with fewer than 4 nodes.", "\n")
-    plot = FALSE
-  }
   
   #Error check for hybrid
   if(hybrid & !ar){
@@ -394,6 +388,12 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        VAR                  = VAR,
                        ordered              = ordered)
 
+  # check of <3 variables and plot = TRUE
+  if(plot == TRUE && (length(dat$ts_list[[1]][1,]) < 4)){
+    cat("gimme WARNING: plot=TRUE changed to plot=FALSE.",
+        " Errors in plotting occur with fewer than 4 nodes.", "\n")
+    dat$plot = FALSE
+  }
   
   if(!is.null(out)){
     writeArg <- arguments[-1]
