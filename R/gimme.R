@@ -40,6 +40,7 @@
 #'          dir_prop_cutoff =0,
 #'          ordered = NULL,
 #'          group_correct = "Bonferoni Group",
+#'          stop_crit = "standard",
 #'            rmsea_cutoff = .05, 
 #'            srmr_cutoff = .05, 
 #'            nnfi_cutoff = .95,
@@ -165,6 +166,11 @@
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
 #' @param group_correct Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
 #' "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
+#' @param stop_crit Stopping criterion for the individual-level search.
+#' "standard" (default) stops when either fit is adequate or no significant
+#' paths remain. "model fit" continues adding the highest-MI path until fit
+#' is adequate, even if the path is not significant. "significance"
+#' continues adding significant paths even after fit is adequate.
 #' @inheritParams count.excellent
 #' @inheritParams highest.mi
 #' @details
@@ -264,6 +270,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               dir_prop_cutoff  = 0,
                               ordered          = NULL,
                               group_correct    = "Bonferoni Group",
+                              stop_crit        = "standard",
                               rmsea_cutoff = .05,
                               srmr_cutoff = .05,
                               nnfi_cutoff = .95,
@@ -292,7 +299,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
     cat("gimme WARNING: Multiple solutions are not likely when ar=TRUE.",
                 " We recommend setting ar to FALSE if using ms_allow.", "\n")
   }
-    
+  
+  stop_crit <- match.arg(stop_crit, c("standard", "model fit", "significance"))
   
   #Error check for hybrid
   if(hybrid & !ar){
@@ -375,6 +383,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
                        ind                  = FALSE,
                        agg                  = FALSE,
                        groupcutoff          = groupcutoff,
+                       stop_crit            = stop_crit,
                        subcutoff            = subcutoff,
                        conv_vars            = conv_vars, 
                        conv_length          = conv_length, 
@@ -668,14 +677,16 @@ gimmeSEM <- gimme <- function(data             = NULL,
     ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
-      store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff, 
+      store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff,
+                            stop_crit = stop_crit,
                             rmsea_cutoff = rmsea_cutoff,
                             srmr_cutoff = srmr_cutoff,
                             nnfi_cutoff = nnfi_cutoff,
                             cfi_cutoff = cfi_cutoff,
                             n_excellent = n_excellent)
     } else {
-      store <- indiv.search(dat, grp[[1]], ind, ind_cutoff, ind_z_cutoff, 
+      store <- indiv.search(dat, grp[[1]], ind, ind_cutoff, ind_z_cutoff,
+                            stop_crit = stop_crit,
                             rmsea_cutoff = rmsea_cutoff,
                             srmr_cutoff = srmr_cutoff,
                             nnfi_cutoff = nnfi_cutoff,
@@ -797,4 +808,3 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
 }
-
