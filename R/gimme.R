@@ -5,6 +5,7 @@
 #' individual that consist of both group-level and individual-level paths.
 #' @usage
 #' gimmeSEM(data        = NULL,
+#'          dataAUG     = FALSE,
 #'          out         = NULL,
 #'          sep         = NULL,
 #'          header      = NULL,
@@ -39,10 +40,12 @@
 #'          VAR = FALSE,
 #'          dir_prop_cutoff =0,
 #'          ordered = NULL,
-#'          group_correct = "Bonferoni Group",
-#'          stop_crit = "standard",
-#'            rmsea_cutoff = .05, 
-#'            srmr_cutoff = .05, 
+#'          group_correct = "Bonferroni Group",
+#'          indiv_correct = "Bonferroni",
+#'          alpha = .05,
+#'          stop_crit = "model fit",
+#'            rmsea_cutoff = .05,
+#'            srmr_cutoff = .05,
 #'            nnfi_cutoff = .95,
 #'            cfi_cutoff = .95,
 #'            n_excellent = 2)
@@ -52,6 +55,10 @@
 #' by p (number of variables) matrix where the columns represent variables and
 #' the rows represent time. Individuals must have the same variables (p)
 #' but can have different lengths of observations (T).
+#' @param dataAUG Logical. If TRUE, the data supplied through \code{data} are
+#' scanned for person-specific augmented variables whose column names end in
+#' "_AUG". The suffix is removed before modeling and constraints are applied
+#' to those variables. Defaults to FALSE.
 #' @param out The path to the directory where the results will be stored
 #' (optional). If specified,
 #' a copy of output files will be replaced in directory. If directory at
@@ -164,16 +171,27 @@
 #' search space.  Defaults to FALSE.
 #' @param dir_prop_cutoff Option to require that the directionality of a relation has to be higher than the reverse direction for a prespecified proportion of indivdiuals.  
 #' @param ordered A character vector containing the names of all ordered categorical variables in the model.
-#' @param group_correct Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
-#' "Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.
+#' @param group_correct Indicate how to correct for multiple testing at the group level.
+#' "Bonferroni Group" (Default) corrects alpha for the number of people (N) in the sample;
+#' "Bonferroni Paths" corrects alpha for the number of eligible paths;
+#' a numeric value between 0 and 1 sets the alpha level directly;
+#' "fdr" applies a Benjamini-Hochberg false discovery rate correction.
+#' @param indiv_correct Indicate how to correct for multiple comparisons at the individual level.
+#' "Bonferroni" (Default) applies a Bonferroni correction dividing alpha by the number of eligible paths;
+#' "fdr" applies a Benjamini-Hochberg false discovery rate correction.
+#' @param alpha The base alpha level used for significance testing in all searches (group and individual).
+#' Defaults to .05.
 #' @param stop_crit Stopping criterion for the individual-level search.
-#' "standard" (default) stops when either fit is adequate or no significant
-#' paths remain. "model fit" continues adding the highest-MI path until fit
-#' is adequate, even if the path is not significant. "significance"
+#' "standard" stops when either fit is adequate or no significant
+#' paths remain. "model fit" (default) continues adding the paths until fit
+#' is adequate regardless of significance of those paths. "significance"
 #' continues adding significant paths even after fit is adequate.
 #' @inheritParams count.excellent
 #' @inheritParams highest.mi
-#' @details
+#' @details gimmeSEM is a data-driven method for identifying structural equation models for each individual that consist of both group-level and individual-level paths. 
+#' The group-level search identifies paths that are significant across a prespecified proportion of individuals in the sample (e.g., 75\%). 
+#' The optional subgrouping stage identifies subgroups of individuals with similar model features (e.g., similar patterns of lagged and contemporaneous relations among variables). 
+#' The individual-level search then adds paths to each individual's model until fit is adequate or no significant paths remain.
 #'  Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used. 
 #' @references Gates, K.M. & Molenaar, P.C.M. (2012). Group search algorithm
 #' recovers effective connectivity maps for individuals
@@ -235,6 +253,7 @@
 #' @export gimme gimmeSEM
 
 gimmeSEM <- gimme <- function(data             = NULL,
+                              dataAUG          = FALSE,
                               out              = NULL,
                               sep              = NULL,
                               header           = NULL,
@@ -269,8 +288,10 @@ gimmeSEM <- gimme <- function(data             = NULL,
                               VAR              = FALSE,
                               dir_prop_cutoff  = 0,
                               ordered          = NULL,
-                              group_correct    = "Bonferoni Group",
-                              stop_crit        = "standard",
+                              group_correct    = "Bonferroni Group",
+                              indiv_correct    = "Bonferroni",
+                              alpha            = .05,
+                              stop_crit        = "model fit",
                               rmsea_cutoff = .05,
                               srmr_cutoff = .05,
                               nnfi_cutoff = .95,
@@ -300,7 +321,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
                 " We recommend setting ar to FALSE if using ms_allow.", "\n")
   }
   
-  stop_crit <- match.arg(stop_crit, c("standard", "model fit", "significance"))
+  stop_crit     <- match.arg(stop_crit, c("standard", "model fit", "significance"))
+  indiv_correct <- match.arg(indiv_correct, c("Bonferroni", "fdr"))
   
   #Error check for hybrid
   if(hybrid & !ar){
@@ -368,6 +390,7 @@ gimmeSEM <- gimme <- function(data             = NULL,
    # } else {
 
   dat         <- setup(data                 = data,
+                       dataAUG              = dataAUG,
                        sep                  = sep,
                        header               = header,
                        out                  = out,
@@ -455,17 +478,25 @@ gimmeSEM <- gimme <- function(data             = NULL,
   }
   
   
-  if(group_correct == "Bonferoni Group"){
-    grp_cutoff <- qchisq(1-.05/dat$n_subj, 1)
-    z_cutoff <- abs(qnorm(.025/dat$n_subj))
+  if(group_correct == "Bonferroni Group" || group_correct == "Bonferroni"){
+    grp_cutoff <- qchisq(1 - alpha/dat$n_subj, 1)
+    z_cutoff   <- abs(qnorm((alpha/2)/dat$n_subj))
+    grp_correction <- "Bonferroni"
   }
   if(is.numeric(group_correct)){
-    grp_cutoff <- qchisq(1-group_correct, 1)
-    z_cutoff <- abs(qnorm(group_correct/2))
+    grp_cutoff <- qchisq(1 - group_correct, 1)
+    z_cutoff   <- abs(qnorm(group_correct/2))
+    grp_correction <- "Bonferroni"
   }
-  if(group_correct == "Bonferoni Paths"){
-    grp_cutoff <- qchisq(1-.05/length(elig_paths), 1)
-    z_cutoff <- abs(qnorm(.025/length(elig_paths)))
+  if(group_correct == "Bonferroni Paths"){
+    grp_cutoff <- qchisq(1 - alpha/length(elig_paths), 1)
+    z_cutoff   <- abs(qnorm((alpha/2)/length(elig_paths)))
+    grp_correction <- "Bonferroni"
+  }
+  if(group_correct == "fdr"){
+    grp_cutoff <- qchisq(1 - alpha, 1)
+    z_cutoff   <- abs(qnorm(alpha/2))
+    grp_correction <- "fdr"
   }
 
   grp_hist  <- search.paths(
@@ -474,15 +505,18 @@ gimmeSEM <- gimme <- function(data             = NULL,
     add_syntax     = grp$group_paths,
     n_paths        = grp$n_group_paths,
     data_list      = dat$ts_list,
-    elig_paths     = elig_paths, 
+    elig_paths     = elig_paths,
     prop_cutoff    = dat$group_cutoff,
     n_subj         = dat$n_subj,
     chisq_cutoff   = grp_cutoff,
     subgroup_stage = FALSE,
     ms_allow       = ms_allow,
-    ms_tol         = ms_tol, 
+    ms_tol         = ms_tol,
     hybrid         = hybrid,
-    dir_prop_cutoff = dir_prop_cutoff
+    dir_prop_cutoff = dir_prop_cutoff,
+    alpha          = alpha,
+    correction     = grp_correction,
+    augmented_vars = dat$augmented_vars
   )
   
   
@@ -548,7 +582,8 @@ gimmeSEM <- gimme <- function(data             = NULL,
         prop_cutoff    = dat$group_cutoff,
         elig_paths     = grp[[i]]$group_paths,
         subgroup_stage = FALSE,
-        test_cutoff    = z_cutoff
+        test_cutoff    = z_cutoff,
+        augmented_vars = dat$augmented_vars
       )
       
     })
@@ -602,10 +637,11 @@ gimmeSEM <- gimme <- function(data             = NULL,
         sub_method,
         ms_tol   = ms_tol,
         ms_allow = FALSE,
-        sub_sim_thresh = sub_sim_thresh,
-        hybrid, 
+        sub_sim_thresh  = sub_sim_thresh,
+        hybrid,
         dir_prop_cutoff = dir_prop_cutoff,
-        group_correct = group_correct
+        group_correct   = group_correct,
+        alpha           = alpha
       )
     })
 
@@ -673,25 +709,34 @@ gimmeSEM <- gimme <- function(data             = NULL,
   #-------------------------------------------------------------#
   
   if(!ms_allow){
-    ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
-    ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
+    if (indiv_correct == "Bonferroni") {
+      ind_cutoff   <- qchisq(1 - alpha/length(elig_paths), 1)
+      ind_z_cutoff <- abs(qnorm(alpha/length(elig_paths)))
+    } else { # fdr
+      ind_cutoff   <- qchisq(1 - alpha, 1)
+      ind_z_cutoff <- abs(qnorm(alpha))
+    }
     # 2.19.2019 kmg: ind[1]$ returns NULL for subgroups; changed to ind[[1]] here
     if(subgroup){
       store <- indiv.search(dat, grp[[1]], ind[[1]], ind_cutoff, ind_z_cutoff,
-                            stop_crit = stop_crit,
-                            rmsea_cutoff = rmsea_cutoff,
-                            srmr_cutoff = srmr_cutoff,
-                            nnfi_cutoff = nnfi_cutoff,
-                            cfi_cutoff = cfi_cutoff,
-                            n_excellent = n_excellent)
+                            stop_crit     = stop_crit,
+                            rmsea_cutoff  = rmsea_cutoff,
+                            srmr_cutoff   = srmr_cutoff,
+                            nnfi_cutoff   = nnfi_cutoff,
+                            cfi_cutoff    = cfi_cutoff,
+                            n_excellent   = n_excellent,
+                            alpha         = alpha,
+                            indiv_correct = indiv_correct)
     } else {
       store <- indiv.search(dat, grp[[1]], ind, ind_cutoff, ind_z_cutoff,
-                            stop_crit = stop_crit,
-                            rmsea_cutoff = rmsea_cutoff,
-                            srmr_cutoff = srmr_cutoff,
-                            nnfi_cutoff = nnfi_cutoff,
-                            cfi_cutoff = cfi_cutoff,
-                            n_excellent = n_excellent)
+                            stop_crit     = stop_crit,
+                            rmsea_cutoff  = rmsea_cutoff,
+                            srmr_cutoff   = srmr_cutoff,
+                            nnfi_cutoff   = nnfi_cutoff,
+                            cfi_cutoff    = cfi_cutoff,
+                            n_excellent   = n_excellent,
+                            alpha         = alpha,
+                            indiv_correct = indiv_correct)
     }
     
     if(!is.null(lv_model)){

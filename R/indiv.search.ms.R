@@ -46,6 +46,7 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
       writeLines(paste0("individual-level search, subject ", k, " (", names(dat$ts_list)[k],")"))
       
     }
+    augmented_vars <- if (dat$agg) list(character()) else list(dat$augmented_vars[[k]])
     
     #-----------------------------------------------#
     # Conduct the ind level search                  #
@@ -63,7 +64,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
       subgroup_stage = FALSE,
       ms_allow       = TRUE,
       ms_tol         = ms_tol,
-      hybrid         = dat$hybrid
+      hybrid         = dat$hybrid,
+      augmented_vars = augmented_vars
     )
     
     s1.ind <- lapply(seq_along(s1.ind), function(i){
@@ -97,7 +99,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         n_subj         = 1,
         prop_cutoff    = NULL,
         elig_paths     = s1.ind[[length(s1.ind)]][[i]]$add_syntax,
-        subgroup_stage = FALSE
+        subgroup_stage = FALSE,
+        augmented_vars = augmented_vars
       )
       
     })
@@ -139,7 +142,8 @@ indiv.search.ms <- function(dat, grp, ind, ms_tol, ms_allow, grp_num){
         chisq_cutoff = 0,
         subgroup_stage = FALSE,
         ms_allow       = FALSE, # do not allow multiple solutions on cleanup
-        ms_tol         = ms_tol)
+        ms_tol         = ms_tol,
+        augmented_vars = augmented_vars)
       
     }, simplify = TRUE)
     

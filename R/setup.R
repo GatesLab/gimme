@@ -1,5 +1,6 @@
 #' @keywords internal
 setup <- function (data,
+                   dataAUG = FALSE,
                    sep,
                    header,
                    out,
@@ -15,6 +16,7 @@ setup <- function (data,
                    agg,
                    ind,
                    groupcutoff,
+                   stop_crit,
                    subcutoff, 
                    conv_vars, 
                    conv_length, 
@@ -63,10 +65,12 @@ setup <- function (data,
     ar               = ar,
     mean_center_mult = mean_center_mult,
     standardize      = standardize,
+    dataAUG          = dataAUG,
     subgroup         = subgroup,
     agg              = agg,
     ind              = ind,
     groupcutoff      = groupcutoff,
+    stop_crit        = stop_crit,
     subcutoff        = subcutoff, 
     conv_length      = conv_length, 
     conv_interval    = conv_interval,
@@ -92,7 +96,19 @@ setup <- function (data,
   #
   #-------------------------------------------------------------#
   
+  if (!is.logical(dataAUG) || length(dataAUG) != 1 || is.na(dataAUG)) {
+    stop("gimme ERROR: dataAUG must be TRUE or FALSE.")
+  }
+
   ts_list <- setupDataLists(data = data, ctrlOpts = ctrlOpts, lv_model = lv_model)
+  if (dataAUG) {
+    augmented_data <- setupAugmentedData(ts_list)
+    ts_list <- augmented_data$data
+    augmented_vars <- augmented_data$augmented_vars
+  } else {
+    augmented_vars <- replicate(length(ts_list), character(), simplify = FALSE)
+    names(augmented_vars) <- names(ts_list)
+  }
   
   #-------------------------------------------------------------#
   # lv_gimme
@@ -426,6 +442,7 @@ setup <- function (data,
               "group_cutoff" = ctrlOpts$groupcutoff,
               "sub_cutoff" = ctrlOpts$subcutoff,
               "ts_list" = ts_list,
+              "augmented_vars" = augmented_vars,
               "standardize" = ctrlOpts$standardize,
               "file_order" =  data.frame(
                 index = c(seq(1:length(ts_list))), 

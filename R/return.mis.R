@@ -1,9 +1,11 @@
 #' Returns MIs from lavaan fit object.
 #' @param fit An object from lavaan.
+#' @param elig_paths Paths eligible at the current search stage.
+#' @param augmented_vars Base names of augmented variables for this individual.
 #' @return If successful, returns MIs for an individual. If unsuccessful, 
 #' returns NA.
 #' @keywords internal 
-return.mis <- function(fit, elig_paths){
+return.mis <- function(fit, elig_paths, augmented_vars = character()){
   zero_se  <- FALSE
   no_paths <- FALSE
   error    <- inherits(fit, "try-error")
@@ -35,5 +37,5 @@ return.mis <- function(fit, elig_paths){
   } else {
     mis <- NA
   }
-  return(mis)
+  maskAugmentedMIs(mis, augmented_vars)
 }

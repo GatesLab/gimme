@@ -20,6 +20,7 @@
 #' @param subgroup_stage Logical. Only present in order to instruct gimme
 #' what message to print to console using writeLines.
 #' @param test_cutoff Z score cutoff for significance testing. 
+#' @param augmented_vars Subject-aligned list of augmented variable names.
 #' @return Returns updated values of n_paths and add_syntax.
 #' @keywords internal 
 prune.paths <- function(base_syntax, 
@@ -31,7 +32,11 @@ prune.paths <- function(base_syntax,
                         prop_cutoff, 
                         elig_paths, 
                         subgroup_stage = FALSE,
-                        test_cutoff){
+                        test_cutoff,
+                        augmented_vars = NULL){
+  if (is.null(augmented_vars)) {
+    augmented_vars <- replicate(n_subj, character(), simplify = FALSE)
+  }
   
   #-----------------------------------------------#
   # Determine the stage                           #
@@ -54,6 +59,7 @@ prune.paths <- function(base_syntax,
     z_list <- list()
     
     for (k in 1:n_subj){
+      subject_augmented_vars <- if (is.null(augmented_vars)) character() else augmented_vars[[k]]
       
       if (!is.null(prop_cutoff)){
         
@@ -61,14 +67,16 @@ prune.paths <- function(base_syntax,
           
           fit <- fit.model(
             syntax = c(base_syntax,fixed_syntax[[k]], add_syntax),
-            data_file = data_list[[k]]
+            data_file = data_list[[k]],
+            augmented_vars = subject_augmented_vars
           )
           
         } else {
           
           fit <- fit.model(
             syntax = c(base_syntax,fixed_syntax, add_syntax),
-            data_file = data_list[[k]]
+            data_file = data_list[[k]],
+            augmented_vars = subject_augmented_vars
           )
           
         }
@@ -96,12 +104,13 @@ prune.paths <- function(base_syntax,
         
         fit <- fit.model(
           syntax = c(base_syntax, fixed_syntax, add_syntax),
-          data_file = data_list
+          data_file = data_list,
+          augmented_vars = subject_augmented_vars
         ) 
         
       }
       
-      z_list[[k]] <- return.zs(fit, elig_paths)
+      z_list[[k]] <- return.zs(fit, elig_paths, subject_augmented_vars)
       
     }
     

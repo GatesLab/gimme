@@ -2,10 +2,11 @@
 #' @param fit An object from lavaan.
 #' @param elig_paths eligable paths at this stage. For subgrouping, group and fixed paths. 
 #' For pruning, only group paths. 
+#' @param augmented_vars Base names of augmented variables for this individual.
 #' @return If successful, returns z values for an individual. If unsuccessful, 
 #' returns NA.
 #' @keywords internal 
-return.zs <- function(fit, elig_paths){
+return.zs <- function(fit, elig_paths, augmented_vars = character()){
   
   op  = NULL # appease CRAN check
   
@@ -28,5 +29,5 @@ if (!error & !zero_se & converge){
   zs <- NA
 }
 
-  return(zs)
+  maskAugmentedZs(zs, augmented_vars)
 }

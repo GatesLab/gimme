@@ -35,7 +35,8 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                                    grp$group_paths, 
                                    ind$sub_paths[[k]], 
                                    ind$ind_paths[[k]]), 
-                     data_file = dat$ts_list[[k]])
+                     data_file = dat$ts_list[[k]],
+                     augmented_vars = dat$augmented_vars[[k]])
   } else {
     data_file <- do.call("rbind", dat$ts_list)
     fit        <- fit.model(syntax    = c(dat$syntax, 
@@ -80,7 +81,8 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
                                        grp$group_paths, 
                                        ind$sub_paths[[k]], 
                                        ind$ind_paths[[k]]), 
-                         data_file = dat$ts_list[[k]])
+                         data_file = dat$ts_list[[k]],
+                         augmented_vars = dat$augmented_vars[[k]])
       } else {
         data_file <- do.call("rbind", dat$ts_list)
         fit        <- fit.model(syntax    = c(dat$syntax, 
@@ -298,7 +300,10 @@ get.params <- function(dat, grp, ind, k, ms.print = TRUE){
               "ind_vcov_full"  = ind_vcov_full,
               "ind_plot"       = ind_plot,
               "ind_plot_cov"   = ind_plot_psi,
-              "ind_syntax" = c(dat$syntax, grp$group_paths,ind$sub_paths[[k]], ind$ind_paths[[k]])
+              "ind_syntax" = constrainAugmentedSyntax(
+                c(dat$syntax, grp$group_paths, ind$sub_paths[[k]], ind$ind_paths[[k]]),
+                dat$augmented_vars[[k]]
+              )
   )
   return(res)
 }

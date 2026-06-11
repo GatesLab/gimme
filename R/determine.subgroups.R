@@ -11,6 +11,7 @@
 #' are considered in the creation of the similarity matrix.
 #' @param confirm_subgroup A dataframe with the first column a string vector of data file names
 #' without extensions and the second vector a integer vector of subgroup labels.
+#' @param augmented_vars Subject-aligned list of augmented variable names.
 #' @return Returns sub object containing similarity matrix, the number of
 #' subgroups, the modularity associated with the subgroup memberships, 
 #' and a data frame containing the file names and subgroup memberships.
@@ -27,7 +28,11 @@ determine.subgroups <- function(data_list,
                                 sub_method,
                                 sub_sim_thresh,
                                 hybrid,
-                                dir_prop_cutoff){
+                                dir_prop_cutoff,
+                                augmented_vars = NULL){
+  if (is.null(augmented_vars)) {
+    augmented_vars <- replicate(n_subj, character(), simplify = FALSE)
+  }
   #######################
   # base_syntax  = c(dat$syntax, grp[[i]]$group_paths)
   # data_list    = dat$ts_list
@@ -50,15 +55,16 @@ determine.subgroups <- function(data_list,
   # if(is.null(confirm_subgroup)){
   fit <- lapply(seq_along(data_list), function(i){fit.model(
     syntax= base_syntax,
-    data_file = data_list[[i]])
+    data_file = data_list[[i]],
+    augmented_vars = augmented_vars[[i]])
   })
 
   for (k in 1:n_subj){
     # writeLines(paste0("subgroup search, subject ", k, " (",names(data_list)[k],")"))
     # fit          <- fit.model(syntax    = base_syntax,
     #                           data_file = data_list[[k]])
-    z_list[[k]]  <- return.zs(fit[[k]], elig_paths)
-    mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
+    z_list[[k]]  <- return.zs(fit[[k]], elig_paths, augmented_vars[[k]])
+    mi_list[[k]] <- return.mis(fit[[k]], elig_paths, augmented_vars[[k]])
     if (inherits(fit[[k]], "simpleError"))
       converge[k] <- FALSE else
       converge[k]  <- lavInspect(fit[[k]], "converged")
