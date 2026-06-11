@@ -8,10 +8,11 @@ subgroupStage <- function(dat,
                           sub_method,
                           ms_tol,
                           ms_allow,
-                          sub_sim_thresh, 
+                          sub_sim_thresh,
                           hybrid,
                           dir_prop_cutoff,
-                          group_correct){
+                          group_correct,
+                          alpha = .05){
 # Satisfy CRAN checks
   sub_membership = NULL
 
@@ -27,7 +28,8 @@ subgroupStage <- function(dat,
                                sub_method   = sub_method, 
                                sub_sim_thresh = sub_sim_thresh,
                                hybrid       = hybrid,
-                               dir_prop_cutoff = dir_prop_cutoff)
+                               dir_prop_cutoff = dir_prop_cutoff,
+                               augmented_vars = dat$augmented_vars)
 
   # begin subgroup-level search for paths ------------------------------------ #
 
@@ -44,31 +46,42 @@ subgroupStage <- function(dat,
                   sub_membership    = s)
 
     if (sub_s$n_sub_subj > 1){
-      if(group_correct == "Bonferoni Group"){
-        grp_cutoff <- qchisq(1-.05/sub_s$n_sub_subj, 1)
-        z_cutoff <- abs(qnorm(.025/sub_s$n_sub_subj))
+      if(group_correct == "Bonferroni Group" || group_correct == "Bonferroni"){
+        grp_cutoff     <- qchisq(1 - alpha/sub_s$n_sub_subj, 1)
+        z_cutoff       <- abs(qnorm((alpha/2)/sub_s$n_sub_subj))
+        grp_correction <- "Bonferroni"
         }
       if(is.numeric(group_correct)){
-        grp_cutoff <- qchisq(1-group_correct, 1)
-        z_cutoff <- abs(qnorm(group_correct/2))
+        grp_cutoff     <- qchisq(1 - group_correct, 1)
+        z_cutoff       <- abs(qnorm(group_correct/2))
+        grp_correction <- "Bonferroni"
         }
-      if(group_correct == "Bonferoni Paths"){
-        grp_cutoff <- qchisq(1-.05/length(elig_paths), 1)
-        z_cutoff <- abs(qnorm(.025/length(elig_paths)))
+      if(group_correct == "Bonferroni Paths"){
+        grp_cutoff     <- qchisq(1 - alpha/length(elig_paths), 1)
+        z_cutoff       <- abs(qnorm((alpha/2)/length(elig_paths)))
+        grp_correction <- "Bonferroni"
+        }
+      if(group_correct == "fdr"){
+        grp_cutoff     <- qchisq(1 - alpha, 1)
+        z_cutoff       <- abs(qnorm(alpha/2))
+        grp_correction <- "fdr"
         }
       
-      s4 <- search.paths(base_syntax  = dat$syntax,
-                         fixed_syntax = grp$group_paths,
-                         add_syntax   = character(),
-                         n_paths      = 0,
-                         data_list    = dat$ts_list[sub_s$sub_s_subjids],
-                         elig_paths   = elig_paths,
-                         prop_cutoff  = dat$sub_cutoff,
-                         n_subj       = sub_s$n_sub_subj,
-                         chisq_cutoff = grp_cutoff,
+      s4 <- search.paths(base_syntax    = dat$syntax,
+                         fixed_syntax   = grp$group_paths,
+                         add_syntax     = character(),
+                         n_paths        = 0,
+                         data_list      = dat$ts_list[sub_s$sub_s_subjids],
+                         elig_paths     = elig_paths,
+                         prop_cutoff    = dat$sub_cutoff,
+                         n_subj         = sub_s$n_sub_subj,
+                         chisq_cutoff   = grp_cutoff,
                          subgroup_stage = TRUE,
                          ms_tol         = ms_tol,
-                         ms_allow       = FALSE)
+                         ms_allow       = FALSE,
+                         alpha          = alpha,
+                         correction     = grp_correction,
+                         augmented_vars = dat$augmented_vars[sub_s$sub_s_subjids])
       #sub_s[c("n_sub_paths", "sub_paths")] <- s4
       
       sub_s$sub_paths   <- s4[[1]][[1]]$add_syntax
@@ -92,7 +105,8 @@ subgroupStage <- function(dat,
                         prop_cutoff  = dat$sub_cutoff,
                         elig_paths   = sub_spec[[s]]$sub_paths,
                         subgroup_stage = TRUE,
-                        test_cutoff = z_cutoff)
+                        test_cutoff = z_cutoff,
+                        augmented_vars = dat$augmented_vars[sub_spec[[s]]$sub_s_subjids])
       
       #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s5
       sub_spec[[s]]$n_sub_paths <- s5$n_paths
@@ -120,7 +134,8 @@ subgroupStage <- function(dat,
                       prop_cutoff  = dat$group_cutoff,
                       elig_paths   = grp$group_paths,
                       subgroup_stage = FALSE,
-                      test_cutoff = z_cutoff)
+                      test_cutoff = z_cutoff,
+                      augmented_vars = dat$augmented_vars)
 
     #grp[c("n_group_paths", "group_paths")] <- s6
     grp$n_group_paths <- s6$n_paths
@@ -131,17 +146,19 @@ subgroupStage <- function(dat,
     temp_sub_spec <- sub_spec
     for (s in 1:sub$n_subgroups){
       if (sub_spec[[s]]$n_sub_subj > 1){
-        s7 <- search.paths(base_syntax  = dat$syntax,
-                           fixed_syntax = grp$group_paths,
-                           add_syntax   = sub_spec[[s]]$sub_paths,
-                           n_paths      = sub_spec[[s]]$n_sub_paths,
-                           data_list    =
-                             dat$ts_list[sub_spec[[s]]$sub_s_subjids],
-                           elig_paths   = elig_paths,
-                           prop_cutoff  = dat$sub_cutoff,
-                           n_subj       = sub_spec[[s]]$n_sub_subj,
-                           chisq_cutoff = grp_cutoff,
-                           subgroup_stage = FALSE)
+        s7 <- search.paths(base_syntax    = dat$syntax,
+                           fixed_syntax   = grp$group_paths,
+                           add_syntax     = sub_spec[[s]]$sub_paths,
+                           n_paths        = sub_spec[[s]]$n_sub_paths,
+                           data_list      = dat$ts_list[sub_spec[[s]]$sub_s_subjids],
+                           elig_paths     = elig_paths,
+                           prop_cutoff    = dat$sub_cutoff,
+                           n_subj         = sub_spec[[s]]$n_sub_subj,
+                           chisq_cutoff   = grp_cutoff,
+                           subgroup_stage = FALSE,
+                           alpha          = alpha,
+                           correction     = grp_correction,
+                           augmented_vars = dat$augmented_vars[sub_spec[[s]]$sub_s_subjids])
         #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s7
         sub_spec[[s]]$sub_paths   <- s7[[1]][[1]]$add_syntax
         sub_spec[[s]]$n_sub_paths <- s7[[1]][[1]]$n_paths
@@ -163,7 +180,8 @@ subgroupStage <- function(dat,
                             prop_cutoff  = dat$sub_cutoff,
                             elig_paths   = sub_spec[[s]]$sub_paths,
                             subgroup_stage = FALSE,
-                            test_cutoff = z_cutoff)
+                            test_cutoff = z_cutoff,
+                            augmented_vars = dat$augmented_vars[sub_spec[[s]]$sub_s_subjids])
           #sub_spec[[s]][c("n_sub_paths", "sub_paths")] <- s8
            sub_spec[[s]]$sub_paths   <- s8$add_syntax
            sub_spec[[s]]$n_sub_paths <- s8$n_paths

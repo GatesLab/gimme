@@ -18,21 +18,29 @@
 #' individual).
 #' @param subgroup_stage Logical. Only present in order to instruct gimme
 #' what message to print to console using writeLines.
+#' @param augmented_vars Subject-aligned list of augmented variable names.
 #' @return Returns updated values of n_paths and add_syntax.
 #' @keywords internal 
-search.paths.ms <- function(obj, 
+search.paths.ms <- function(obj,
                             data_list,
-                            base_syntax, 
+                            base_syntax,
                             fixed_syntax,
-                            elig_paths, 
-                            prop_cutoff, 
-                            n_subj, 
+                            elig_paths,
+                            prop_cutoff,
+                            n_subj,
                             chisq_cutoff,
                             subgroup_stage,
                             ms_allow,
                             ms_tol,
                             hybrid,
-                            dir_prop_cutoff){
+                            dir_prop_cutoff,
+                            alpha = .05,
+                            correction = "Bonferroni",
+                            augmented_vars = NULL){
+
+  if (is.null(augmented_vars)) {
+    augmented_vars <- replicate(n_subj, character(), simplify = FALSE)
+  }
   
   
   #-----------------------------------------------#
@@ -76,11 +84,12 @@ search.paths.ms <- function(obj,
            
             fit <- lapply(seq_along(data_list), function(i){fit.model(
               syntax= c(base_syntax, fixed_syntax, obj[[1]]$add_syntax),
-              data_file = data_list[[i]])
+              data_file = data_list[[i]],
+              augmented_vars = augmented_vars[[i]])
             })
 
             for (k in 1:n_subj)
-            mi_list[[k]] <- return.mis(fit[[k]], elig_paths)
+            mi_list[[k]] <- return.mis(fit[[k]], elig_paths, augmented_vars[[k]])
           } else {
             
             for (k in 1:n_subj){
@@ -88,7 +97,8 @@ search.paths.ms <- function(obj,
             # individual level search
             fit <- fit.model(
               syntax = c(base_syntax, fixed_syntax, obj[[j]]$add_syntax),
-              data_file = data_list
+              data_file = data_list,
+              augmented_vars = augmented_vars[[k]]
             )
             
             #------------------------------------------------------#
@@ -103,7 +113,7 @@ search.paths.ms <- function(obj,
                                                  "srmr", "nnfi", "cfi"))
               } else indices <- NULL
             } else indices <- NULL
-            mi_list[[k]] <- return.mis(fit, elig_paths)
+            mi_list[[k]] <- return.mis(fit, elig_paths, augmented_vars[[k]])
             
           }
            }
@@ -118,24 +128,28 @@ search.paths.ms <- function(obj,
           add_p     <- highest.mi(mi_list      = mi_list,
                                   indices      = indices,
                                   elig_paths   = elig_paths,
-                                  prop_cutoff  = prop_cutoff, 
+                                  prop_cutoff  = prop_cutoff,
                                   n_subj       = n_subj,
                                   chisq_cutoff = chisq_cutoff,
                                   allow.mult   = TRUE,
                                   ms_tol       = ms_tol,
                                   hybrid       = hybrid,
-                                  dir_prop_cutoff = dir_prop_cutoff)
+                                  dir_prop_cutoff = dir_prop_cutoff,
+                                  alpha        = alpha,
+                                  correction   = correction)
           if (!ms_allow)
             add_p     <- highest.mi(mi_list      = mi_list,
                                     indices      = indices,
                                     elig_paths   = elig_paths,
-                                    prop_cutoff  = prop_cutoff, 
+                                    prop_cutoff  = prop_cutoff,
                                     n_subj       = n_subj,
                                     chisq_cutoff = chisq_cutoff,
                                     allow.mult   = FALSE,
                                     ms_tol       = ms_tol,
-                                    hybrid       = hybrid, 
-                                    dir_prop_cutoff = dir_prop_cutoff)
+                                    hybrid       = hybrid,
+                                    dir_prop_cutoff = dir_prop_cutoff,
+                                    alpha        = alpha,
+                                    correction   = correction)
           
           add_param <- add_p$add_param
           mi_info   <- add_p$mi_list

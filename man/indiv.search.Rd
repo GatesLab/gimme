@@ -10,11 +10,14 @@ indiv.search(
   ind,
   ind_cutoff = NULL,
   ind_z_cutoff = 1.96,
+  stop_crit = "standard",
   rmsea_cutoff = 0.05,
   srmr_cutoff = 0.05,
   nnfi_cutoff = 0.95,
   cfi_cutoff = 0.95,
-  n_excellent = 2
+  n_excellent = 2,
+  alpha = 0.05,
+  indiv_correct = "Bonferroni"
 )
 }
 \arguments{
@@ -30,6 +33,8 @@ information.}
 
 \item{ind_z_cutoff}{Z score cutoff, .05 level adjusted for multiple tests.}
 
+\item{stop_crit}{Stopping criterion for the individual-level search.}
+
 \item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05; must be between 0.0 and 1.0).}
 
 \item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05; must be between 0.0 and 1.0).}
@@ -40,6 +45,8 @@ information.}
 
 \item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
 individual model to be considered excellent. Default is 2. Max is 4.}
+
+\item{alpha}{Alpha level for significance testing. Default is .05.}
 }
 \value{
 Lists associated with coefficients, fit indices, etc.

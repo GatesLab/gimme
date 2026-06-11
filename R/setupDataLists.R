@@ -88,7 +88,7 @@ setupDataLists <- function(data, ctrlOpts  = NULL, lv_model = NULL){
     varnames <- c(paste0("V", seq(1,n_orig_vars)))
     ts_list <- lapply(ts_list, function(x) { colnames(x)<-varnames;  x })
   } else {
-    if(is.null(lv_model)){
+    if(is.null(lv_model) && !isTRUE(ctrlOpts$dataAUG)){
       ts_list <- lapply(ts_list, function(x) { x[,varnames]})
     }
   }

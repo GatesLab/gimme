@@ -66,10 +66,12 @@ gimme(                  # can use "gimme" or "gimmeSEM"
     paths = NULL,       # option to list paths that will be group-level (semi-confirmatory)
     groupcutoff = .75,  # the proportion that is considered the majority at the group level
     subcutoff = .75,     # the proportion that is considered the majority at the subgroup level
+    stop_crit = "model fit", # "standard", "model fit", or "significance"
     VAR       = FALSE,  # TRUE or FALSE (default), option to use VAR model instead of uSEM
     hybrid    = FALSE   # TRUE or FALSE (default), option to use hybrid-VAR model instead of uSEM
     )        
 ```
+`stop_crit` controls when the individual-level search ends. `"standard"` stops once model fit is adequate or no significant paths remain. `"model fit"` keeps adding the path with the largest modification index until fit is adequate, even when that path is not significant. `"significance"` keeps adding significant paths even after model fit is adequate.
 While *gimme* is running you will see information iterate in the command window. The algorithm will tell you when it is finished.
 
 # **Output**

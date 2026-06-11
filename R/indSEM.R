@@ -5,6 +5,7 @@
 #' individual. It does not utilize any shared information from the sample.
 #' @usage
 #' indSEM(data   = NULL,
+#'        dataAUG = FALSE,
 #'        out    = NULL,
 #'        sep    = NULL,
 #'        header = NULL,
@@ -19,6 +20,9 @@
 #'        mult_vars        = NULL,
 #'        mean_center_mult = FALSE,
 #'        standardize      = FALSE,
+#'        stop_crit        = "model fit",
+#'        indiv_correct    = "Bonferroni",
+#'        alpha            = .05,
 #'        hybrid = FALSE,
 #'        VAR    = FALSE)
 #' @param data The path to the directory where the data files are located, 
@@ -26,6 +30,10 @@
 #' or matrix must contain one matrix for each individual containing a 
 #' T (time) by p (number of variables) matrix where the columns represent 
 #' variables and the rows represent time. 
+#' @param dataAUG Logical. If TRUE, the data supplied through \code{data} are
+#' scanned for person-specific augmented variables whose column names end in
+#' "_AUG". The suffix is removed before modeling and constraints are applied
+#' to those variables. Defaults to FALSE.
 #' @param out The path to the directory where the results will be stored 
 #' (optional). If specified, a copy of output files will be replaced in 
 #' directory. If directory at specified path does not exist, it will be created.
@@ -77,6 +85,15 @@
 #' before being multiplied together. Defaults to FALSE. 
 #' @param standardize Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 #' standard deviation of one. Defaults to FALSE. 
+#' @param stop_crit Stopping criterion for the individual-level search.
+#' "standard" stops when either fit is adequate or no significant
+#' paths remain. "model fit" (default) continues adding the highest-MI path until fit
+#' is adequate, even if the path is not significant. "significance"
+#' continues adding significant paths even after fit is adequate.
+#' @param indiv_correct Indicate how to correct for multiple comparisons at the individual level.
+#' "Bonferroni" (Default) applies a Bonferroni correction dividing alpha by the number of eligible paths;
+#' "fdr" applies a Benjamini-Hochberg false discovery rate correction.
+#' @param alpha The base alpha level used for significance testing. Defaults to .05.
 #' @param hybrid Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous 	
 #' covariances among residuals are candidate relations in the search space. Defaults to FALSE.
 #' @param VAR Logical.  If true, VAR models where contemporaneous covariances among residuals are candidate relations in the 
@@ -97,20 +114,24 @@
 #'@export
 
 indSEM <- function(data   = NULL,
+                   dataAUG = FALSE,
                    out    = NULL,
                    sep    = NULL,
                    header = NULL,
                    ar     = TRUE,
                    plot   = TRUE,
                    paths  = NULL,
-                   exogenous = NULL, 
-                   outcome   = NULL, 
+                   exogenous = NULL,
+                   outcome   = NULL,
                    conv_vars      = NULL,
-                   conv_length    = 16, 
-                   conv_interval = 1, 
+                   conv_length    = 16,
+                   conv_interval  = 1,
                    mult_vars      = NULL,
                    mean_center_mult = FALSE,
                    standardize    = FALSE,
+                   stop_crit      = "model fit",
+                   indiv_correct  = "Bonferroni",
+                   alpha          = .05,
                    hybrid = FALSE,
                    VAR    = FALSE){
   
@@ -127,7 +148,11 @@ indSEM <- function(data   = NULL,
   if(VAR)
     hybrid = TRUE
   
+  stop_crit     <- match.arg(stop_crit, c("standard", "model fit", "significance"))
+  indiv_correct <- match.arg(indiv_correct, c("Bonferroni", "fdr"))
+  
   dat  <- setup(data        = data,
+                dataAUG     = dataAUG,
                 sep         = sep,
                 header      = header,
                 out         = out,
@@ -147,6 +172,7 @@ indSEM <- function(data   = NULL,
                 subgroup    = FALSE,
                 ind         = TRUE,
                 agg         = FALSE,
+                stop_crit   = stop_crit,
                 hybrid      = hybrid,
                 VAR         = VAR,
                 ##added ordered = ordered here to reflect the changes made in other code. lan 3.4.2022
@@ -162,13 +188,21 @@ indSEM <- function(data   = NULL,
     dat$candidate_paths <- grep("*lag", dat$candidate_paths, value = TRUE)
   }
 
-  ind_cutoff <- qchisq(1-.05/length(elig_paths), 1)
-  ind_z_cutoff <- abs(qnorm(.05/length(elig_paths)))
-  store <- indiv.search(dat, 
-                        grp = NULL, 
+  if (indiv_correct == "Bonferroni") {
+    ind_cutoff   <- qchisq(1 - alpha/length(elig_paths), 1)
+    ind_z_cutoff <- abs(qnorm(alpha/length(elig_paths)))
+  } else {
+    ind_cutoff   <- qchisq(1 - alpha, 1)
+    ind_z_cutoff <- abs(qnorm(alpha))
+  }
+  store <- indiv.search(dat,
+                        grp = NULL,
                         ind = dat$file_order,
-                        ind_cutoff = ind_cutoff,
-                        ind_z_cutoff = ind_z_cutoff)
+                        ind_cutoff    = ind_cutoff,
+                        ind_z_cutoff  = ind_z_cutoff,
+                        stop_crit     = stop_crit,
+                        alpha         = alpha,
+                        indiv_correct = indiv_correct)
 
   final <- final.org(dat, 
                      grp      = NULL, 
@@ -206,4 +240,3 @@ indSEM <- function(data   = NULL,
   
   invisible(res)
 }
-

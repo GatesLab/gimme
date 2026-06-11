@@ -17,7 +17,8 @@ determine.subgroups(
   sub_method,
   sub_sim_thresh,
   hybrid,
-  dir_prop_cutoff
+  dir_prop_cutoff,
+  augmented_vars = NULL
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ are considered in the creation of the similarity matrix.}
 
 \item{confirm_subgroup}{A dataframe with the first column a string vector of data file names
 without extensions and the second vector a integer vector of subgroup labels.}
+
+\item{augmented_vars}{Subject-aligned list of augmented variable names.}
 }
 \value{
 Returns sub object containing similarity matrix, the number of

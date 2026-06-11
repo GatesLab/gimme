@@ -12,7 +12,7 @@
 
 <meta name="author" content="KM Gates" />
 
-<meta name="date" content="2023-06-13" />
+<meta name="date" content="2026-03-25" />
 
 <title>Group Iterative Multiple Model Estimation (GIMME)</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -341,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Group Iterative Multiple Model Estimation
 (GIMME)</h1>
 <h4 class="author">KM Gates</h4>
-<h4 class="date">2023-06-13</h4>
+<h4 class="date">2026-03-25</h4>
 
 
 
@@ -410,11 +410,19 @@ is stored as R objects (see tutorial linked above for details).</p>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="at">paths =</span> <span class="cn">NULL</span>,       <span class="co"># option to list paths that will be group-level (semi-confirmatory)</span></span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="at">groupcutoff =</span> .<span class="dv">75</span>,  <span class="co"># the proportion that is considered the majority at the group level</span></span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="at">subcutoff =</span> .<span class="dv">75</span>,     <span class="co"># the proportion that is considered the majority at the subgroup level</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="at">VAR       =</span> <span class="cn">FALSE</span>,  <span class="co"># TRUE or FALSE (default), option to use VAR model instead of uSEM</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="at">hybrid    =</span> <span class="cn">FALSE</span>   <span class="co"># TRUE or FALSE (default), option to use hybrid-VAR model instead of uSEM</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    )        </span></code></pre></div>
-<p>While <em>gimme</em> is running you will see information iterate in
-the command window. The algorithm will tell you when it is finished.</p>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="at">stop_crit =</span> <span class="st">&quot;standard&quot;</span>, <span class="co"># &quot;standard&quot;, &quot;model fit&quot;, or &quot;significance&quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="at">VAR       =</span> <span class="cn">FALSE</span>,  <span class="co"># TRUE or FALSE (default), option to use VAR model instead of uSEM</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="at">hybrid    =</span> <span class="cn">FALSE</span>   <span class="co"># TRUE or FALSE (default), option to use hybrid-VAR model instead of uSEM</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    )        </span></code></pre></div>
+<p><code>stop_crit</code> controls when the individual-level search
+ends. <code>&quot;standard&quot;</code> stops once
+model fit is adequate or no significant paths remain.
+<code>&quot;model fit&quot;</code> keeps adding the path with the largest
+modification index until fit is adequate, even when that path is not
+significant. <code>&quot;significance&quot;</code> keeps adding significant paths
+even after model fit is adequate. While <em>gimme</em> is running you
+will see information iterate in the command window. The algorithm will
+tell you when it is finished.</p>
 </div>
 <div id="output" class="section level1">
 <h1><strong>Output</strong></h1>

@@ -14,6 +14,7 @@ search.paths.ind(
   prop_cutoff,
   n_subj,
   chisq_cutoff,
+  stop_crit = "standard",
   subgroup_stage,
   hybrid,
   dir_prop_cutoff,
@@ -22,7 +23,9 @@ search.paths.ind(
   srmr_cutoff = 0.05,
   nnfi_cutoff = 0.95,
   cfi_cutoff = 0.95,
-  n_excellent = 2
+  n_excellent = 2,
+  alpha = 0.05,
+  indiv_correct = "Bonferroni"
 )
 }
 \arguments{
@@ -54,6 +57,8 @@ individual stage, n_subj = 1.}
 Value varies depending on stage of search (e.g., group, subgroup, 
 individual).}
 
+\item{stop_crit}{Stopping criterion for the individual-level search.}
+
 \item{subgroup_stage}{Logical. Only present in order to instruct gimme
 what message to print to console using writeLines.}
 
@@ -67,6 +72,8 @@ what message to print to console using writeLines.}
 
 \item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
 individual model to be considered excellent. Default is 2. Max is 4.}
+
+\item{alpha}{Alpha level for significance testing. Default is .05.}
 }
 \value{
 Returns updated values of n_paths and add_syntax.

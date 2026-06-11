@@ -4,12 +4,14 @@
 \alias{fit.model}
 \title{Attempt to fit lavaan model.}
 \usage{
-fit.model(syntax, data_file)
+fit.model(syntax, data_file, augmented_vars = character())
 }
 \arguments{
 \item{syntax}{A character vector containing syntax.}
 
 \item{data_file}{A data frame containing individual data set.}
+
+\item{augmented_vars}{Base names of augmented variables for this individual.}
 }
 \value{
 If successful, returns fitted lavaan object. If not successful,

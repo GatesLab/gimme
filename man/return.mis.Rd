@@ -4,10 +4,14 @@
 \alias{return.mis}
 \title{Returns MIs from lavaan fit object.}
 \usage{
-return.mis(fit, elig_paths)
+return.mis(fit, elig_paths, augmented_vars = character())
 }
 \arguments{
 \item{fit}{An object from lavaan.}
+
+\item{elig_paths}{Paths eligible at the current search stage.}
+
+\item{augmented_vars}{Base names of augmented variables for this individual.}
 }
 \value{
 If successful, returns MIs for an individual. If unsuccessful, 

@@ -22,22 +22,26 @@
 #' individual).
 #' @param subgroup_stage Logical. Only present in order to instruct gimme
 #' what message to print to console using writeLines.
+#' @param augmented_vars Subject-aligned list of augmented variable names.
 #' @return Returns updated values of n_paths and add_syntax.
 #' @keywords internal 
-search.paths <- function(base_syntax, 
+search.paths <- function(base_syntax,
                          fixed_syntax,
                          add_syntax,
-                         n_paths, 
-                         data_list, 
-                         elig_paths, 
-                         prop_cutoff, 
-                         n_subj, 
+                         n_paths,
+                         data_list,
+                         elig_paths,
+                         prop_cutoff,
+                         n_subj,
                          chisq_cutoff,
                          subgroup_stage = FALSE,
                          ms_allow = FALSE,
                          ms_tol   = 1e-6,
-                         hybrid = F,
-                         dir_prop_cutoff = 0){
+                         hybrid = FALSE,
+                         dir_prop_cutoff = 0,
+                         alpha = .05,
+                         correction = "Bonferroni",
+                         augmented_vars = NULL){
   
   ####################################
   # ind search
@@ -87,19 +91,22 @@ search.paths <- function(base_syntax,
   while(!all(unlist(lapply(obj,"[[","final.sol")))){
     
     obj <- search.paths.ms(
-      obj, 
+      obj,
       data_list,
-      base_syntax, 
+      base_syntax,
       fixed_syntax,
-      elig_paths, 
-      prop_cutoff, 
-      n_subj, 
+      elig_paths,
+      prop_cutoff,
+      n_subj,
       chisq_cutoff,
       subgroup_stage,
       ms_allow,
-      ms_tol, 
+      ms_tol,
       hybrid,
-      dir_prop_cutoff
+      dir_prop_cutoff,
+      alpha     = alpha,
+      correction = correction,
+      augmented_vars = augmented_vars
     )
     
     history[[cnt]] <- obj
@@ -116,4 +123,3 @@ search.paths <- function(base_syntax,
   
  
 }
-

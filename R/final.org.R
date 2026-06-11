@@ -8,7 +8,8 @@
 #' @param elig_paths if subgroup = TRUE, eligable paths for potential individual-level search 
 #' @return Aggregated information, such as counts, levels, and plots.
 #' @keywords internal
-final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_subgroup, elig_paths = NULL){
+final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_subgroup, elig_paths = NULL,
+                      alpha = .05, indiv_correct = "Bonferroni"){
   
   ind = store$ind
   
@@ -34,9 +35,15 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
             id <- which(ind$sub_membership==p)
             for (t in 1:length(id))
               ind$sub_paths[[id[t]]] <- sub_spec[[p]]$sub_paths
-            ind_cutoff <- qchisq(1 - .05 / length(elig_paths), 1)
-            ind_z_cutoff <- abs(qnorm(.025 / length(elig_paths)))
-            store <- indiv.search(dat, grp, ind, ind_cutoff, ind_z_cutoff)
+            if (indiv_correct == "Bonferroni") {
+              ind_cutoff   <- qchisq(1 - alpha / length(elig_paths), 1)
+              ind_z_cutoff <- abs(qnorm(alpha / length(elig_paths)))
+            } else {
+              ind_cutoff   <- qchisq(1 - alpha, 1)
+              ind_z_cutoff <- abs(qnorm(alpha))
+            }
+            store <- indiv.search(dat, grp, ind, ind_cutoff, ind_z_cutoff,
+                                  alpha = alpha, indiv_correct = indiv_correct)
             summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
           } else {
             added_sub <- FALSE
@@ -56,9 +63,15 @@ final.org <- function(dat, grp, sub, sub_spec, diagnos=FALSE, store, confirm_sub
         for (t in 1:length(id))
           ind$sub_paths[[id[t]]] <- sub_spec[[p]]$sub_paths
       }
-      ind_cutoff <- qchisq(1 - .05 / length(elig_paths), 1)
-      ind_z_cutoff <- abs(qnorm(.025 / length(elig_paths)))
-      store <- indiv.search(dat, grp, ind, ind_cutoff, ind_z_cutoff)
+      if (indiv_correct == "Bonferroni") {
+        ind_cutoff   <- qchisq(1 - alpha / length(elig_paths), 1)
+        ind_z_cutoff <- abs(qnorm(alpha / length(elig_paths)))
+      } else {
+        ind_cutoff   <- qchisq(1 - alpha, 1)
+        ind_z_cutoff <- abs(qnorm(alpha))
+      }
+      store <- indiv.search(dat, grp, ind, ind_cutoff, ind_z_cutoff,
+                            alpha = alpha, indiv_correct = indiv_correct)
       ind = store$ind
       summarize <- summaryPathsCounts(dat, grp, store, sub, sub_spec)
     }

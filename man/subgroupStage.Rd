@@ -16,7 +16,8 @@ subgroupStage(
   sub_sim_thresh,
   hybrid,
   dir_prop_cutoff,
-  group_correct
+  group_correct,
+  alpha = 0.05
 )
 }
 \description{

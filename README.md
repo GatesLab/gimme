@@ -81,9 +81,12 @@ fit <- gimme(         # can use "gimme" or "gimmeSEM"
   subgroup = FALSE,   # TRUE or FALSE (default), cluster individuals based on similarities in effects
   paths = NULL,       # option to list paths that will be group-level (semi-confirmatory)
   groupcutoff = .75,  # the proportion that is considered the majority at the group level
-  subcutoff = .5      # the proportion that is considered the majority at the subgroup level
+  subcutoff = .5,     # the proportion that is considered the majority at the subgroup level
+  stop_crit = "model fit" # "standard", "model fit", or "significance"
 )        
 ```
+
+`stop_crit` controls when the individual-level search ends. `"standard"` stops once model fit is adequate or no significant paths remain. `"model fit"` keeps adding the path with the largest modification index until fit is adequate, even when that path is not significant. `"significance"` keeps adding significant paths even after model fit is adequate.
 
 While *gimme* is running you will see information iterate in the command window. The algorithm will tell you when it is finished.
 

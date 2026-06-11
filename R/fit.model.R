@@ -1,10 +1,13 @@
 #' Attempt to fit lavaan model.
 #' @param syntax A character vector containing syntax.
 #' @param data_file A data frame containing individual data set.
+#' @param augmented_vars Base names of augmented variables for this individual.
 #' @return If successful, returns fitted lavaan object. If not successful,
 #' catches and returns error message.
 #' @keywords internal 
-fit.model <- function (syntax, data_file) {
+fit.model <- function (syntax, data_file, augmented_vars = character()) {
+
+  syntax <- constrainAugmentedSyntax(syntax, augmented_vars)
   
   fit <- try(lavaan::lavaan(syntax,
                             data            = data_file,

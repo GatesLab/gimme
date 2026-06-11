@@ -6,6 +6,7 @@
 \title{Group iterative multiple model estimation.}
 \usage{
 gimmeSEM(data        = NULL,
+         dataAUG     = FALSE,
          out         = NULL,
          sep         = NULL,
          header      = NULL,
@@ -40,9 +41,12 @@ gimmeSEM(data        = NULL,
          VAR = FALSE,
          dir_prop_cutoff =0,
          ordered = NULL,
-         group_correct = "Bonferoni Group",
-           rmsea_cutoff = .05, 
-           srmr_cutoff = .05, 
+         group_correct = "Bonferroni Group",
+         indiv_correct = "Bonferroni",
+         alpha = .05,
+         stop_crit = "model fit",
+           rmsea_cutoff = .05,
+           srmr_cutoff = .05,
            nnfi_cutoff = .95,
            cfi_cutoff = .95,
            n_excellent = 2)
@@ -54,6 +58,11 @@ or matrix must contain one matrix for each individual containing a T (time)
 by p (number of variables) matrix where the columns represent variables and
 the rows represent time. Individuals must have the same variables (p)
 but can have different lengths of observations (T).}
+
+\item{dataAUG}{Logical. If TRUE, the data supplied through \code{data} are
+scanned for person-specific augmented variables whose column names end in
+"_AUG". The suffix is removed before modeling and constraints are applied
+to those variables. Defaults to FALSE.}
 
 \item{out}{The path to the directory where the results will be stored
 (optional). If specified,
@@ -201,8 +210,24 @@ search space.  Defaults to FALSE.}
 
 \item{ordered}{A character vector containing the names of all ordered categorical variables in the model.}
 
-\item{group_correct}{Indicate how to correct for multiple testing. "Bonferoni Group" (Default) corrects the alpha value for the number of people (N) in th sample; 
-"Bonferoni Paths" corrects according to the number of eligible paths for that individual; a numeric <1 and >0 can be entered to indicate the alpha level desired.}
+\item{group_correct}{Indicate how to correct for multiple testing at the group level.
+"Bonferroni Group" (Default) corrects alpha for the number of people (N) in the sample;
+"Bonferroni Paths" corrects alpha for the number of eligible paths;
+a numeric value between 0 and 1 sets the alpha level directly;
+"fdr" applies a Benjamini-Hochberg false discovery rate correction.}
+
+\item{indiv_correct}{Indicate how to correct for multiple comparisons at the individual level.
+"Bonferroni" (Default) applies a Bonferroni correction dividing alpha by the number of eligible paths;
+"fdr" applies a Benjamini-Hochberg false discovery rate correction.}
+
+\item{alpha}{The base alpha level used for significance testing in all searches (group and individual).
+Defaults to .05.}
+
+\item{stop_crit}{Stopping criterion for the individual-level search.
+"standard" stops when either fit is adequate or no significant
+paths remain. "model fit" (default) continues adding the paths until fit
+is adequate regardless of significance of those paths. "significance"
+continues adding significant paths even after fit is adequate.}
 
 \item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05; must be between 0.0 and 1.0).}
 
@@ -252,7 +277,11 @@ This function identifies structural equation models for each
 individual that consist of both group-level and individual-level paths.
 }
 \details{
-Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used.
+gimmeSEM is a data-driven method for identifying structural equation models for each individual that consist of both group-level and individual-level paths. 
+The group-level search identifies paths that are significant across a prespecified proportion of individuals in the sample (e.g., 75\%). 
+The optional subgrouping stage identifies subgroups of individuals with similar model features (e.g., similar patterns of lagged and contemporaneous relations among variables). 
+The individual-level search then adds paths to each individual's model until fit is adequate or no significant paths remain.
+ Output is a list of results if saved as an object and/or files printed to a directory if the "out" argument is used.
 }
 \examples{
  \dontrun{

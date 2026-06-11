@@ -19,6 +19,9 @@ aggSEM(data   = "",
        mult_vars        = NULL,
        mean_center_mult = FALSE,
        standardize      = FALSE,
+       stop_crit        = "model fit",
+       indiv_correct    = "Bonferroni",
+       alpha            = .05,
        hybrid = FALSE,
        VAR    = FALSE)
 }
@@ -96,6 +99,18 @@ before being multiplied together. Defaults to FALSE.}
 
 \item{standardize}{Logical. If TRUE, all variables will be standardized to have a mean of zero and a
 standard deviation of one. Defaults to FALSE.}
+
+\item{stop_crit}{Stopping criterion for the individual-level search.
+"standard" stops when either fit is adequate or no significant
+paths remain. "model fit" (default) continues adding the highest-MI path until fit
+is adequate, even if the path is not significant. "significance"
+continues adding significant paths even after fit is adequate.}
+
+\item{indiv_correct}{Indicate how to correct for multiple comparisons at the individual level.
+"Bonferroni" (Default) applies a Bonferroni correction dividing alpha by the number of eligible paths;
+"fdr" applies a Benjamini-Hochberg false discovery rate correction.}
+
+\item{alpha}{The base alpha level used for significance testing. Defaults to .05.}
 
 \item{hybrid}{Logical. If TRUE, enables hybrid-VAR models where both directed contemporaneous paths and contemporaneous
 covariances among residuals are candidate relations in the search space. Defaults to FALSE.}

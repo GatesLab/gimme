@@ -12,7 +12,9 @@ final.org(
   diagnos = FALSE,
   store,
   confirm_subgroup,
-  elig_paths = NULL
+  elig_paths = NULL,
+  alpha = 0.05,
+  indiv_correct = "Bonferroni"
 )
 }
 \arguments{

@@ -17,7 +17,10 @@ search.paths.ms(
   ms_allow,
   ms_tol,
   hybrid,
-  dir_prop_cutoff
+  dir_prop_cutoff,
+  alpha = 0.05,
+  correction = "Bonferroni",
+  augmented_vars = NULL
 )
 }
 \arguments{
@@ -47,6 +50,8 @@ individual).}
 
 \item{subgroup_stage}{Logical. Only present in order to instruct gimme
 what message to print to console using writeLines.}
+
+\item{augmented_vars}{Subject-aligned list of augmented variable names.}
 }
 \value{
 Returns updated values of n_paths and add_syntax.

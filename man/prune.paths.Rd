@@ -14,7 +14,8 @@ prune.paths(
   prop_cutoff,
   elig_paths,
   subgroup_stage = FALSE,
-  test_cutoff
+  test_cutoff,
+  augmented_vars = NULL
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ gimme is allowed to drop from the model at a given stage.}
 what message to print to console using writeLines.}
 
 \item{test_cutoff}{Z score cutoff for significance testing.}
+
+\item{augmented_vars}{Subject-aligned list of augmented variable names.}
 }
 \value{
 Returns updated values of n_paths and add_syntax.

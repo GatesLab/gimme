@@ -11,6 +11,7 @@ highest.mi(
   prop_cutoff,
   n_subj,
   chisq_cutoff,
+  stop_crit = "standard",
   allow.mult,
   ms_tol,
   hybrid,
@@ -19,7 +20,9 @@ highest.mi(
   srmr_cutoff = 0.05,
   nnfi_cutoff = 0.95,
   cfi_cutoff = 0.95,
-  n_excellent = 2
+  n_excellent = 2,
+  alpha = 0.05,
+  correction = "Bonferroni"
 )
 }
 \arguments{
@@ -43,6 +46,12 @@ individual stage, n_subj = 1.}
 Value varies depending on stage of search (e.g., group, subgroup, 
 individual).}
 
+\item{stop_crit}{Stopping criterion for the individual-level search.
+"standard" stops when fit is adequate or no significant paths remain.
+"model fit" continues adding the highest-MI path until fit is adequate,
+even if the path is not significant. "significance" continues adding
+significant paths even after fit is adequate.}
+
 \item{rmsea_cutoff}{Cutoff for RMSEA for an individual model(default is .05; must be between 0.0 and 1.0).}
 
 \item{srmr_cutoff}{Cutoff for SRMR for an individual model (default is .05; must be between 0.0 and 1.0).}
@@ -53,9 +62,15 @@ individual).}
 
 \item{n_excellent}{Number of fit indices needed to surpass their cutoffs for an
 individual model to be considered excellent. Default is 2. Max is 4.}
+
+\item{alpha}{Alpha level for significance testing. Default is .05.}
+
+\item{correction}{Multiple comparison correction method. "Bonferroni" (default)
+divides alpha by the number of candidate paths. "fdr" applies the
+Benjamini-Hochberg false discovery rate procedure.}
 }
 \value{
-Returns name of parameter associated with highest MI. If no MI meets 
+Returns name of parameter associated with highest MI. If no MI meets
 the criteria, returns NA.
 }
 \description{
